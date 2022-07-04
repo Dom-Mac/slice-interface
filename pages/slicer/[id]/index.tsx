@@ -29,6 +29,7 @@ import formatCalldata from "@utils/formatCalldata"
 import client from "@utils/apollo-client"
 import { gql } from "@apollo/client"
 import { sliceCore } from "@lib/initProvider"
+import Link from "next/link"
 
 export type NewImage = { url: string; file: File }
 export type SlicerAttributes = {
@@ -409,7 +410,8 @@ export async function getStaticProps(context: GetStaticPropsContext) {
       slicerInfo,
       products,
       subgraphDataPayees: subgraphData?.slicer?.payees,
-      subgraphDataProducts: subgraphData?.slicer?.products
+      subgraphDataProducts: subgraphData?.slicer?.products,
+      key: slicerInfo.id
     },
     revalidate: 300
   }
