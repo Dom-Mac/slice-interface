@@ -23,7 +23,6 @@ type Props = {
 }
 
 const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
-  console.log(cookieCart, "cookieCart")
   const { setPurchases, purchases, setModalView, account } = useAppContext()
   const { data: signer } = useSigner()
   const addRecentTransaction = useAddRecentTransaction()
