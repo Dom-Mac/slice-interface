@@ -29,7 +29,8 @@ const CartList = ({ cookieCart, ethUsd, setCookie }: Props) => {
         const externalCallEth = utils.formatEther(extCallValue)
 
         const index = cookieCart.findIndex(
-          (p: ProductCart) => p.productId == productId
+          (p: ProductCart) =>
+            p.productId == productId && p.slicerAddress == slicerAddress
         )
 
         const handleRemove = () => {
