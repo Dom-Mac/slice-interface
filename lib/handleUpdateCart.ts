@@ -39,7 +39,8 @@ const handleUpdateCart = async (
   if (newCookies.length != 0 && productCart) {
     const quantity = productCart.quantity + newQuantity
     const index = newCookies.findIndex(
-      (p: ProductCart) => p.productId == productId
+      (p: ProductCart) =>
+        p.productId == productId && p.slicerAddress == slicerAddress
     )
     if (quantity > 0) {
       newCookies[index] = {
