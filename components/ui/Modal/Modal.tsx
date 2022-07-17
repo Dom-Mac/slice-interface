@@ -52,7 +52,7 @@ const Modal = ({ modalView, setModalView }: Props) => {
       content = REDEEM_PRODUCT_VIEW(params)
       break
     case "FINGERPRINTING_VIEW":
-      content = FINGERPRINTING_VIEW(params)
+      content = FINGERPRINTING_VIEW()
       break
   }
 
