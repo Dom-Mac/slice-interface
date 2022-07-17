@@ -75,6 +75,10 @@ export const beforeCreate = async (
       metadata["image"] = image
     }
   }
+  // TODO: remove
+  // throw new Error(
+  //   "Pica: cannot use getImageData on canvas, make sure fingerprinting protection isn't enabled"
+  // )
 
   // Pin metadata on pinata
   setUploadStep(2)

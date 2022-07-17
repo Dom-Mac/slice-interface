@@ -23,6 +23,7 @@ const supabaseUpload = async (
       .trim() + `_${randomString}`
 
   let mainImage: File
+  // GIF COMPRESSION
   if (fileExt !== "gif") {
     if (highQuality) {
       mainImage = await reduce.toBlob(newImage.file, { max: 2560 })

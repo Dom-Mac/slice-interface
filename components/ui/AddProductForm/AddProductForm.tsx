@@ -194,6 +194,13 @@ const AddProductForm = ({
         message: err.message,
         messageStatus: "error"
       })
+      // Handling fingerptinting error
+      if (err.message.includes("Pica", "fingerprint")) {
+        // Trigger an event to track how many users are most likely using Brave with shields enabled
+        saEvent("create_product_fail_due_to_fingerprint")
+        // Open modal with fingerprinting warning
+        setModalView({ name: "FINGERPRINTING_VIEW" })
+      }
     }
   }
 

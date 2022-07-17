@@ -5,6 +5,7 @@ import fetcher from "@utils/fetcher"
 import { Message } from "@utils/handleMessage"
 import { useAppContext } from "../context"
 import { Button, MessageBlock } from "@components/ui"
+import saEvent from "@utils/saEvent"
 
 type Props = {
   editMode: boolean
@@ -138,6 +139,13 @@ const SlicerSubmitBlock = ({
         },
         setMsg
       )
+      // Handling fingerptinting error
+      if (err.message.includes("Pica", "fingerprint")) {
+        // Trigger an event to track how many users are most likely using Brave with shields enabled
+        saEvent("create_product_fail_due_to_fingerprint")
+        // Open modal with fingerprinting warning
+        setModalView({ name: "FINGERPRINTING_VIEW" })
+      }
     }
   }
 
