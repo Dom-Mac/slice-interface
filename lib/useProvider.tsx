@@ -35,28 +35,24 @@ export const initialize = async (connector) => {
 export const useAllowed = (slicerId: number) => {
   const { account, provider, isConnected } = useAppContext()
   const [access, setAccess] = useState({ isAllowed: false, loading: false })
+
   const getAllowed = async () => {
     setAccess({ isAllowed: false, loading: true })
-    if (slicerId && slicerId != NaN && account && isConnected) {
-      const slicerContract = await slicer(slicerId, provider)
 
-      const isPayeeAllowed: boolean = await slicerContract.isPayeeAllowed(
-        account
-      )
+    const slicerContract = await slicer(slicerId, provider)
 
-      setAccess({ isAllowed: isPayeeAllowed, loading: false })
+    const isPayeeAllowed: boolean = await slicerContract.isPayeeAllowed(account)
+
+    setAccess({ isAllowed: isPayeeAllowed, loading: false })
+  }
+  useEffect(() => {
+    if (slicerId && slicerId != NaN && isConnected && account) {
+      getAllowed()
     } else {
       setAccess({ isAllowed: false, loading: false })
     }
-  }
-  useEffect(() => {
-    if (account) {
-      getAllowed()
-    }
-  }, [slicerId, account])
+  }, [slicerId, isConnected, account])
   return access
-
-  // TODO: Fix this, sometimes it stops working
 }
 
 const useProvider = (setLoading: Dispatch<SetStateAction<boolean>>) => {
