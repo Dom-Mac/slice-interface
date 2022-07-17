@@ -600,11 +600,11 @@ export const FINGERPRINTING_VIEW = () => {
   return (
     <>
       <div className="pb-6 text-center">
-        <DoubleText inactive logoText="OPS, shield detected" />
+        <DoubleText inactive logoText="Oops, shield detected" />
       </div>
-      <p className="text-lg text-center">
-        🍰 Please make sure Fingerprinting protection isn&apos;t enabled, if you
-        are a Brave user turn off shields and try again 🍰
+      <p className="text-center">
+        Make sure Fingerprinting protection isn&apos;t enabled in your browser,
+        if you are a Brave user turn off shields and try again.
       </p>
     </>
   )
