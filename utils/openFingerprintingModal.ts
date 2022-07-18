@@ -7,7 +7,7 @@ const openFingerprintingModal = (
   setModalView: Dispatch<SetStateAction<View>>
 ) => {
   // Handling fingerptinting error
-  if (err.message.includes("Pica")) {
+  if (err.message.includes("fingerprinting")) {
     // Trigger an event to track how many users are most likely using Brave with shields enabled
     saEvent("create_product_fail_due_to_fingerprint")
     // Open modal with fingerprinting warning
