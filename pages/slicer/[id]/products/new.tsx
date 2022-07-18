@@ -74,7 +74,7 @@ export default function NewProduct() {
               <Spinner size="w-10 h-10" />
             </div>
           </main>
-        ) : isAllowed ? (
+        ) : isAllowed == "product" || isAllowed == "full" ? (
           !success ? (
             <main className="max-w-[420px] mx-auto sm:max-w-screen-md">
               <DoubleText

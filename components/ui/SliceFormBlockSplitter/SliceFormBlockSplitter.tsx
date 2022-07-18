@@ -11,11 +11,13 @@ type Props = {
   minimumShares: number
   totalShares: number
   isImmutable: boolean
+  isCreatorOnly: boolean
   setAddresses: Dispatch<SetStateAction<string[]>>
   setShares: Dispatch<SetStateAction<number[]>>
   setMinimumShares: Dispatch<SetStateAction<number>>
   setTotalShares: Dispatch<SetStateAction<number>>
-  setisImmutable: Dispatch<SetStateAction<boolean>>
+  setIsImmutable: Dispatch<SetStateAction<boolean>>
+  setIsCreatorOnly: Dispatch<SetStateAction<boolean>>
 }
 
 const SliceFormBlockSplitter = ({
@@ -25,11 +27,13 @@ const SliceFormBlockSplitter = ({
   minimumShares,
   totalShares,
   isImmutable,
+  isCreatorOnly,
   setAddresses,
   setShares,
   setMinimumShares,
   setTotalShares,
-  setisImmutable
+  setIsImmutable,
+  setIsCreatorOnly
 }: Props) => {
   const { account } = useAppContext()
   const [initAddress, setInitAddress] = useState("")
@@ -211,7 +215,34 @@ const SliceFormBlockSplitter = ({
           />
         </div>
         <div className="flex">
-          <MySwitch enabled={isImmutable} setEnabled={setisImmutable} />
+          <MySwitch enabled={isImmutable} setEnabled={setIsImmutable} />
+        </div>
+        <div className="relative flex items-center justify-end col-span-5 xs:col-end-7">
+          <p className="pr-1">Creator metadata</p>
+          <Question
+            text={
+              <>
+                <p>
+                  Makes the metadata editable <b>only by the slicer creator</b>{" "}
+                  and not by superowners.
+                </p>
+                <p>Consider enabling it if:</p>
+                <ul>
+                  <li>
+                    You&apos;re creating the slicer for someone else but need to
+                    have control over its metadata.
+                  </li>
+                  <li>
+                    Superowners should not be able to edit the metadata at their
+                    discretion (useful for community-owned slicers)
+                  </li>
+                </ul>
+              </>
+            }
+          />
+        </div>
+        <div className="flex">
+          <MySwitch enabled={isCreatorOnly} setEnabled={setIsCreatorOnly} />
         </div>
       </div>
     </div>

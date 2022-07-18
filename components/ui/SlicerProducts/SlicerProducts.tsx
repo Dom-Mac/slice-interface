@@ -27,7 +27,7 @@ export type Product = {
 
 type Props = {
   account: string
-  isAllowed: boolean
+  isAllowed: string
   slicerId: string
   slicerAddress: string
   products: any
@@ -104,7 +104,7 @@ const SlicerProducts = ({
         products={showProducts}
         editMode={editMode}
       />
-      {isAllowed && (
+      {(isAllowed == "product" || isAllowed == "full") && (
         <div>
           {!editMode && (
             <div className="pt-6">

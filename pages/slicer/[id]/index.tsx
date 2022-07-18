@@ -57,7 +57,7 @@ const Id = ({
   const router = useRouter()
   const { view } = router.query
   const { account, setModalView } = useAppContext()
-  const { isAllowed } = useAllowed(slicerInfo?.id)
+  const { isAllowed } = useAllowed(slicerInfo)
   const [editMode, setEditMode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [sponsorLoading, setSponsorLoading] = useState(true)
@@ -97,7 +97,7 @@ const Id = ({
 
   // Todo: For collectibles save image on web3Storage instead of supabase? + Allow indefinite size? Figure it out
   const editAllowed = !slicerInfo?.isImmutable
-    ? isAllowed
+    ? isAllowed == "metadata" || isAllowed == "full"
     : slicer?.attributes?.filter((el) => el.trait_type === "Creator")[0]
         .value === account?.toLowerCase() // only Creator
     ? (newName === `Slicer #${slicerInfo?.id}` && // default name, descr & image

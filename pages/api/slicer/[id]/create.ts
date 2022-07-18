@@ -14,6 +14,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const {
         slicerAddress,
         isImmutable,
+        isCreatorOnly,
         totalShares,
         minimumShares,
         creator
@@ -58,7 +59,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 value: String(creator).toLowerCase()
               }
             ],
-            config: { sponsors: true },
+            config: { sponsors: true, creatorOnly: isCreatorOnly },
             sponsors: {}
           }
           await prisma.slicer.create({

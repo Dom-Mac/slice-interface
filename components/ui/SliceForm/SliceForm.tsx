@@ -28,7 +28,8 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
   const [shares, setShares] = useState([1000000])
   const [minimumShares, setMinimumShares] = useState(0)
   const [totalShares, setTotalShares] = useState(1000000)
-  const [isImmutable, setisImmutable] = useState(false)
+  const [isImmutable, setIsImmutable] = useState(false)
+  const [isCreatorOnly, setIsCreatorOnly] = useState(false)
   const [message, setMessage] = useState<Message>({
     message: "",
     messageStatus: "success"
@@ -91,6 +92,7 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
           body: JSON.stringify({
             slicerAddress,
             isImmutable,
+            isCreatorOnly,
             totalShares,
             minimumShares,
             creator
@@ -133,11 +135,13 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
           minimumShares={minimumShares}
           totalShares={totalShares}
           isImmutable={isImmutable}
+          isCreatorOnly={isCreatorOnly}
           setAddresses={setAddresses}
           setShares={setShares}
           setMinimumShares={setMinimumShares}
           setTotalShares={setTotalShares}
-          setisImmutable={setisImmutable}
+          setIsImmutable={setIsImmutable}
+          setIsCreatorOnly={setIsCreatorOnly}
         />
         <div className="py-8 sm:px-6 ">
           {totalShares > 4000000000 && (
