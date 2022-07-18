@@ -73,10 +73,15 @@ export const useAllowed = (slicerInfo: any) => {
   }
 
   useEffect(() => {
-    if (slicerInfo) {
-      if (slicerId && slicerId != NaN && isConnected && account) {
+    if (slicerInfo != undefined) {
+      if (
+        slicerId != undefined &&
+        !isNaN(Number(slicerId)) &&
+        isConnected &&
+        account
+      ) {
         getAllowed()
-      } else if (typeof slicerInfo == "number") {
+      } else if (typeof slicerInfo == "number" && !isNaN(slicerInfo)) {
         getProductAllowed()
       } else {
         setAccess({ isAllowed: "", loading: false })
