@@ -11,13 +11,13 @@ type Props = {
   minimumShares: number
   totalShares: number
   isImmutable: boolean
-  isCreatorOnly: boolean
+  isCreatorMetadata: boolean
   setAddresses: Dispatch<SetStateAction<string[]>>
   setShares: Dispatch<SetStateAction<number[]>>
   setMinimumShares: Dispatch<SetStateAction<number>>
   setTotalShares: Dispatch<SetStateAction<number>>
   setIsImmutable: Dispatch<SetStateAction<boolean>>
-  setIsCreatorOnly: Dispatch<SetStateAction<boolean>>
+  setIsCreatorMetadata: Dispatch<SetStateAction<boolean>>
 }
 
 const SliceFormBlockSplitter = ({
@@ -27,13 +27,13 @@ const SliceFormBlockSplitter = ({
   minimumShares,
   totalShares,
   isImmutable,
-  isCreatorOnly,
+  isCreatorMetadata,
   setAddresses,
   setShares,
   setMinimumShares,
   setTotalShares,
   setIsImmutable,
-  setIsCreatorOnly
+  setIsCreatorMetadata
 }: Props) => {
   const { account } = useAppContext()
   const [initAddress, setInitAddress] = useState("")
@@ -242,7 +242,10 @@ const SliceFormBlockSplitter = ({
           />
         </div>
         <div className="flex">
-          <MySwitch enabled={isCreatorOnly} setEnabled={setIsCreatorOnly} />
+          <MySwitch
+            enabled={isCreatorMetadata}
+            setEnabled={setIsCreatorMetadata}
+          />
         </div>
       </div>
     </div>

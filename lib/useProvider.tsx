@@ -48,7 +48,7 @@ export const useAllowed = (slicerInfo: any) => {
   const getAllowed = async () => {
     setAccess({ isAllowed: "", loading: true })
     if (
-      config?.creatorOnly &&
+      config?.creatorMetadata &&
       attributes?.filter((el) => el.trait_type === "Creator")[0].value ===
         account?.toLowerCase()
     ) {
@@ -61,7 +61,7 @@ export const useAllowed = (slicerInfo: any) => {
 
       if (isPayeeAllowed) {
         setAccess({
-          isAllowed: config?.creatorOnly
+          isAllowed: config?.creatorMetadata
             ? access.isAllowed == "metadata"
               ? "full"
               : "product"
