@@ -56,7 +56,7 @@ const InputAddress: React.FC<Props> = (props) => {
   }, [provider, address])
 
   return (
-    <div className="relative pb-2">
+    <div className="relative mb-2">
       <Input
         type="string"
         value={address}
