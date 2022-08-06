@@ -3,7 +3,6 @@ import nightwind from "nightwind/helper"
 import Logo from "@components/icons/Logo"
 import Nightwind from "@components/icons/Nightwind"
 import ShoppingBag from "@components/icons/ShoppingBag"
-import Coins from "@components/icons/Coins"
 import { Dispatch, SetStateAction } from "react"
 import { DropdownMenuElement } from ".."
 type Props = {
