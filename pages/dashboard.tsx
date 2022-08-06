@@ -27,7 +27,9 @@ export default function Profile() {
         }}
       />
       <ConnectBlock>
-        <main className="max-w-[420px] mx-auto sm:max-w-screen-md"></main>
+        <main className="max-w-[420px] mx-auto sm:max-w-screen-md">
+          <h1 className="text-2xl font-normal text-left">Earnings Dashboard</h1>
+        </main>
       </ConnectBlock>
     </Container>
   )
