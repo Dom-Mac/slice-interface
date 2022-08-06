@@ -118,7 +118,7 @@ const SliceFormInputBlock = ({
           />
         </div>
         <p className="col-span-2 pr-2 text-right xs:hidden">Slices</p>
-        <div className="col-span-4 mt-3 xs:col-span-3">
+        <div className="col-span-4 mt-3 xs:pb-2 xs:col-span-3">
           <Input
             type="number"
             placeholder={placeholder}
