@@ -3,15 +3,16 @@ import multicall from "@utils/multicall"
 import formatCalldata from "@utils/formatCalldata"
 
 const useUnreleased = (
-  slicerAddress: string,
-  addresses: string[],
-  currency: string
+  slicers: any[],
+  address: string,
+  currencies: string[]
 ) => {
   const [unreleased, setUnreleased] = useState([])
+  let slicerAddresses = []
 
   const getOwnersUnreleased = async (args: string[]) => {
     const result = await multicall(
-      slicerAddress,
+      slicerAddresses,
       "unreleased(address,address)",
       args
     )
@@ -19,10 +20,13 @@ const useUnreleased = (
   }
 
   useEffect(() => {
-    if (slicerAddress && addresses.length != 0) {
+    if (address && slicers) {
+      slicers?.map((slicer) => {
+        slicerAddresses.push(slicer.slicer.address)
+      })
       const args = []
-      addresses.forEach((address) => {
-        if (address) {
+      currencies.forEach((currency) => {
+        if (currency) {
           args.push(formatCalldata(address, currency))
         }
       })
@@ -31,7 +35,7 @@ const useUnreleased = (
         getOwnersUnreleased(args)
       }
     }
-  }, [slicerAddress, addresses])
+  }, [slicers, address])
 
   return unreleased
 }
