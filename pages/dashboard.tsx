@@ -38,34 +38,30 @@ export default function Dashboard() {
             protocolFee
           }
         }
-        # currencies(where: {toWithdraw_gt: "0"}){
-        # toWithdraw
-        # currency {
-        #   id
-        # }
-        # }
-      }
-      payeeCurrency(id: "${account?.toLowerCase()}-${addrO}") {
-        withdrawn
+        currencies(where: {toWithdraw_gt: "0"}) {
+          id
+          withdrawn
+          toWithdraw
+        }
       }
     `
   let subgraphData = useQuery(tokensQuery, [account])
   const slicers = subgraphData?.payee?.slicers
+  const currencies = subgraphData?.payee?.currencies
+  const currenciesIds = currencies?.map((c) => c.id.split("-")[1])
 
   // TODO: pass array of currencies to useUnreleased taken from subgraph
   // Unreleased amount taken from blockchain
-  const unreleased = useUnreleased(slicers, account, [
-    ethers.constants.AddressZero
-  ])
+  const unreleased = useUnreleased(slicers, account, currenciesIds || [])
   // Amount already withdrawn from the payee
-  const withdrawn = subgraphData?.payeeCurrency?.withdrawn
-  // TODO: convert Eth to USD
+  const withdrawnEth = currencies?.filter((c) => c.id.split("-")[1] == addrO)[0]
+    ?.withdrawn
   // Are all the currencies in the array the same? Right now there is only ETH
   const toWithdrawEth = unreleased.reduce((acc, curr) => {
     return acc + getEthFromWei(curr, true)
   }, 0)
   const totalEarnedEth =
-    Number(ethers.utils.formatEther(withdrawn || 0)) + Number(toWithdrawEth)
+    Number(ethers.utils.formatEther(withdrawnEth || 0)) + Number(toWithdrawEth)
 
   // Conversion in USD
   const totalEarnedUsd = (
@@ -115,6 +111,16 @@ export default function Dashboard() {
               <p className="text-lg font-semibold">$ {toWithdrawUsd}</p>
               {/* <p className="text-xs font-normal text-green-500">+200 tokens</p> */}
             </div>
+          </div>
+          <p className="p-2 mb-5 text-xs font-normal text-left text-slate-500 ">
+            Current SLX cashback fee: 2.5%
+          </p>
+          <div className="w-screen -mb-10 -ml-4 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
+            <div>
+              <p>Select all</p>
+              <p>Widthraw all</p>
+            </div>
+            <div>ETH</div>
           </div>
         </main>
       </ConnectBlock>
