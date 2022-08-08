@@ -45,6 +45,7 @@ export default function Dashboard() {
   const slicers = payee?.slicers
   const currencies = payee?.currencies
   const currenciesIds = currencies?.map((c) => c.id.split("-")[1])
+  const slicerAddresses = slicers?.map((s) => s.slicer.address)
 
   // Unreleased amounts are taken from blockchain
   // TODO: divide useUnreleased by currencies
