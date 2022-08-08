@@ -12,10 +12,16 @@ import useQuery from "@utils/subgraphQuery"
 import useUnreleased from "@lib/useUnreleased"
 import { ethers } from "ethers"
 import getEthFromWei from "@utils/getEthFromWei"
+import useSWR from "swr"
+import fetcher from "@utils/fetcher"
 
 export default function Dashboard() {
   const { account } = useAppContext()
   const addrO = ethers.constants.AddressZero
+  const { data: ethUsd } = useSWR(
+    "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT",
+    fetcher
+  )
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
@@ -46,17 +52,22 @@ export default function Dashboard() {
   const slicers = subgraphData?.payee?.slicers
 
   // TODO: pass array of currencies to useUnreleased taken from subgraph
+  // Unreleased amount taken from blockchain
   const unreleased = useUnreleased(slicers, account, [
     ethers.constants.AddressZero
   ])
+  // Amount already withdrawn from the payee
+  const withdrawn = subgraphData?.payeeCurrency?.withdrawn
   // TODO: convert Eth to USD
   // Are all the currencies in the array the same? Right now there is only ETH
   const toWithdrawEth = unreleased.reduce((acc, curr) => {
     return acc + getEthFromWei(curr, true)
   }, 0)
-  const withdrawn = subgraphData?.payeeCurrency?.withdrawn
   const totalEarnedEth =
     Number(ethers.utils.formatEther(withdrawn || 0)) + Number(toWithdrawEth)
+
+  const totalEarnedUsd = Number(totalEarnedEth) * Number(ethUsd?.price)
+  const toWithdrawUsd = Number(toWithdrawEth) * Number(ethUsd?.price)
 
   return (
     <Container page={true}>
@@ -88,14 +99,14 @@ export default function Dashboard() {
           <div className="flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 dark:bg-slate-800">
             <div className="text-left ">
               <p className="text-xs font-normal text-slate-400">Total earned</p>
-              <p className="text-lg font-semibold">$ {totalEarnedEth}</p>
+              <p className="text-lg font-semibold">$ {totalEarnedUsd}</p>
               <p className="text-xs font-normal text-green-500">
                 +200 SLX cashback
               </p>
             </div>
             <div className="text-left ">
               <p className="text-xs font-normal text-slate-400">To withdraw</p>
-              <p className="text-lg font-semibold">$ {toWithdrawEth}</p>
+              <p className="text-lg font-semibold">$ {toWithdrawUsd}</p>
               <p className="text-xs font-normal text-green-500">+200 tokens</p>
             </div>
           </div>
