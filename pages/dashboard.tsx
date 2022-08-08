@@ -23,40 +23,33 @@ export default function Dashboard() {
     fetcher
   )
 
-  // TODO: Optimize this query for multiple currencies
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
         slicers (where: {slices_gt: "0"}){
-          slices
           slicer {
             id
             address
-            slices
-            minimumSlices
-            isImmutable
-            productsModuleBalance
-            protocolFee
           }
         }
         currencies(where: {toWithdraw_gt: "0"}) {
           id
           withdrawn
-          toWithdraw
         }
       }
     `
   let subgraphData = useQuery(tokensQuery, [account])
-  const slicers = subgraphData?.payee?.slicers
-  const currencies = subgraphData?.payee?.currencies
+  const payee = subgraphData?.payee
+  const slicers = payee?.slicers
+  const currencies = payee?.currencies
   const currenciesIds = currencies?.map((c) => c.id.split("-")[1])
 
-  // TODO: pass array of currencies to useUnreleased taken from subgraph
-  // Unreleased amount taken from blockchain
+  // Unreleased amounts are taken from blockchain
+  // TODO: divide useUnreleased by currencies
+  // Are all the currencies in the array the same? Right now there is only ETH
   const unreleased = useUnreleased(slicers, account, currenciesIds || [])
   // Amount already withdrawn from the payee
   const withdrawnEth = currencies?.filter((c) => c.id.split("-")[1] == addrO)[0]
     ?.withdrawn
-  // Are all the currencies in the array the same? Right now there is only ETH
   const toWithdrawEth = unreleased.reduce((acc, curr) => {
     return acc + getEthFromWei(curr, true)
   }, 0)
