@@ -15,6 +15,7 @@ import getEthFromWei from "@utils/getEthFromWei"
 
 export default function Dashboard() {
   const { account } = useAppContext()
+  const addrO = ethers.constants.AddressZero
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
@@ -37,17 +38,25 @@ export default function Dashboard() {
         # }
         # }
       }
+      payeeCurrency(id: "${account?.toLowerCase()}-${addrO}") {
+        withdrawn
+      }
     `
   let subgraphData = useQuery(tokensQuery, [account])
-  const payeeData = subgraphData?.payee
-  const slicers = payeeData?.slicers
+  const slicers = subgraphData?.payee?.slicers
 
+  // TODO: pass array of currencies to useUnreleased taken from subgraph
   const unreleased = useUnreleased(slicers, account, [
     ethers.constants.AddressZero
   ])
-  const toWithdraw = unreleased.reduce((acc, curr) => {
+  // TODO: convert Eth to USD
+  // Are all the currencies in the array the same? Right now there is only ETH
+  const toWithdrawEth = unreleased.reduce((acc, curr) => {
     return acc + getEthFromWei(curr, true)
   }, 0)
+  const withdrawn = subgraphData?.payeeCurrency?.withdrawn
+  const totalEarnedEth =
+    Number(ethers.utils.formatEther(withdrawn || 0)) + Number(toWithdrawEth)
 
   return (
     <Container page={true}>
@@ -79,14 +88,14 @@ export default function Dashboard() {
           <div className="flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 dark:bg-slate-800">
             <div className="text-left ">
               <p className="text-xs font-normal text-slate-400">Total earned</p>
-              <p className="text-lg font-semibold">$ 999.99</p>
+              <p className="text-lg font-semibold">$ {totalEarnedEth}</p>
               <p className="text-xs font-normal text-green-500">
                 +200 SLX cashback
               </p>
             </div>
             <div className="text-left ">
               <p className="text-xs font-normal text-slate-400">To withdraw</p>
-              <p className="text-lg font-semibold">$ {toWithdraw}</p>
+              <p className="text-lg font-semibold">$ {toWithdrawEth}</p>
               <p className="text-xs font-normal text-green-500">+200 tokens</p>
             </div>
           </div>
