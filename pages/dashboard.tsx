@@ -23,6 +23,7 @@ export default function Dashboard() {
     fetcher
   )
 
+  // TODO: Optimize this query for multiple currencies
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
         slicers (where: {slices_gt: "0"}){
@@ -66,8 +67,13 @@ export default function Dashboard() {
   const totalEarnedEth =
     Number(ethers.utils.formatEther(withdrawn || 0)) + Number(toWithdrawEth)
 
-  const totalEarnedUsd = Number(totalEarnedEth) * Number(ethUsd?.price)
-  const toWithdrawUsd = Number(toWithdrawEth) * Number(ethUsd?.price)
+  // Conversion in USD
+  const totalEarnedUsd = (
+    Number(totalEarnedEth) * Number(ethUsd?.price)
+  ).toFixed(2)
+  const toWithdrawUsd = (Number(toWithdrawEth) * Number(ethUsd?.price)).toFixed(
+    2
+  )
 
   return (
     <Container page={true}>
@@ -100,14 +106,14 @@ export default function Dashboard() {
             <div className="text-left ">
               <p className="text-xs font-normal text-slate-400">Total earned</p>
               <p className="text-lg font-semibold">$ {totalEarnedUsd}</p>
-              <p className="text-xs font-normal text-green-500">
+              {/* <p className="text-xs font-normal text-green-500">
                 +200 SLX cashback
-              </p>
+              </p> */}
             </div>
             <div className="text-left ">
               <p className="text-xs font-normal text-slate-400">To withdraw</p>
               <p className="text-lg font-semibold">$ {toWithdrawUsd}</p>
-              <p className="text-xs font-normal text-green-500">+200 tokens</p>
+              {/* <p className="text-xs font-normal text-green-500">+200 tokens</p> */}
             </div>
           </div>
         </main>
