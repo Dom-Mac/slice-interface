@@ -18,8 +18,6 @@ import { ethers } from "ethers"
 import getEthFromWei from "@utils/getEthFromWei"
 import useSWR from "swr"
 import fetcher from "@utils/fetcher"
-import TriggerBatchReleaseSlicers from "@lib/handlers/chain/TriggerBatchReleaseSlicers"
-import { useSigner } from "wagmi"
 
 export default function Dashboard() {
   const { account } = useAppContext()
@@ -48,8 +46,6 @@ export default function Dashboard() {
   const slicers = payee?.slicers
   const currencies = payee?.currencies
   const currenciesAddresses = currencies?.map((c) => c.id.split("-")[1])
-  const slicerAddresses = slicers?.map((s) => s.slicer.address)
-  const { data: signer } = useSigner()
 
   // Unreleased amounts are taken from blockchain
   // TODO: divide useUnreleased by currencies
@@ -71,15 +67,6 @@ export default function Dashboard() {
   const toWithdrawUsd = (Number(toWithdrawEth) * Number(ethUsd?.price)).toFixed(
     2
   )
-  const handleWithdraw = () => {
-    TriggerBatchReleaseSlicers(
-      signer,
-      slicerAddresses,
-      account,
-      ethers.constants.AddressZero,
-      true
-    )
-  }
 
   return (
     <Container page={true}>
@@ -111,7 +98,8 @@ export default function Dashboard() {
           <ToWithdrawList
             toWithdrawEth={toWithdrawEth}
             toWithdrawUsd={toWithdrawUsd}
-            handleWithdraw={handleWithdraw}
+            slicers={slicers}
+            account={account}
           />
         </main>
       </ConnectBlock>

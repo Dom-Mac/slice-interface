@@ -1,18 +1,34 @@
 import Image from "next/image"
 import ethImg from "public/eth.svg"
 import withdrawImg from "public/download.svg"
+import TriggerBatchReleaseSlicers from "@lib/handlers/chain/TriggerBatchReleaseSlicers"
+import { ethers } from "ethers"
+import { useSigner } from "wagmi"
 
 type Props = {
   toWithdrawEth: string
   toWithdrawUsd: string
-  handleWithdraw: () => void
+  slicers: any
+  account: string
 }
 
 const ToWithdrawList = ({
   toWithdrawEth,
   toWithdrawUsd,
-  handleWithdraw
+  slicers,
+  account
 }: Props) => {
+  const slicerAddresses = slicers?.map((s) => s.slicer.address)
+  const { data: signer } = useSigner()
+  const handleWithdraw = () => {
+    TriggerBatchReleaseSlicers(
+      signer,
+      slicerAddresses,
+      account,
+      ethers.constants.AddressZero,
+      true
+    )
+  }
   return (
     <div className="w-screen px-4 -mb-10 -ml-4 pt-7 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
       <div className="flex justify-between mb-8">
