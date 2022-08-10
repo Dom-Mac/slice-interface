@@ -1,4 +1,4 @@
-import { ConnectBlock, Container } from "@components/ui"
+import { ConnectBlock, Container, TotalBalance } from "@components/ui"
 import { NextSeo } from "next-seo"
 import {
   defaultDescription,
@@ -6,7 +6,6 @@ import {
   longTitle,
   domain
 } from "@components/common/Head"
-import VisibilityOpen from "@components/icons/VisibilityOpen"
 import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
 import useUnreleased from "@lib/useUnreleased"
@@ -103,27 +102,10 @@ export default function Dashboard() {
           <h1 className="mb-6 text-2xl font-normal text-left">
             Earnings Dashboard
           </h1>
-          <div className="flex items-center mb-4">
-            <p className="mr-3 text-lg ">My balance</p>
-            <VisibilityOpen className="h-6" />
-          </div>
-          <div className="flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 dark:bg-slate-800">
-            <div className="text-left ">
-              <p className="text-xs font-normal text-slate-400">Total earned</p>
-              <p className="text-lg font-semibold">$ {totalEarnedUsd}</p>
-              {/* <p className="text-xs font-normal text-green-500">
-                +200 SLX cashback
-              </p> */}
-            </div>
-            <div className="text-left ">
-              <p className="text-xs font-normal text-slate-400">To withdraw</p>
-              <p className="text-lg font-semibold">$ {toWithdrawUsd}</p>
-              {/* <p className="text-xs font-normal text-green-500">+200 tokens</p> */}
-            </div>
-          </div>
-          <p className="p-2 mb-5 text-xs font-normal text-left text-slate-500 ">
-            Current SLX cashback fee: 2.5%
-          </p>
+          <TotalBalance
+            totalEarnedUsd={totalEarnedUsd}
+            toWithdrawUsd={toWithdrawUsd}
+          />
           <div className="w-screen px-4 -mb-10 -ml-4 pt-7 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
             <div className="flex justify-between mb-8">
               <p className="text-xs font-normal text-slate-400">Select all</p>
