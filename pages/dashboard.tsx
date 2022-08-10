@@ -17,6 +17,8 @@ import fetcher from "@utils/fetcher"
 import Image from "next/image"
 import ethImg from "public/eth.svg"
 import withdrawImg from "public/download.svg"
+import TriggerBatchReleaseSlicers from "@lib/handlers/chain/TriggerBatchReleaseSlicers"
+import { useSigner } from "wagmi"
 
 export default function Dashboard() {
   const { account } = useAppContext()
@@ -44,13 +46,14 @@ export default function Dashboard() {
   const payee = subgraphData?.payee
   const slicers = payee?.slicers
   const currencies = payee?.currencies
-  const currenciesIds = currencies?.map((c) => c.id.split("-")[1])
+  const currenciesAddresses = currencies?.map((c) => c.id.split("-")[1])
   const slicerAddresses = slicers?.map((s) => s.slicer.address)
+  const { data: signer } = useSigner()
 
   // Unreleased amounts are taken from blockchain
   // TODO: divide useUnreleased by currencies
   // Are all the currencies in the array the same? Right now there is only ETH
-  const unreleased = useUnreleased(slicers, account, currenciesIds || [])
+  const unreleased = useUnreleased(slicers, account, currenciesAddresses || [])
   // Amount already withdrawn from the payee
   const withdrawnEth = currencies?.filter((c) => c.id.split("-")[1] == addrO)[0]
     ?.withdrawn
@@ -67,6 +70,15 @@ export default function Dashboard() {
   const toWithdrawUsd = (Number(toWithdrawEth) * Number(ethUsd?.price)).toFixed(
     2
   )
+  const handleWithdraw = () => {
+    TriggerBatchReleaseSlicers(
+      signer,
+      slicerAddresses,
+      account,
+      ethers.constants.AddressZero,
+      true
+    )
+  }
 
   return (
     <Container page={true}>
@@ -140,7 +152,7 @@ export default function Dashboard() {
                     $ {toWithdrawUsd}
                   </p>
                 </div>
-                <div className="h-6 pl-4">
+                <div className="h-6 pl-4" onClick={handleWithdraw}>
                   <Image
                     src={withdrawImg}
                     alt="download"
