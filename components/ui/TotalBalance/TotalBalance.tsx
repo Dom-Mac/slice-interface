@@ -36,7 +36,7 @@ const TotalBalance = ({ currencies, ethUsd }) => {
         <div className="text-left ">
           <p className="text-xs font-normal text-slate-400">To withdraw</p>
           <p className="text-lg font-semibold">$ {toWithdrawUsd}</p>
-          {otherTokens.length > 0 && (
+          {otherTokens?.length > 0 && (
             <p className="text-xs font-normal text-green-500">
               +{otherTokens.length} token{otherTokens.length > 1 ? "s" : null}
             </p>
