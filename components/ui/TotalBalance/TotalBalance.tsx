@@ -17,8 +17,7 @@ const TotalBalance = ({ currencies, ethUsd }) => {
   const toWithdrawUsd = (Number(toWithdrawEth) * Number(ethUsd?.price)).toFixed(
     2
   )
-  // const otherTokens = currencies?.filter((c) => c.id.split("-")[1] != addrO)
-  const otherTokens = [1]
+  const otherTokens = currencies?.filter((c) => c.id.split("-")[1] != addrO)
 
   return (
     <>
