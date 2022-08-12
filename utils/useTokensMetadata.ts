@@ -3,7 +3,7 @@ import { ethers } from "ethers"
 import ethImg from "public/eth.svg"
 import fetcher from "./fetcher"
 
-// TODO: Save tokens metadata into a db/json file anche call alchemy api just in case the metadata is not available
+// TODO: Save tokens metadata into a db/json file and call alchemy api just in case the metadata is not available
 export default function useTokensMetadata(currencies: any[]) {
   const [tokensMetadata, setTokensMetadata] = useState([])
 
