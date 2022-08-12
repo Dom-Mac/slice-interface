@@ -2,7 +2,6 @@ import Image from "next/image"
 import withdrawImg from "public/download.svg"
 import { ethers } from "ethers"
 import useTokenMetadata from "@utils/useTokenMetadata"
-import { useEffect } from "react"
 
 const ToWithdrawItem = ({ currency }) => {
   const currencyAddress = currency?.id.split("-")[1]

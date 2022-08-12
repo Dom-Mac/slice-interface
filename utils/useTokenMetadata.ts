@@ -30,10 +30,12 @@ export default function useTokenMetadata(currency: string) {
       body: JSON.stringify(body)
     })
 
-    // TODO handle case in with one field is empty
-    setTokenName(response.result.name)
-    setTokenSymbol(response.result.symbol)
-    setTokenLogo(response.result.logo)
+    if (response.result) {
+      setTokenName(response.result.name || "")
+      setTokenSymbol(response.result.symbol || "")
+      // TODO choose default logo
+      setTokenLogo(response.result.logo || ethImg)
+    }
   }
 
   useEffect(() => {
