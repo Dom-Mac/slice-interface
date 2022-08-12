@@ -13,15 +13,7 @@ type Props = {
 
 const ToWithdrawList = ({ currencies, account }: Props) => {
   const { data: signer } = useSigner()
-  // const handleWithdraw = () => {
-  //   TriggerBatchReleaseSlicers(
-  //     signer,
-  //     slicerAddresses,
-  //     account,
-  //     ethers.constants.AddressZero,
-  //     true
-  //   )
-  // }
+
   return (
     <div className="w-screen px-4 -mb-10 -ml-4 pt-7 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
       <div className="flex justify-between mb-8">
