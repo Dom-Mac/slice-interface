@@ -177,11 +177,10 @@ const SlicerCard = ({
         ) : null}
         {ethReleased != "" && (
           <p className="pt-4 text-sm text-green-500">
-            You released{" "}
+            You have released{" "}
             <span className="font-medium">
               {((Number(ethReleased) * (1000 - protocolFee)) / 1000).toFixed(4)}{" "}
-              ETH + {((Number(ethReleased) * protocolFee) / 1000).toFixed(4)}{" "}
-              ETH in SLX
+              ETH
             </span>
             ! 🎉
             <br />
@@ -189,7 +188,6 @@ const SlicerCard = ({
             <Link href="/dashboard">
               <a className="text-green-500 underline">your dashboard</a>
             </Link>{" "}
-            to withdraw them
           </p>
         )}
       </div>

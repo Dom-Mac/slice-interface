@@ -18,6 +18,7 @@ const TotalBalance = ({ currencies, ethUsd }) => {
     2
   )
   const otherTokens = currencies?.filter((c) => c.id.split("-")[1] != addrO)
+  // {((Number(ethReleased) * protocolFee) / 1000).toFixed(4)}{" "}  ETH in SLX cashback
 
   return (
     <>
