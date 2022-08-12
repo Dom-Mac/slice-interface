@@ -5,6 +5,7 @@ import TriggerBatchReleaseSlicers from "@lib/handlers/chain/TriggerBatchReleaseS
 import { ethers } from "ethers"
 import { useSigner } from "wagmi"
 import ToWithdrawItem from "../ToWithdrawItem"
+import useTokenMetadata from "@utils/useTokensMetadata"
 
 type Props = {
   currencies: any
@@ -13,6 +14,7 @@ type Props = {
 
 const ToWithdrawList = ({ currencies, account }: Props) => {
   const { data: signer } = useSigner()
+  const tokensMetadata = useTokenMetadata(currencies)
 
   return (
     <div className="w-screen px-4 -mb-10 -ml-4 pt-7 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
@@ -23,7 +25,11 @@ const ToWithdrawList = ({ currencies, account }: Props) => {
         </p>
       </div>
       {currencies?.map((currency, index) => (
-        <ToWithdrawItem currency={currency} key={index} />
+        <ToWithdrawItem
+          currency={currency}
+          tokenMetadata={tokensMetadata[index]}
+          key={index}
+        />
       ))}
     </div>
   )

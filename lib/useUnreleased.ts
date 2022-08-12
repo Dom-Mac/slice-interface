@@ -35,6 +35,7 @@ const useUnreleased = (
         getOwnersUnreleased(args)
       }
     }
+    return () => {}
   }, [slicers, address])
 
   return unreleased
