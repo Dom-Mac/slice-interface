@@ -8,8 +8,8 @@ const ToWithdrawItem = ({ currency }) => {
   const { tokenName, tokenSymbol, tokenLogo } =
     useTokenMetadata(currencyAddress)
   console.log(currency)
-  const toWithdrawToken = currency?.toWithdraw
-  const toWithdrawUsd = currency?.toWithdraw
+  const toWithdrawToken = ethers.utils.formatEther(currency?.toWithdraw || 0)
+  const toWithdrawUsd = ethers.utils.formatEther(currency?.toWithdraw || 0)
 
   return (
     <div className="flex justify-between p-2 border rounded-lg border-sky-400">
