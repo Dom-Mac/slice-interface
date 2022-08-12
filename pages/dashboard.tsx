@@ -37,6 +37,9 @@ export default function Dashboard() {
   let subgraphData = useQuery(tokensQuery, [account])
   const payee = subgraphData?.payee
   const currencies = payee?.currencies
+  const currenciesToWithdraw = currencies?.filter(
+    (currency) => currency.toWithdraw > 1
+  )
 
   return (
     <Container page={true}>
@@ -62,7 +65,7 @@ export default function Dashboard() {
             Earnings Dashboard
           </h1>
           <TotalBalance currencies={currencies} ethUsd={ethUsd} />
-          <ToWithdrawList currencies={currencies} account={account} />
+          <ToWithdrawList currencies={currenciesToWithdraw} account={account} />
         </main>
       </ConnectBlock>
     </Container>
