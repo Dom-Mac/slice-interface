@@ -1,8 +1,4 @@
-import Image from "next/image"
-import ethImg from "public/eth.svg"
-import withdrawImg from "public/download.svg"
 import TriggerBatchReleaseSlicers from "@lib/handlers/chain/TriggerBatchReleaseSlicers"
-import { ethers } from "ethers"
 import { useSigner } from "wagmi"
 import ToWithdrawItem from "../ToWithdrawItem"
 import useTokenMetadata from "@utils/useTokensMetadata"
