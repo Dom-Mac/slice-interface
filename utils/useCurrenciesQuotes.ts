@@ -19,7 +19,7 @@ const useCurrenciesQuotes = (tokensMetadata: any[]) => {
     }
   }, [tokensMetadata])
 
-  return []
+  return quotes
 }
 
 export default useCurrenciesQuotes
