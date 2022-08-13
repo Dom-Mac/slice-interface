@@ -10,9 +10,7 @@ const useCurrenciesQuotes = (tokensMetadata: any[]) => {
       body: JSON.stringify({ tokensMetadata })
     })
 
-    console.log("response", response)
-
-    return response
+    setQuotes(response)
   }
 
   useEffect(() => {
