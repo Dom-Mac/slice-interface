@@ -16,6 +16,7 @@ import useQuery from "@utils/subgraphQuery"
 import useSWR from "swr"
 import fetcher from "@utils/fetcher"
 import useTokensMetadata from "@utils/useTokensMetadata"
+import useCurrenciesQuotes from "@utils/useCurrenciesQuotes"
 
 export default function Dashboard() {
   const { account } = useAppContext()
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const payee = subgraphData?.payee
   const currencies = payee?.currencies
   const tokensMetadata = useTokensMetadata(currencies)
+  const tokensQuotes = useCurrenciesQuotes(tokensMetadata)
 
   return (
     <Container page={true}>
