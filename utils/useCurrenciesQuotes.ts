@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import fetcher from "./fetcher"
 
 const useCurrenciesQuotes = (tokensMetadata: any[]) => {
-  const [quotes, setQuotes] = useState([])
+  const [quotes, setQuotes] = useState({})
 
   const getQuotes = async () => {
     const response = await fetcher("/api/getQuotes", {

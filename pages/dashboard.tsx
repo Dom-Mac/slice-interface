@@ -13,17 +13,11 @@ import {
 } from "@components/common/Head"
 import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
-import useSWR from "swr"
-import fetcher from "@utils/fetcher"
 import useTokensMetadata from "@utils/useTokensMetadata"
 import useCurrenciesQuotes from "@utils/useCurrenciesQuotes"
 
 export default function Dashboard() {
   const { account } = useAppContext()
-  const { data: ethUsd } = useSWR(
-    "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT",
-    fetcher
-  )
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
@@ -65,12 +59,16 @@ export default function Dashboard() {
           <h1 className="mb-6 text-2xl font-normal text-left">
             Earnings Dashboard
           </h1>
-          <TotalBalance currencies={currencies} ethUsd={ethUsd} />
-          <ToWithdrawList
+          <TotalBalance
+            currencies={currencies}
+            tokensMetadata={tokensMetadata}
+            tokensQuotes={tokensQuotes}
+          />
+          {/* <ToWithdrawList
             currencies={currencies}
             account={account}
             tokensMetadata={tokensMetadata}
-          />
+          /> */}
         </main>
       </ConnectBlock>
     </Container>
