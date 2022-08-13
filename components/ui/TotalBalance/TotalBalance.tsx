@@ -9,10 +9,13 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
   let plusTokens = 0
   let cashback = 0
 
+  // TokensQuotes is the last state to be updated, if is available all other states are available
   if (Object.keys(tokensQuotes).length) {
     currencies.forEach((currency, index) => {
       const symbol = tokensMetadata[index]?.symbol
       const usdPrice = tokensQuotes[symbol]
+
+      // If the currency has been withdrawn, add the amount to the total to withdraw
       if (currency.withdrawn > 0 && usdPrice) {
         const withdrawn =
           currency.id.split("-")[1] == addr0
@@ -21,6 +24,8 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
 
         totalEarned += withdrawn * usdPrice
       }
+
+      // If the currency is available for withdrawn, add the amount to the total to withdraw
       if (currency.toWithdraw > 1) {
         const toWithdraw =
           currency.id.split("-")[1] == addr0
@@ -35,11 +40,14 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
         }
       }
 
+      // only if the currency is eth calculate SLX cashback
       if (currency.id.split("-")[1] == addr0) {
         cashback +=
           Number(currency.toPayToProtocol) + Number(currency.paidToProtocol)
       }
     })
+
+    // Round numbers to 2 decimals
     totalToWithdraw = Number(totalToWithdraw.toFixed(2))
     totalEarned = Number(totalEarned.toFixed(2))
   }
