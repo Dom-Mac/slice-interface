@@ -15,6 +15,7 @@ import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
 import useSWR from "swr"
 import fetcher from "@utils/fetcher"
+import useTokensMetadata from "@utils/useTokensMetadata"
 
 export default function Dashboard() {
   const { account } = useAppContext()
@@ -37,9 +38,7 @@ export default function Dashboard() {
   let subgraphData = useQuery(tokensQuery, [account])
   const payee = subgraphData?.payee
   const currencies = payee?.currencies
-  const currenciesToWithdraw = currencies?.filter(
-    (currency) => currency.toWithdraw > 1
-  )
+  const tokensMetadata = useTokensMetadata(currencies)
 
   return (
     <Container page={true}>
@@ -65,7 +64,11 @@ export default function Dashboard() {
             Earnings Dashboard
           </h1>
           <TotalBalance currencies={currencies} ethUsd={ethUsd} />
-          <ToWithdrawList currencies={currenciesToWithdraw} account={account} />
+          <ToWithdrawList
+            currencies={currencies}
+            account={account}
+            tokensMetadata={tokensMetadata}
+          />
         </main>
       </ConnectBlock>
     </Container>
