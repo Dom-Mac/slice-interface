@@ -64,11 +64,12 @@ export default function Dashboard() {
             tokensMetadata={tokensMetadata}
             tokensQuotes={tokensQuotes}
           />
-          {/* <ToWithdrawList
+          <ToWithdrawList
             currencies={currencies}
             account={account}
             tokensMetadata={tokensMetadata}
-          /> */}
+            tokensQuotes={tokensQuotes}
+          />
         </main>
       </ConnectBlock>
     </Container>

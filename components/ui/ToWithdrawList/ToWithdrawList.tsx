@@ -6,11 +6,16 @@ type Props = {
   currencies: any
   tokensMetadata: any[]
   account: string
+  tokensQuotes: any
 }
 
-const ToWithdrawList = ({ currencies, tokensMetadata, account }: Props) => {
+const ToWithdrawList = ({
+  currencies,
+  tokensMetadata,
+  account,
+  tokensQuotes
+}: Props) => {
   const { data: signer } = useSigner()
-  console.log("dnkjnd")
 
   return (
     <div className="w-screen px-4 -mb-10 -ml-4 pt-7 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
@@ -22,10 +27,12 @@ const ToWithdrawList = ({ currencies, tokensMetadata, account }: Props) => {
       </div>
       {currencies?.map((currency, index) => {
         if (currency.toWithdraw > 1) {
+          const symbol = tokensMetadata[index]?.symbol
           return (
             <ToWithdrawItem
               currency={currency}
               tokenMetadata={tokensMetadata[index]}
+              tokenQuote={tokensQuotes[symbol]}
               key={index}
             />
           )

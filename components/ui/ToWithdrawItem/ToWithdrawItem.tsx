@@ -2,9 +2,11 @@ import Image from "next/image"
 import withdrawImg from "public/download.svg"
 import { ethers } from "ethers"
 
-const ToWithdrawItem = ({ currency, tokenMetadata }) => {
+const ToWithdrawItem = ({ currency, tokenMetadata, tokenQuote }) => {
   const toWithdrawToken = ethers.utils.formatEther(currency?.toWithdraw || 0)
-  const toWithdrawUsd = ethers.utils.formatEther(currency?.toWithdraw || 0)
+  const toWithdrawUsd = tokenQuote
+    ? Number(toWithdrawToken) * Number(tokenQuote)
+    : 0
 
   return (
     <div className="flex justify-between p-2 border rounded-lg border-sky-400">
@@ -31,7 +33,7 @@ const ToWithdrawItem = ({ currency, tokenMetadata }) => {
         <div className="pt-1 text-right">
           <p className="text-lg font-normal">{toWithdrawToken}</p>
           <p className="text-xs font-normal text-slate-400">
-            $ {toWithdrawUsd}
+            $ {toWithdrawUsd.toFixed(2)}
           </p>
         </div>
         <div className="h-6 pl-4">
