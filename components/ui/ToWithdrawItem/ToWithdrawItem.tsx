@@ -1,8 +1,23 @@
 import Image from "next/image"
 import withdrawImg from "public/download.svg"
 import { ethers } from "ethers"
+import { Withdraw } from "@lib/handlers/chain"
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
+import { useState } from "react"
+import { Message } from "@utils/handleMessage"
+import saEvent from "@utils/saEvent"
+import BlockchainCall from "../BlockchainCall"
+import { LogDescription } from "ethers/lib/utils"
 
-const ToWithdrawItem = ({ currency, tokenMetadata, tokenQuote }) => {
+const ToWithdrawItem = ({
+  currency,
+  tokenMetadata,
+  tokenQuote,
+  account,
+  signer
+}) => {
+  const [success, setSuccess] = useState(false)
+  const [logs, setLogs] = useState<LogDescription[]>()
   const toWithdrawToken = ethers.utils.formatEther(currency?.toWithdraw || 0)
   const toWithdrawUsd = tokenQuote
     ? Number(toWithdrawToken) * Number(tokenQuote)
@@ -17,7 +32,12 @@ const ToWithdrawItem = ({ currency, tokenMetadata, tokenQuote }) => {
         />
         <div className="h-6 mx-2">
           {tokenMetadata?.logo && (
-            <Image src={tokenMetadata?.logo} alt="ETH" width={24} height={24} />
+            <Image
+              src={tokenMetadata?.logo}
+              alt="Token logo"
+              width={24}
+              height={24}
+            />
           )}
         </div>
         <div className="pt-1 text-left">
@@ -30,15 +50,28 @@ const ToWithdrawItem = ({ currency, tokenMetadata, tokenQuote }) => {
         </div>
       </div>
       <div className="flex items-center">
-        <div className="pt-1 text-right">
+        <div className="pt-1 pr-4 text-right">
           <p className="text-lg font-normal">{toWithdrawToken}</p>
           <p className="text-xs font-normal text-slate-400">
             $ {toWithdrawUsd.toFixed(2)}
           </p>
         </div>
-        <div className="h-6 pl-4">
-          <Image src={withdrawImg} alt="download" width={24} height={24} />
-        </div>
+        {/* TODO: What if message ? */}
+        <BlockchainCall
+          transactionDescription={`Withdraw ${toWithdrawToken} ${tokenMetadata?.symbol} `}
+          saEventName="withdraw_to_owner"
+          action={() => Withdraw(signer, account, currency.id.split("-")[1])}
+          success={success}
+          setSuccess={setSuccess}
+          setLogs={setLogs}
+          confetti={true}
+          label={
+            <div className="h-6">
+              <Image src={withdrawImg} alt="download" width={24} height={24} />
+            </div>
+          }
+          isCustomButton={true}
+        />
       </div>
     </div>
   )

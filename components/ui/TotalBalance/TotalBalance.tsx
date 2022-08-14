@@ -62,7 +62,7 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
         <div className="text-left ">
           <p className="text-xs font-normal text-slate-400">Total earned</p>
           <p className="text-lg font-semibold">$ {totalEarned}</p>
-          {/* {cashback && (
+          {/* {cashback > 0 && (
             <p className="text-xs font-normal text-green-500">
               +{cashback} SLX cashback
             </p>
@@ -71,7 +71,7 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
         <div className="text-left ">
           <p className="text-xs font-normal text-slate-400">To withdraw</p>
           <p className="text-lg font-semibold">$ {totalToWithdraw}</p>
-          {plusTokens && (
+          {plusTokens > 0 && (
             <p className="text-xs font-normal text-green-500">
               +{plusTokens} token{plusTokens > 1 ? "s" : null}
             </p>

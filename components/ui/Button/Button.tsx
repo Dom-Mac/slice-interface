@@ -18,6 +18,7 @@ interface ButtonProps {
   disabled?: boolean
   onClick?: any
   saEventName?: string
+  rootClassNameProp?: string
 }
 
 const Button: FC<ButtonProps> = (props) => {
@@ -35,12 +36,13 @@ const Button: FC<ButtonProps> = (props) => {
     targetBlank = true,
     disabled = false,
     saEventName = "",
+    rootClassNameProp = "px-7 min-w-[150px] focus:outline-none ",
     ...rest
   } = props
 
   const { color1, color2 } = useAppContext()
 
-  const rootClassName = `px-7 min-w-[150px] focus:outline-none ${className}`
+  const rootClassName = `${rootClassNameProp} ${className}`
 
   return (
     <div

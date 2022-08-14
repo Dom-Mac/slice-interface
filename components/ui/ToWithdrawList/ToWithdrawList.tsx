@@ -33,6 +33,8 @@ const ToWithdrawList = ({
               currency={currency}
               tokenMetadata={tokensMetadata[index]}
               tokenQuote={tokensQuotes[symbol]}
+              account={account}
+              signer={signer}
               key={index}
             />
           )

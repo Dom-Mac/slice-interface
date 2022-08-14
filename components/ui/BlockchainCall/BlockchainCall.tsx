@@ -8,7 +8,7 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import saEvent from "@utils/saEvent"
 
 type Props = {
-  label: string
+  label: string | JSX.Element
   action: () => Promise<any>
   setSuccess: Dispatch<SetStateAction<boolean>>
   setLogs: Dispatch<SetStateAction<LogDescription[]>>
@@ -18,6 +18,7 @@ type Props = {
   mutateObj?: object
   confetti?: boolean
   saEventName?: string
+  isCustomButton?: boolean
 }
 
 const BlockchainCall = ({
@@ -30,7 +31,8 @@ const BlockchainCall = ({
   mutateObj,
   transactionDescription,
   confetti = false,
-  saEventName = ""
+  saEventName = "",
+  isCustomButton = false
 }: Props) => {
   const addRecentTransaction = useAddRecentTransaction()
   const [loading, setLoading] = useState(false)
@@ -78,7 +80,15 @@ const BlockchainCall = ({
   return (
     <>
       <div className="py-1">
-        <Button label={label} loading={loading} onClick={() => submit()} />
+        <Button
+          label={label}
+          loading={loading}
+          onClick={() => submit()}
+          className={isCustomButton ? "" : null}
+          color={isCustomButton ? "" : null}
+          double={!isCustomButton}
+          rootClassNameProp={isCustomButton ? "" : null}
+        />
       </div>
       <div>
         <MessageBlock msg={message} />
