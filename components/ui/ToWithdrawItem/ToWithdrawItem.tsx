@@ -18,9 +18,11 @@ const ToWithdrawItem = ({
 }) => {
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
-  const toWithdrawToken = ethers.utils.formatEther(currency?.toWithdraw || 0)
+  const toWithdrawToken = Number(
+    ethers.utils.formatEther(currency?.toWithdraw || 0)
+  ).toFixed(6)
   const toWithdrawUsd = tokenQuote
-    ? Number(toWithdrawToken) * Number(tokenQuote)
+    ? (Number(toWithdrawToken) * Number(tokenQuote)).toFixed(2)
     : 0
 
   return (
@@ -53,7 +55,7 @@ const ToWithdrawItem = ({
         <div className="pt-1 pr-4 text-right">
           <p className="text-lg font-normal">{toWithdrawToken}</p>
           <p className="text-xs font-normal text-slate-400">
-            $ {toWithdrawUsd.toFixed(2)}
+            $ {toWithdrawUsd}
           </p>
         </div>
         {/* TODO: What if message ? */}
