@@ -15,10 +15,12 @@ const ToWithdrawItem = ({
   tokenQuote,
   account,
   signer,
-  selected
+  handleSelected,
+  isChecked
 }) => {
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
+
   const toWithdrawToken = Number(
     ethers.utils.formatEther(currency?.toWithdraw || 0)
   ).toFixed(6)
@@ -30,9 +32,11 @@ const ToWithdrawItem = ({
     <div className="flex justify-between p-2 border rounded-lg border-sky-400">
       <div className="flex items-center">
         <input
-          checked={selected}
           type="checkbox"
           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          checked={isChecked}
+          onChange={handleSelected}
+          id={currency?.id.split("-")[1]}
         />
         <div className="h-6 mx-2">
           {tokenMetadata?.logo && (

@@ -1,4 +1,5 @@
 export { default as AddProduct } from "./AddProduct"
+export { default as BatchWithdraw } from "./BatchWithdraw"
 export { default as clone } from "./clone"
 export { default as cloneProjectPayer } from "./cloneProjectPayer"
 export { default as ExtCall } from "./ExtCall"

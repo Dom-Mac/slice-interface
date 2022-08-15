@@ -1,5 +1,5 @@
-import TriggerBatchReleaseSlicers from "@lib/handlers/chain/TriggerBatchReleaseSlicers"
-import { useState } from "react"
+import { Withdraw, BatchWithdraw } from "@lib/handlers/chain"
+import { useEffect, useState } from "react"
 import { useSigner } from "wagmi"
 import ToWithdrawItem from "../ToWithdrawItem"
 
@@ -21,13 +21,24 @@ const ToWithdrawList = ({
 
   const handleSelectAll = () => {
     let addresses = []
-    if (selectedTokens?.length != currencies?.length) {
+    if (selectedTokens.length === 0) {
       currencies.forEach((currency) => {
-        addresses.push(currency.id.split("-")[1])
+        if (currency.toWithdraw > 0) {
+          addresses.push(currency.id.split("-")[1])
+        }
       })
       setSelectedTokens(addresses)
     } else {
       setSelectedTokens([])
+    }
+  }
+
+  const handleSelected = (e) => {
+    const { id, checked } = e.target
+    if (!checked) {
+      setSelectedTokens(selectedTokens.filter((item) => item !== id))
+    } else {
+      setSelectedTokens([...selectedTokens, id])
     }
   }
 
@@ -38,9 +49,7 @@ const ToWithdrawList = ({
           className="text-xs font-normal text-slate-400"
           onClick={handleSelectAll}
         >
-          {selectedTokens.length === currencies?.length
-            ? "Deselect all"
-            : "Select all"}
+          {selectedTokens.length === 0 ? "Select all" : "Deselect all"}
         </p>
         <p className="text-sm font-normal border-b border-yellow-400">
           {selectedTokens.length > 0 ? "Widthraw selected" : "Widthraw all"}
@@ -49,7 +58,6 @@ const ToWithdrawList = ({
       {currencies?.map((currency, index) => {
         if (currency.toWithdraw > 1) {
           const symbol = tokensMetadata[index]?.symbol
-          const selected = selectedTokens.includes(currency.id.split("-")[1])
 
           return (
             <ToWithdrawItem
@@ -58,8 +66,9 @@ const ToWithdrawList = ({
               tokenQuote={tokensQuotes[symbol]}
               account={account}
               signer={signer}
-              selected={selected}
+              isChecked={selectedTokens.includes(currency.id.split("-")[1])}
               key={index}
+              handleSelected={handleSelected}
             />
           )
         }
