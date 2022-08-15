@@ -90,7 +90,7 @@ const Button: FC<ButtonProps> = (props) => {
             </div>
           ) : (
             <div className="flex items-center justify-center">
-              <p>{label}</p>
+              <div>{label}</div>
             </div>
           )}
         </button>
@@ -106,7 +106,7 @@ const Button: FC<ButtonProps> = (props) => {
           }`}
         >
           <div className="relative flex items-center justify-center -z-10">
-            <p>{label}</p>
+            <div>{label}</div>
           </div>
         </div>
       )}
