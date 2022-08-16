@@ -1,8 +1,10 @@
 import VisibilityOpen from "@components/icons/VisibilityOpen"
+import VisibilityClosed from "@components/icons/VisibilityClosed"
 import { ethers } from "ethers"
 import { useState } from "react"
 
 const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
+  const [isBlurred, setIsBlurred] = useState(false)
   const addr0 = ethers.constants.AddressZero
   let totalToWithdraw = 0
   let totalEarned = 0
@@ -56,9 +58,19 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
     <>
       <div className="flex items-center mb-4">
         <p className="mr-3 text-lg ">My balance</p>
-        <VisibilityOpen className="h-6" />
+        <div onClick={() => setIsBlurred(!isBlurred)}>
+          {isBlurred ? (
+            <VisibilityClosed className="h-6" />
+          ) : (
+            <VisibilityOpen className="h-6" />
+          )}
+        </div>
       </div>
-      <div className="flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 dark:bg-slate-800">
+      <div
+        className={`flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 dark:bg-slate-800 ${
+          isBlurred ? "blur" : null
+        }`}
+      >
         <div className="text-left ">
           <p className="text-xs font-normal text-slate-400">Total earned</p>
           <p className="text-lg font-semibold">$ {totalEarned}</p>
