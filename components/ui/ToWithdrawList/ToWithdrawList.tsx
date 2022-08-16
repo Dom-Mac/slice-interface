@@ -1,5 +1,5 @@
 import { Withdraw, BatchWithdraw } from "@lib/handlers/chain"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSigner } from "wagmi"
 import ToWithdrawItem from "../ToWithdrawItem"
 
