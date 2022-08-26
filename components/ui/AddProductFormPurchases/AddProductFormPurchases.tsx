@@ -1,7 +1,9 @@
+import useDecodeShortcode, { ReducedShortcode } from "@utils/useDecodeShortcode"
 import React, { Dispatch, SetStateAction } from "react"
-import { FilesList, Textarea } from ".."
+import { FilesList, Shortcodes, Textarea } from ".."
 
 type Props = {
+  slicerId: number
   thankMessage: string
   setThankMessage: Dispatch<SetStateAction<string>>
   instructions: string
@@ -10,9 +12,12 @@ type Props = {
   setNotes: Dispatch<SetStateAction<string>>
   files: File[]
   setFiles: Dispatch<SetStateAction<File[]>>
+  customShortcodes: ReducedShortcode
+  setCustomShortcodes: Dispatch<SetStateAction<ReducedShortcode>>
 }
 
 const AddProductFormPurchases = ({
+  slicerId,
   thankMessage,
   setThankMessage,
   instructions,
@@ -20,8 +25,18 @@ const AddProductFormPurchases = ({
   notes,
   setNotes,
   files,
-  setFiles
+  setFiles,
+  customShortcodes,
+  setCustomShortcodes
 }: Props) => {
+  const decodedInstructions = useDecodeShortcode(
+    "buyerAddress",
+    "0",
+    String(slicerId),
+    "0",
+    instructions
+  )
+
   return (
     <>
       <h2 className="pb-6">Purchase info</h2>
@@ -42,10 +57,18 @@ const AddProductFormPurchases = ({
           label="Instructions"
           placeholder="How can buyers redeem or use the product?"
           value={instructions}
+          previewValue={decodedInstructions}
           onChange={setInstructions}
           rows={4}
         />
       </div>
+      <Shortcodes
+        customShortcodes={customShortcodes}
+        setCustomShortcodes={setCustomShortcodes}
+        instructions={instructions}
+        setInstructions={setInstructions}
+      />
+
       <div>
         <hr className="w-20 mx-auto border-gray-300 my-14" />
       </div>
@@ -74,9 +97,4 @@ export default AddProductFormPurchases
 
 // Other kinds of purchase data
 // - A link of some sort? Webhook? What else?
-// - dynamic data, id, etc
-// - generate coupon code
 // - Additional text info
-
-// To consider?
-//  - stream of money (the guy who contacted me)

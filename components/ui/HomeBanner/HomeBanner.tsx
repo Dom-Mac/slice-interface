@@ -17,7 +17,7 @@ const HomeBanner = () => {
         <div className="pt-1 pb-4">
           <Button
             label="Go to treasury"
-            href="https://juicebox.money/#/p/slice"
+            href="https://juicebox.money/p/slice"
             external
           />
         </div>

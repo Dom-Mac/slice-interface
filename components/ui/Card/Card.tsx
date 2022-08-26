@@ -33,7 +33,7 @@ const Card = ({
   className,
   size,
   product,
-  onClick,
+  onClick
 }: Props) => {
   const content = (
     <div className={cardClassName}>

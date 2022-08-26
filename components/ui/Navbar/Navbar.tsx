@@ -18,10 +18,10 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false)
 
   return (
-    <header className="shadow-sm bg-gray-50">
+    <header className="shadow-sm">
       <Container>
         <nav className="relative px-3 sm:px-6 h-[4.25rem] items-center mx-auto flex justify-between">
-          <div className="relative z-10 flex items-center space-x-7 sm:space-x-10">
+          <div className="flex items-center space-x-7 sm:space-x-10">
             <Link href="/">
               <a className="mb-1" aria-label="Slice logo">
                 <Logo size="w-[24px]" />
@@ -61,7 +61,7 @@ const Navbar = () => {
           )}
         </nav>
       </Container>
-      <hr className="w-full border-gray-200 opacity-80" />
+      <hr className="w-full border-gray-200" />
     </header>
   )
 }

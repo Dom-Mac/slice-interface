@@ -1,3 +1,4 @@
+import { ReducedShortcode } from "@utils/useDecodeShortcode"
 import { useRouter } from "next/dist/client/router"
 import { useEffect, useState } from "react"
 import { ProductsGrid } from ".."
@@ -17,6 +18,7 @@ export type Product = {
     files: boolean
     instructions: boolean
     notes: boolean
+    shortcodes: string[]
   }
   texts: {
     thanks?: string

@@ -108,7 +108,7 @@ const SliceFormInputBlock = ({
             )}
           </div>
         </div>
-        <div className="col-span-7 mt-3 xs:col-span-5 md:col-span-7">
+        <div className="col-span-7 pt-3 xs:col-span-5 md:col-span-7">
           <InputAddress
             address={address}
             onChange={setAddress}
@@ -118,7 +118,7 @@ const SliceFormInputBlock = ({
           />
         </div>
         <p className="col-span-2 pr-2 text-right xs:hidden">Slices</p>
-        <div className="col-span-4 mt-3 xs:col-span-3">
+        <div className="col-span-4 pt-3 xs:col-span-3">
           <Input
             type="number"
             placeholder={placeholder}

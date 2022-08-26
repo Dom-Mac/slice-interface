@@ -30,6 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       data = await prisma.product.findMany({
         where: { OR: getProductsBody },
         select: {
+          id: true,
           name: true,
           slicerId: true,
           productId: true,

@@ -4,7 +4,9 @@ import { Signer } from "ethers"
 import saEvent from "./saEvent"
 
 const handleRedeemProduct = async (
+  account: string,
   signer: Signer,
+  dbId: number,
   slicerId: number,
   productId: number,
   name: string,
@@ -16,10 +18,12 @@ const handleRedeemProduct = async (
     instructions?: string
   },
   setLoading: Dispatch<SetStateAction<boolean>>,
-  setModalView: Dispatch<SetStateAction<View>>
+  setModalView: Dispatch<SetStateAction<View>>,
+  shortcodes: string[]
 ) => {
   try {
     saEvent("redeem_product_attempt")
+    const fetcher = (await import("@utils/fetcher")).default
     const { CID } = await import("multiformats/cid")
     const { base16 } = await import("multiformats/bases/base16")
     const redeemProduct = (await import("@lib/handlers/chain/redeemProduct"))
@@ -31,8 +35,10 @@ const handleRedeemProduct = async (
 
     setLoading(true)
 
+    // Check if product has been purchased
     const redeemed = await redeemProduct(signer, slicerId, productId)
 
+    // Retrieve and decrypt purchaseInfo texts and files
     if (redeemed[1] != "0x") {
       const purchaseHash = CID.parse(
         "f" + redeemed[1].substring(2),
@@ -50,6 +56,25 @@ const handleRedeemProduct = async (
       decryptedFiles = decrypted.decryptedFiles
       decryptedTexts = decrypted.decryptedTexts
     }
+
+    // Retrieve or apply shortcodes, if present
+
+    let accountCodes = {}
+    if (shortcodes && shortcodes?.length != 0) {
+      const { data } = await fetcher(
+        `/api/account/${account}/shortcodes?productId=${dbId}&codes=${shortcodes.join(
+          ","
+        )}`
+      )
+
+      accountCodes = data?.appliedCodes
+      shortcodes.forEach((shortcode) => {
+        if (!accountCodes[`${shortcode}`]) {
+          accountCodes[`${shortcode}`] = "___"
+        }
+      })
+    }
+
     setModalView({
       name: "REDEEM_PRODUCT_VIEW",
       cross: true,
@@ -61,7 +86,8 @@ const handleRedeemProduct = async (
         purchasedQuantity: Number(redeemed[0]),
         texts,
         decryptedFiles,
-        decryptedTexts
+        decryptedTexts,
+        accountCodes
       }
     })
   } catch (err) {

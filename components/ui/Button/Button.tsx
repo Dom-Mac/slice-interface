@@ -23,10 +23,10 @@ interface ButtonProps {
 
 const Button: FC<ButtonProps> = (props) => {
   const {
-    wrapperClassName,
+    wrapperClassName = "",
     className = "h-[40px] font-bold tracking-wide rounded-sm overflow-hidden border-white border-[3px] nightwind-prevent",
     color = "text-white bg-blue-600 hover:bg-blue-700 focus:bg-blue-700",
-    type,
+    type = "button",
     label,
     href,
     onClick,
@@ -59,16 +59,21 @@ const Button: FC<ButtonProps> = (props) => {
             </button>
           </Link>
         ) : targetBlank ? (
-          <a href={href} target="_blank" rel="noreferrer">
-            <button className={`peer relative z-10 ${rootClassName} ${color}`}>
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="relative z-10 peer"
+          >
+            <button className={`${rootClassName} ${color}`}>
               <div className="flex items-center justify-center">
                 <p>{label}</p>
               </div>
             </button>
           </a>
         ) : (
-          <a href={href}>
-            <button className={`peer relative z-10 ${rootClassName} ${color}`}>
+          <a href={href} className="relative z-10 peer">
+            <button className={`${rootClassName} ${color}`}>
               <div className="flex items-center justify-center">
                 <p>{label}</p>
               </div>

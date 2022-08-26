@@ -12,7 +12,6 @@ import { LogDescription } from "ethers/lib/utils"
 import { NewImage } from "pages/slicer/[id]"
 import { useAppContext } from "../context"
 import { ProductParamsStruct } from "types/typechain/ProductsModule"
-import { FunctionStruct } from "types/typechain/ProductsModule"
 import { ethers } from "ethers"
 import AddProductFormExternal from "../AddProductFormExternal"
 import ethToWei from "@utils/ethToWei"
@@ -21,6 +20,7 @@ import { useSigner } from "wagmi"
 import saEvent from "@utils/saEvent"
 import { emptyExternalCall, Params } from "@components/hooks/purchaseHooks"
 import openFingerprintingModal from "@utils/openFingerprintingModal"
+import { ReducedShortcode } from "@utils/useDecodeShortcode"
 
 type Props = {
   slicerId: number
@@ -60,6 +60,7 @@ const AddProductForm = ({
   const [units, setUnits] = useState(0)
   const [maxUnits, setMaxUnits] = useState(1)
 
+  const [customShortcodes, setCustomShortcodes] = useState<ReducedShortcode>({})
   const [purchaseHookParams, setPurchaseHookParams] = useState<Params>({
     externalCall: emptyExternalCall
   })
@@ -87,6 +88,13 @@ const AddProductForm = ({
 
     const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
 
+    const filteredShortcodes = Object.entries(customShortcodes).filter(
+      (shortcode) => {
+        const [, val] = shortcode
+        return val.length != 0
+      }
+    )
+
     try {
       const { image, newProduct, data, purchaseDataCID, purchaseData } =
         await beforeCreate(
@@ -101,6 +109,7 @@ const AddProductForm = ({
           thankMessage,
           instructions,
           notes,
+          filteredShortcodes,
           setUploadStep,
           setUploadPct
         )
@@ -250,6 +259,7 @@ const AddProductForm = ({
         setParams={setPurchaseHookParams}
       />
       <AddProductFormPurchases
+        slicerId={slicerId}
         thankMessage={thankMessage}
         setThankMessage={setThankMessage}
         instructions={instructions}
@@ -258,6 +268,8 @@ const AddProductForm = ({
         setNotes={setNotes}
         files={files}
         setFiles={setFiles}
+        customShortcodes={customShortcodes}
+        setCustomShortcodes={setCustomShortcodes}
       />
       <AddProductFormPreview
         slicerId={slicerId}

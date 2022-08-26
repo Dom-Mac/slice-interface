@@ -45,6 +45,7 @@ const SlicersList = ({ account, payeeData, slicers, loading }: Props) => {
       actionScreenHref="/slice"
       actionScreenButtonLabel="Start slicing"
       endpageButtonLabel="Create a new slicer"
+      wrapperClassName="space-y-20 sm:space-y-28"
     >
       <>
         {[...Array(iterator)].map((el, key) => {
@@ -75,9 +76,6 @@ const SlicersList = ({ account, payeeData, slicers, loading }: Props) => {
                 productsModuleBalance={productsModuleBalance}
                 unreleasedAmount={unreleasedAmount}
               />
-              {i + 1 != iterator && (
-                <hr className="w-20 mx-auto my-16 border-gray-300" />
-              )}
             </div>
           )
         })}

@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from "react"
 import { NewImage } from "pages/slicer/[id]"
 import { LogDescription } from "@ethersproject/abi"
 import decimalToHex from "@utils/decimalToHex"
-import { View } from "./content/modals"
 import timeout from "@utils/timeout"
 // import { mutate } from "swr"
 
@@ -18,6 +17,7 @@ export const beforeCreate = async (
   thanks: string,
   instructions: string,
   notes: string,
+  filteredShortcodes: [string, string[]][],
   setUploadStep: Dispatch<SetStateAction<number>>,
   setUploadPct: Dispatch<SetStateAction<number>>
 ) => {
@@ -33,7 +33,8 @@ export const beforeCreate = async (
   const purchaseInfo = {
     instructions: instructions.length != 0,
     notes: notes.length != 0,
-    files: purchaseFiles.length != 0
+    files: purchaseFiles.length != 0,
+    shortcodes: filteredShortcodes.map((el) => el[0])
   }
   const metadata = {
     name,
@@ -146,7 +147,8 @@ export const beforeCreate = async (
         thanks,
         instructions
       },
-      allowedAddresses
+      allowedAddresses,
+      filteredShortcodes
     })
   }
 
@@ -329,9 +331,16 @@ export const reload = async (
   const { data: products } = await fetcher(`/api/slicer/${slicerId}/products`)
 
   const tokensQuery = /* GraphQL */ `
-  products (where: {slicer: "${hexId}"}) {
+  products (
+    where: {
+      slicer: "${hexId}" 
+    }, 
+    orderBy: "createdAtTimestamp", 
+    orderDirection: "asc"
+  ) {
     id
     data
+    isRemoved
     createdAtTimestamp
   }
 `
@@ -348,34 +357,35 @@ export const reload = async (
     return Number(timestamp) < Math.floor(Date.now() / 1000) - 60 * 15
   }
 
-  const productIds = Array.from(
-    { length: blockchainProducts.length },
-    (_, i) => i + 1
+  const productIds = blockchainProducts.map((product) =>
+    Number(product.id.split("-")[1])
   )
+
+  let productsToCreate = []
 
   for (let i = 0; i < productIds.length; i++) {
     const productId = productIds[i]
 
     if (products.filter((p) => p.productId === productId).length == 0) {
       if (timeHasElapsed(blockchainProducts[i].createdAtTimestamp)) {
-        const hash = "f" + blockchainProducts[i].data.substring(2)
-        const dataHash = CID.parse(hash, base16.decoder).toV1().toString()
+        // If product hasn't been removed
+        if (!blockchainProducts[i].isRemoved) {
+          const hash = "f" + blockchainProducts[i].data.substring(2)
+          const dataHash = CID.parse(hash, base16.decoder).toV1().toString()
 
-        const {
-          name,
-          shortDescription,
-          description,
-          creator,
-          image,
-          uid,
-          purchaseInfo,
-          texts
-        } = await fetcher(`https://gateway.pinata.cloud/ipfs/${dataHash}`)
-        const body = {
-          method: "POST",
-          body: JSON.stringify({
+          const {
             name,
-            productId,
+            shortDescription,
+            description,
+            creator,
+            image,
+            uid,
+            purchaseInfo,
+            texts
+          } = await fetcher(`https://slice.mypinata.cloud/ipfs/${dataHash}`)
+
+          productsToCreate.push({
+            name,
             shortDescription,
             description,
             image,
@@ -384,13 +394,53 @@ export const reload = async (
             tempProductHash: null,
             hash: dataHash,
             purchaseInfo,
-            texts
+            texts,
+            slicerId,
+            productId,
+            isRemoved: false
+          })
+        } else {
+          productsToCreate.push({
+            name: "",
+            shortDescription: "",
+            description: "",
+            image: "",
+            creator: "",
+            uid: "",
+            tempProductHash: null,
+            hash: "",
+            purchaseInfo: {
+              files: false,
+              notes: false,
+              shortcodes: false,
+              instructions: false
+            },
+            texts: {
+              thanks: "",
+              instructions: ""
+            },
+            slicerId,
+            productId,
+            isRemoved: true
           })
         }
-        await fetcher(`/api/slicer/${slicerId}/products`, body)
       }
     }
   }
+
+  const body = JSON.stringify({ data: productsToCreate })
+
+  if (body != "{}") {
+    const payload = {
+      method: "POST",
+      body
+    }
+
+    await fetcher(`/api/createProducts`, payload)
+  }
+
   // mutate(`/api/slicer/${slicerId}/products`)
   setLoading(false)
 }
+
+// TODO: Fix reload, productIDs are wrong

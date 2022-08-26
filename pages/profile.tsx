@@ -20,7 +20,9 @@ export default function Profile() {
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
-        slicers (where: {slices_gt: "0"}){
+        slicers (
+          where: {slices_gt: "0"}
+        ) {
           slices
           slicer {
             id
@@ -44,6 +46,10 @@ export default function Profile() {
   const payeeData = subgraphData?.payee
   const slicers = payeeData?.slicers
   // const payeeCurrencyData = payeeData?.currencies
+
+  let orderedSlicers = slicers
+    ? [...slicers].sort((a, b) => Number(a.slicer.id) - Number(b.slicer.id))
+    : []
 
   return (
     <Container page={true}>
@@ -80,7 +86,7 @@ export default function Profile() {
             <SlicersList
               account={account}
               payeeData={payeeData}
-              slicers={slicers}
+              slicers={orderedSlicers}
               loading={!subgraphData}
             />
           </div>

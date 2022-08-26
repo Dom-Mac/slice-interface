@@ -15,7 +15,7 @@ const description =
   "Allow purchases only from allowlisted addresses, using Merkle proof verification"
 
 const factoryAddresses = {
-  1: "",
+  1: "0x360737289ea84FEeE7a337aD593A1792909870C9",
   4: "0x06686c6ce1800963Be8b4D03C24E666fe21038d0"
 }
 

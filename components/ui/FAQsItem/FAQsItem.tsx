@@ -38,7 +38,7 @@ const FAQsItem = ({
         </span>
       </div>
       {showAnswer && (
-        <div className="px-3 py-2 border-b-2 border-l-2 border-r-2 border-blue-200 rounded-b-sm shadow-inner bg-blue-50 dark:bg-gray-900 xs:pl-8 xs:pr-4">
+        <div className="px-3 py-2 border-b border-l border-r border-blue-600 rounded-b-sm xs:pl-8 xs:pr-4">
           {typeof answer == "string" ? <p className="">{answer}</p> : answer}
         </div>
       )}

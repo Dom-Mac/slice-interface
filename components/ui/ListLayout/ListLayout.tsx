@@ -13,6 +13,7 @@ type Props = {
   actionScreenButtonLabel?: string
   endpageButtonLabel?: string
   endpageHref?: string
+  wrapperClassName?: string
 }
 
 const ListLayout = ({
@@ -25,6 +26,7 @@ const ListLayout = ({
   endpageButtonLabel = actionScreenButtonLabel,
   endpageHref = actionScreenHref,
   children,
+  wrapperClassName = ""
 }: Props) => {
   const [items, setItems] = useState(itemsIncrement)
 
@@ -51,8 +53,8 @@ const ListLayout = ({
     </div>
   ) : elementsArray?.length != 0 ? (
     <div className="pt-4 sm:pt-8">
-      {children}
-      <div className="pt-10 pb-6 space-y-8">
+      <div className={wrapperClassName}>{children}</div>
+      <div className="py-12">
         {items < elementsArray?.length && (
           <p className="text-center">
             <a
@@ -64,7 +66,7 @@ const ListLayout = ({
           </p>
         )}
         {endpageButtonLabel && (
-          <div className="flex justify-center pt-4 sm:pt-8">
+          <div className="flex justify-center pt-8 sm:pt-12">
             <Button label={endpageButtonLabel} href={endpageHref} />
           </div>
         )}

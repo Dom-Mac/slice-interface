@@ -14,7 +14,8 @@ const CreateProduct = async (
     thanks?: string
     instructions?: string
   },
-  allowedAddresses?: string[]
+  allowedAddresses?: string[],
+  filteredShortcodes?: [string, string[]][]
 ) => {
   const prisma = (await import("@lib/prisma")).default
 
@@ -38,6 +39,18 @@ const CreateProduct = async (
         // version
       }
     })
+
+    if (filteredShortcodes.length != 0) {
+      // Format custom shortcodes
+      const formattedShortcodes = Object.fromEntries(filteredShortcodes)
+
+      await prisma.shortcode.create({
+        data: {
+          productId: query.id,
+          availableCodes: formattedShortcodes
+        }
+      })
+    }
   } catch (err) {
     console.log(err)
   }

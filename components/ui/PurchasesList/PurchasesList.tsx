@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import useSWR from "swr"
 
 const PurchasesList = () => {
-  const { purchases } = useAppContext()
+  const { account, purchases } = useAppContext()
   const [purchaseQuery, setPurchaseQuery] = useState("")
   const [iterator, setIterator] = useState(0)
 
@@ -34,6 +34,7 @@ const PurchasesList = () => {
       actionScreenText="You haven't purchased anything yet"
       actionScreenHref="/slicer"
       actionScreenButtonLabel="Browse slicers"
+      wrapperClassName="space-y-20 sm:space-y-28"
     >
       <>
         {[...Array(iterator)].map((el, key) => {
@@ -48,6 +49,7 @@ const PurchasesList = () => {
 
           const slicerId = purchase?.slicerId
           const productId = purchase?.productId
+          const dbId = purchaseDataEl?.id
           const name = purchaseDataEl?.name
           const hash = purchaseDataEl?.hash
           const image = purchaseDataEl?.image
@@ -64,6 +66,8 @@ const PurchasesList = () => {
           return (
             <div className="mt-3" key={key}>
               <ProductPurchaseCard
+                dbId={dbId}
+                account={account}
                 slicerId={slicerId}
                 productId={productId}
                 name={name}
@@ -73,10 +77,8 @@ const PurchasesList = () => {
                 creator={creator}
                 purchaseInfo={purchaseInfo}
                 texts={texts}
+                shortcodes={purchaseDataEl?.purchaseInfo?.shortcodes || []}
               />
-              {i + 1 != iterator && (
-                <hr className="w-20 mx-auto my-16 border-gray-300" />
-              )}
             </div>
           )
         })}

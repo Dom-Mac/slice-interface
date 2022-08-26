@@ -42,11 +42,13 @@ model Product {
   allowedAddresses String[]
   tempProductHash  String?
   isRemoved        Boolean  @default(false)
+  shortcode        Shortcode?
   slicer           Slicer   @relation(fields: [slicerId], references: [id])
   slicerId         Int      @map(name: "slicer_id")
   
   @@index([productId], name:"productId")
   @@index([slicerId], name:"slicerId")
+  // @unique(shortcodes, name: "slicerNameVersion")
   // @@unique([slicerId, name, version], name: "slicerNameVersion")
 }
 
@@ -54,4 +56,23 @@ model Revert {
   id            Int      @default(autoincrement()) @id
   hash          String
   service       String   @default("web3Storage")
+}
+
+model Shortcode {
+  id               Int           @default(autoincrement())      @id
+  product          Product       @relation(fields: [productId], onDelete: Cascade, references: [id])
+  productId        Int           @unique
+  availableCodes   Json          @default("{}")
+  accountCodes     AccountCode[]
+}
+
+model AccountCode {
+  id               Int       @default(autoincrement()) @id
+  buyerAddress     String
+  appliedCodes     Json      @default("{}")
+  shortcode        Shortcode @relation(fields: [shortcodeId], references: [id])
+  shortcodeId      Int       @map(name: "shortcode_id")
+ 
+  // @@index([shortcodeId], name:"shortcodeId")
+  // @@index([buyerAddress], name:"buyerAddress")
 }

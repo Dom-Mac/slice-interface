@@ -20,7 +20,7 @@
     "@mdx-js/loader": "^2.1.2",
     "@next/mdx": "^12.2.0",
     "@peculiar/webcrypto": "^1.4.0",
-    "@prisma/client": "^4.0.0",
+    "@prisma/client": "^4.2.1",
     "@rainbow-me/rainbowkit": "^0.4.1",
     "@supabase/supabase-js": "^1.35.4",
     "@tailwindcss/forms": "^0.3.4",
@@ -74,7 +74,7 @@
     "eslint-config-next": "^12.2.0",
     "mocha": "^9.2.2",
     "nightwind": "^1.1.12",
-    "prisma": "^4.0.0",
+    "prisma": "^4.2.1",
     "tailwindcss": "^2.2.15",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"

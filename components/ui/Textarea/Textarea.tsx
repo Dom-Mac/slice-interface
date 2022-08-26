@@ -3,6 +3,7 @@ import { Question } from ".."
 
 export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   value: string
+  previewValue?: string
   className?: string
   label?: string
   placeholder?: string
@@ -29,7 +30,8 @@ const Textarea: React.FC<Props> = (props) => {
     previewBox,
     markdownView = true,
     question,
-    onChange
+    onChange,
+    previewValue
   } = props
   const [showPreview, setShowPreview] = useState(false)
   const [htmlContent, setHtmlContent] = useState("")
@@ -38,7 +40,7 @@ const Textarea: React.FC<Props> = (props) => {
     const markdownToHtml = (await import("@lib/markdownToHtml")).default
 
     if (!showPreview) {
-      setHtmlContent(await markdownToHtml(value))
+      setHtmlContent(await markdownToHtml(previewValue ? previewValue : value))
     }
     setShowPreview((showPreview) => !showPreview)
   }
@@ -56,30 +58,32 @@ const Textarea: React.FC<Props> = (props) => {
       {label && (
         <div className="relative flex items-center pb-2">
           <p
-            className={`text-sm pr-1 font-semibold text-left ${
+            className={`text-sm font-semibold text-left ${
               inverted ? "text-gray-200" : "text-gray-700"
             }`}
           >
             {label}
           </p>
 
-          {markdownView && !showPreview && (
+          {question && !showPreview && (
             <Question
               text={
                 <>
                   {question}
-                  <p>
-                    You can use{" "}
-                    <a
-                      className="highlight"
-                      href="https://www.markdownguide.org/cheat-sheet/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      markdown syntax
-                    </a>{" "}
-                    to add elements such as headings, links or lists.{" "}
-                  </p>
+                  {markdownView && (
+                    <p>
+                      You can use{" "}
+                      <a
+                        className="highlight"
+                        href="https://www.markdownguide.org/cheat-sheet/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        markdown syntax
+                      </a>{" "}
+                      to add elements such as headings, links or lists.{" "}
+                    </p>
+                  )}
                 </>
               }
             />

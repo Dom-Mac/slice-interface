@@ -71,3 +71,5 @@ const ProductsGrid = ({
 }
 
 export default ProductsGrid
+
+// TODO: Remove `displayProduct` logic when product page is done

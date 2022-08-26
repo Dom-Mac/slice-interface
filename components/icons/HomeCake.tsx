@@ -137,7 +137,7 @@ const HomeCake = () => {
           viewBox="0 0 608 594"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="absolute top-0 w-full h-full transition-transform duration-300 group-hover:scale-[1.20]"
+          className="absolute top-0 w-full h-full transition-transform duration-200 group-hover:scale-[1.20]"
         >
           <g filter="url(#filter0_d)">
             <circle

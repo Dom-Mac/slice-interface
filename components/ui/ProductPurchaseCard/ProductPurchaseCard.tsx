@@ -10,6 +10,8 @@ export type RedeemData = {
 }
 
 type Props = {
+  account: string
+  dbId: number
   slicerId: number
   productId: number
   name: string
@@ -22,9 +24,12 @@ type Props = {
     thanks?: string
     instructions?: string
   }
+  shortcodes: string[]
 }
 
 const ProductPurchaseCard = ({
+  account,
+  dbId,
   slicerId,
   productId,
   name,
@@ -33,7 +38,8 @@ const ProductPurchaseCard = ({
   uid,
   creator,
   purchaseInfo,
-  texts
+  texts,
+  shortcodes
 }: Props) => {
   const { setModalView } = useAppContext()
   const { data: signer } = useSigner()
@@ -74,7 +80,9 @@ const ProductPurchaseCard = ({
             disabled={!name}
             onClick={() =>
               handleRedeemProduct(
+                account,
                 signer,
+                dbId,
                 slicerId,
                 productId,
                 name,
@@ -83,7 +91,8 @@ const ProductPurchaseCard = ({
                 creator,
                 texts,
                 setLoading,
-                setModalView
+                setModalView,
+                shortcodes
               )
             }
           />
@@ -94,3 +103,5 @@ const ProductPurchaseCard = ({
 }
 
 export default ProductPurchaseCard
+
+// TODO: Fix product not showing info and being redeemable if not in db

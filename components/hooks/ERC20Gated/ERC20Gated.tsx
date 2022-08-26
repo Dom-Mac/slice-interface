@@ -10,7 +10,7 @@ const description =
   "Allow purchases only from buyers with the specified amount of ERC20 tokens"
 
 const factoryAddresses = {
-  1: "",
+  1: "0x06981DDb5a7D9B74465a12c6880938C3de54746E",
   4: "0xfbe8feE9e3f0fb7d8271e7c88Cc3d7B575265564"
 }
 
@@ -25,7 +25,7 @@ const Component = ({ setParams }: HookProps) => {
       deploy: {
         factoryAddresses,
         abi: clonerInterface.abi,
-        args: [address, BigNumber.from(10).pow(18).mul(33)]
+        args: [address, BigNumber.from(10).pow(18).mul(gateAmount)]
       }
     })
   }, [address, gateAmount])

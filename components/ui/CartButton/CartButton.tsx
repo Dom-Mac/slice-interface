@@ -19,6 +19,7 @@ import { useProvider, useSigner } from "wagmi"
 
 type Props = {
   productCart: ProductCart
+  dbId: number
   slicerId: number
   slicerAddress: string
   productId: number
@@ -42,9 +43,11 @@ type Props = {
   labelAdd?: string
   labelRemove?: string
   preview?: boolean
+  shortcodes?: string[]
 }
 
 const CartButton = ({
+  dbId,
   slicerId,
   productCart,
   slicerAddress,
@@ -65,7 +68,8 @@ const CartButton = ({
   purchasedQuantity,
   labelAdd,
   labelRemove,
-  preview
+  preview,
+  shortcodes
 }: Props) => {
   const { account, setModalView } = useAppContext()
   const provider = useProvider()
@@ -136,7 +140,9 @@ const CartButton = ({
         className="relative z-10 flex items-center justify-center w-full py-2 text-center text-white transition-colors duration-150 bg-blue-500 rounded-md hover:text-white nightwind-prevent group-cart hover:bg-blue-600"
         onClick={async () =>
           await handleRedeemProduct(
+            account,
             signer,
+            dbId,
             slicerId,
             productId,
             name,
@@ -145,7 +151,8 @@ const CartButton = ({
             creator,
             texts,
             setLoading,
-            setModalView
+            setModalView,
+            shortcodes
           )
         }
       >
@@ -198,7 +205,9 @@ const CartButton = ({
           className="relative z-10 flex items-center justify-center h-8 text-white transition-colors duration-150 bg-blue-500 rounded-r-md nightwind-prevent group-cart hover:bg-blue-600"
           onClick={() =>
             handleRedeemProduct(
+              account,
               signer,
+              dbId,
               slicerId,
               productId,
               name,
@@ -207,7 +216,8 @@ const CartButton = ({
               creator,
               texts,
               setLoading,
-              setModalView
+              setModalView,
+              shortcodes
             )
           }
         >
