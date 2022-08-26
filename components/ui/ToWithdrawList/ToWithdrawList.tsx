@@ -8,9 +8,10 @@ import ToWithdrawItem from "../ToWithdrawItem"
 type Props = {
   currencies: any
   account: string
+  setCurrencies: any
 }
 
-const ToWithdrawList = ({ currencies, account }: Props) => {
+const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   const { data: signer } = useSigner()
   const [selectedTokens, setSelectedTokens] = useState([])
   const [success, setSuccess] = useState(false)
@@ -97,6 +98,8 @@ const ToWithdrawList = ({ currencies, account }: Props) => {
           return (
             <ToWithdrawItem
               currency={currency}
+              currencies={currencies}
+              setCurrencies={setCurrencies}
               account={account}
               signer={signer}
               isChecked={selectedTokens.includes(currency.id.split("-")[1])}

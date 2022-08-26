@@ -75,7 +75,11 @@ export default function Dashboard() {
             Earnings Dashboard
           </h1>
           <TotalBalance currencies={currencies} />
-          <ToWithdrawList currencies={currencies} account={account} />
+          <ToWithdrawList
+            currencies={currencies}
+            account={account}
+            setCurrencies={setCurrencies}
+          />
         </main>
       </ConnectBlock>
     </Container>

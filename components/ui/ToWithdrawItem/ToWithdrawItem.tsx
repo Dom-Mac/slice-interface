@@ -2,12 +2,14 @@ import Image from "next/image"
 import withdrawImg from "public/download.svg"
 import { ethers } from "ethers"
 import { Withdraw } from "@lib/handlers/chain"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import BlockchainCall from "../BlockchainCall"
 import { LogDescription } from "ethers/lib/utils"
 
 const ToWithdrawItem = ({
   currency,
+  currencies,
+  setCurrencies,
   account,
   signer,
   handleSelected,
@@ -22,6 +24,20 @@ const ToWithdrawItem = ({
   const toWithdrawUsd = currency.quote
     ? (Number(toWithdrawToken) * Number(currency.quote)).toFixed(2)
     : 0
+
+  useEffect(() => {
+    if (success) {
+      const updatedCurrencies = [...currencies]
+      const index = currencies.indexOf(currency)
+      updatedCurrencies[index].withdrawn =
+        Number(updatedCurrencies[index].withdrawn) +
+        Number(updatedCurrencies[index].toWithdraw) -
+        1
+      updatedCurrencies[index].toWithdraw = 1
+
+      setCurrencies(updatedCurrencies)
+    }
+  }, [success])
 
   return (
     <div
