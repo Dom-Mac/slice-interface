@@ -52,7 +52,6 @@ const ToWithdrawList = ({
       .map((currency) => {
         return currency.id.split("-")[1]
       })
-    console.log(currenciesToWithdraw)
 
     // If there is only one currency available, withdraw all or selected is the same thing
     if (currenciesToWithdraw.length === 1) {

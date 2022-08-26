@@ -11,7 +11,7 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
   let plusTokens = 0
   let cashback = 0
 
-  // TokensQuotes is the last state to be updated, if is available all other states are available
+  // TokensQuotes is the last state to be updated, if it is available all other states are available
   if (Object.keys(tokensQuotes).length) {
     currencies.forEach((currency, index) => {
       const symbol = tokensMetadata[index]?.symbol
@@ -27,7 +27,7 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
         totalEarned += withdrawn * usdPrice
       }
 
-      // If the currency is available for withdrawn, add the amount to the total to withdraw
+      // If the currency is available to withdrawn, add the amount to the total to withdraw
       if (currency.toWithdraw > 1) {
         const toWithdraw =
           currency.id.split("-")[1] == addr0
