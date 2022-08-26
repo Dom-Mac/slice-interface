@@ -7,9 +7,7 @@ import ToWithdrawItem from "../ToWithdrawItem"
 
 type Props = {
   currencies: any
-  tokensMetadata: any[]
   account: string
-  tokensQuotes: any
 }
 
 const ToWithdrawList = ({ currencies, account }: Props) => {
