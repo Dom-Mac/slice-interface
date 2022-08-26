@@ -15,9 +15,11 @@ import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
 import useTokensMetadata from "@utils/useTokensMetadata"
 import useCurrenciesQuotes from "@utils/useCurrenciesQuotes"
+import { useEffect, useState } from "react"
 
 export default function Dashboard() {
   const { account } = useAppContext()
+  const [currencies, setCurrencies] = useState([])
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
@@ -32,9 +34,22 @@ export default function Dashboard() {
     `
   let subgraphData = useQuery(tokensQuery, [account])
   const payee = subgraphData?.payee
-  const currencies = payee?.currencies
-  const tokensMetadata = useTokensMetadata(currencies)
+  const payeeCurrencies = payee?.currencies
+  const tokensMetadata = useTokensMetadata(payeeCurrencies)
   const tokensQuotes = useCurrenciesQuotes(tokensMetadata)
+
+  useEffect(() => {
+    let formattedArray = []
+    payeeCurrencies?.forEach((currency, index) => {
+      const metadata = tokensMetadata[index]
+      formattedArray.push({
+        ...currency,
+        metadata: metadata,
+        quote: tokensQuotes[metadata.symbol]
+      })
+    })
+    setCurrencies(formattedArray)
+  }, [tokensQuotes])
 
   return (
     <Container page={true}>
@@ -59,17 +74,8 @@ export default function Dashboard() {
           <h1 className="mb-6 text-2xl font-normal text-left">
             Earnings Dashboard
           </h1>
-          <TotalBalance
-            currencies={currencies}
-            tokensMetadata={tokensMetadata}
-            tokensQuotes={tokensQuotes}
-          />
-          <ToWithdrawList
-            currencies={currencies}
-            account={account}
-            tokensMetadata={tokensMetadata}
-            tokensQuotes={tokensQuotes}
-          />
+          <TotalBalance currencies={currencies} />
+          <ToWithdrawList currencies={currencies} account={account} />
         </main>
       </ConnectBlock>
     </Container>

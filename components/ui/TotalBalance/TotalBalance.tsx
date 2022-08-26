@@ -3,28 +3,26 @@ import VisibilityClosed from "@components/icons/VisibilityClosed"
 import { ethers } from "ethers"
 import { useState } from "react"
 
-const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
+const TotalBalance = ({ currencies }) => {
   const [isBlurred, setIsBlurred] = useState(false)
   const addr0 = ethers.constants.AddressZero
   let totalToWithdraw = 0
   let totalEarned = 0
   let plusTokens = 0
   let cashback = 0
+  console.log("rendered", currencies)
 
   // TokensQuotes is the last state to be updated, if it is available all other states are available
-  if (Object.keys(tokensQuotes).length) {
-    currencies.forEach((currency, index) => {
-      const symbol = tokensMetadata[index]?.symbol
-      const usdPrice = tokensQuotes[symbol]
-
+  if (currencies.length) {
+    currencies.forEach((currency) => {
       // If the currency has been withdrawn, add the amount to the total to withdraw
-      if (currency.withdrawn > 0 && usdPrice) {
+      if (currency.withdrawn > 0 && currency.quote) {
         const withdrawn =
           currency.id.split("-")[1] == addr0
             ? Number(ethers.utils.formatEther(currency.withdrawn))
             : Number(currency.withdrawn)
 
-        totalEarned += withdrawn * usdPrice
+        totalEarned += withdrawn * currency.quote
       }
 
       // If the currency is available to withdrawn, add the amount to the total to withdraw
@@ -34,9 +32,9 @@ const TotalBalance = ({ currencies, tokensMetadata, tokensQuotes }) => {
             ? Number(ethers.utils.formatEther(currency.toWithdraw))
             : Number(currency.toWithdraw)
 
-        if (usdPrice) {
-          totalToWithdraw += toWithdraw * usdPrice
-          totalEarned += toWithdraw * usdPrice
+        if (currency.quote) {
+          totalToWithdraw += toWithdraw * currency.quote
+          totalEarned += toWithdraw * currency.quote
         } else {
           plusTokens += toWithdraw
         }

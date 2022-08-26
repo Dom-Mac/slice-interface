@@ -12,12 +12,7 @@ type Props = {
   tokensQuotes: any
 }
 
-const ToWithdrawList = ({
-  currencies,
-  tokensMetadata,
-  account,
-  tokensQuotes
-}: Props) => {
+const ToWithdrawList = ({ currencies, account }: Props) => {
   const { data: signer } = useSigner()
   const [selectedTokens, setSelectedTokens] = useState([])
   const [success, setSuccess] = useState(false)
@@ -101,13 +96,9 @@ const ToWithdrawList = ({
       </div>
       {currencies?.map((currency, index) => {
         if (currency.toWithdraw > 1) {
-          const symbol = tokensMetadata[index]?.symbol
-
           return (
             <ToWithdrawItem
               currency={currency}
-              tokenMetadata={tokensMetadata[index]}
-              tokenQuote={tokensQuotes[symbol]}
               account={account}
               signer={signer}
               isChecked={selectedTokens.includes(currency.id.split("-")[1])}

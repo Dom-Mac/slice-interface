@@ -8,8 +8,6 @@ import { LogDescription } from "ethers/lib/utils"
 
 const ToWithdrawItem = ({
   currency,
-  tokenMetadata,
-  tokenQuote,
   account,
   signer,
   handleSelected,
@@ -21,8 +19,8 @@ const ToWithdrawItem = ({
   const toWithdrawToken = Number(
     ethers.utils.formatEther(currency?.toWithdraw || 0)
   ).toFixed(6)
-  const toWithdrawUsd = tokenQuote
-    ? (Number(toWithdrawToken) * Number(tokenQuote)).toFixed(2)
+  const toWithdrawUsd = currency.quote
+    ? (Number(toWithdrawToken) * Number(currency.quote)).toFixed(2)
     : 0
 
   return (
@@ -40,9 +38,9 @@ const ToWithdrawItem = ({
           id={currency?.id.split("-")[1]}
         />
         <div className="h-6 mx-2">
-          {tokenMetadata?.logo && (
+          {currency.metadata?.logo && (
             <Image
-              src={tokenMetadata?.logo}
+              src={currency.metadata?.logo}
               alt="Token logo"
               width={24}
               height={24}
@@ -51,10 +49,10 @@ const ToWithdrawItem = ({
         </div>
         <div className="pt-1 text-left">
           <p className="text-lg font-normal leading-none">
-            {tokenMetadata?.symbol}
+            {currency.metadata?.symbol}
           </p>
           <p className="text-xs font-normal text-slate-400">
-            {tokenMetadata?.name}
+            {currency.metadata?.name}
           </p>
         </div>
       </div>
@@ -67,7 +65,7 @@ const ToWithdrawItem = ({
         </div>
         {/* TODO: What if message ? */}
         <BlockchainCall
-          transactionDescription={`Withdraw ${toWithdrawToken} ${tokenMetadata?.symbol} `}
+          transactionDescription={`Withdraw ${toWithdrawToken} ${currency.metadata?.symbol} `}
           saEventName="withdraw_to_owner"
           action={() => Withdraw(signer, account, currency.id.split("-")[1])}
           success={success}
