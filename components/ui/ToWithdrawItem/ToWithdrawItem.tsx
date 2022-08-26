@@ -28,12 +28,16 @@ const ToWithdrawItem = ({
   useEffect(() => {
     if (success) {
       const updatedCurrencies = [...currencies]
-      const index = currencies.indexOf(currency)
-      updatedCurrencies[index].withdrawn =
+      const index = currencies
+        .map((currency) => currency.id)
+        .indexOf(currency.id)
+
+      updatedCurrencies[index].withdrawn = String(
         Number(updatedCurrencies[index].withdrawn) +
-        Number(updatedCurrencies[index].toWithdraw) -
-        1
-      updatedCurrencies[index].toWithdraw = 1
+          Number(updatedCurrencies[index].toWithdraw) -
+          1
+      )
+      updatedCurrencies[index].toWithdraw = "1"
 
       setCurrencies(updatedCurrencies)
     }

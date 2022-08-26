@@ -10,7 +10,6 @@ const TotalBalance = ({ currencies }) => {
   let totalEarned = 0
   let plusTokens = 0
   let cashback = 0
-  console.log("rendered", currencies)
 
   // TokensQuotes is the last state to be updated, if it is available all other states are available
   if (currencies.length) {
@@ -34,7 +33,8 @@ const TotalBalance = ({ currencies }) => {
 
         if (currency.quote) {
           totalToWithdraw += toWithdraw * currency.quote
-          totalEarned += toWithdraw * currency.quote
+          // TODO: uncomment to add toWithdraw value to total earned
+          // totalEarned += toWithdraw * currency.quote
         } else {
           plusTokens += toWithdraw
         }

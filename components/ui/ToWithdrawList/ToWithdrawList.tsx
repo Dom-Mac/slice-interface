@@ -1,6 +1,6 @@
 import { Withdraw, BatchWithdraw } from "@lib/handlers/chain"
 import { LogDescription } from "ethers/lib/utils"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSigner } from "wagmi"
 import BlockchainCall from "../BlockchainCall"
 import ToWithdrawItem from "../ToWithdrawItem"
@@ -64,6 +64,43 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
     }
   }
 
+  useEffect(() => {
+    if (success) {
+      const updatedCurrencies = [...currencies]
+
+      if (selectedTokens.length === 0) {
+        updatedCurrencies.forEach((currency, index) => {
+          updatedCurrencies[index].withdrawn = String(
+            Number(updatedCurrencies[index].withdrawn) +
+              Number(updatedCurrencies[index].toWithdraw) -
+              1
+          )
+          updatedCurrencies[index].toWithdraw = "1"
+        })
+      } else {
+        updatedCurrencies
+          .filter((currency) =>
+            selectedTokens.includes(currency.id.split("-")[1])
+          )
+          .forEach((currency) => {
+            const index = currencies
+              .map((currency) => currency.id)
+              .indexOf(currency.id)
+
+            updatedCurrencies[index].withdrawn = String(
+              Number(updatedCurrencies[index].withdrawn) +
+                Number(updatedCurrencies[index].toWithdraw) -
+                1
+            )
+            updatedCurrencies[index].toWithdraw = "1"
+          })
+      }
+
+      setCurrencies(updatedCurrencies)
+      setSelectedTokens([])
+    }
+  }, [success])
+
   return (
     <div className="w-screen px-4 -mb-10 -ml-4 pt-7 bg-slate-800 dark:bg-slate-800 rounded-t-2xl container-list">
       <div className="flex justify-between mb-9">
@@ -74,6 +111,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
           {selectedTokens.length === 0 ? "Select all" : "Deselect all"}
         </p>
         <div>
+          {/* TODO: What if message ? */}
           <BlockchainCall
             transactionDescription={`Withdraw tokens`}
             saEventName="withdraw_to_owner"
