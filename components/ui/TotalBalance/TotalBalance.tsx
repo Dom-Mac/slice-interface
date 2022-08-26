@@ -33,8 +33,6 @@ const TotalBalance = ({ currencies }) => {
 
         if (currency.quote) {
           totalToWithdraw += toWithdraw * currency.quote
-          // TODO: uncomment to add toWithdraw value to total earned
-          // totalEarned += toWithdraw * currency.quote
         } else {
           plusTokens += toWithdraw
         }
