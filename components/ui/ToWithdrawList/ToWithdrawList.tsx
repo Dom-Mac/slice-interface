@@ -147,6 +147,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
           )
         }
       })}
+      {!currencies.length && <p>No woman no cry</p>}
     </div>
   )
 }

@@ -40,16 +40,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     let formattedArray = []
-    payeeCurrencies?.forEach((currency, index) => {
-      const metadata = tokensMetadata[index]
-      formattedArray.push({
-        ...currency,
-        metadata: metadata,
-        quote: tokensQuotes[metadata.symbol]
+    if (Object.keys(tokensQuotes).length && tokensMetadata.length) {
+      payeeCurrencies?.forEach((currency, index) => {
+        const metadata = tokensMetadata[index]
+        formattedArray.push({
+          ...currency,
+          metadata: metadata,
+          quote: tokensQuotes[metadata?.symbol]
+        })
       })
-    })
+    }
     setCurrencies(formattedArray)
-  }, [tokensQuotes])
+  }, [payeeCurrencies, tokensQuotes])
 
   return (
     <Container page={true}>
