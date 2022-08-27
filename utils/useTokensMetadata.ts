@@ -3,11 +3,31 @@ import { ethers } from "ethers"
 import ethImg from "public/eth.svg"
 import fetcher from "./fetcher"
 
-// TODO: Save tokens metadata into a db/json file and call alchemy api just in case the metadata is not available
-export default function useTokensMetadata(currencies: any[]) {
-  const [tokensMetadata, setTokensMetadata] = useState([])
+export type Currency = {
+  id: string
+  metadata?: any
+  paidToProtocol: string
+  quote?: number
+  toPayToProtocol: string
+  toWithdraw: string
+  withdrawn: string
+  __typename: string
+}
 
-  const getTokenMetadata = async (currency: string) => {
+export type TokenMetadata = {
+  decimals?: number
+  name: string
+  symbol: string
+  logo: any
+}
+
+// TODO: Save tokens metadata into a db/json file and call alchemy api just in case the metadata is not available
+export default function useTokensMetadata(
+  currencies: Currency[]
+): TokenMetadata[] {
+  const [tokensMetadata, setTokensMetadata] = useState<TokenMetadata[]>([])
+
+  const getTokenMetadata = async (currency: string): Promise<TokenMetadata> => {
     const alchemyUrl = process.env.NEXT_PUBLIC_NETWORK_URL
     const headers = {
       "Content-Type": "application/json",
@@ -31,11 +51,11 @@ export default function useTokensMetadata(currencies: any[]) {
     return response.result
   }
 
-  const getEthMetadata = async () => {
+  const getEthMetadata = async (): Promise<TokenMetadata> => {
     return { name: "Ethereum", symbol: "ETH", logo: ethImg }
   }
 
-  const getAllTokensMetadata = async (requests: Promise<any>[]) => {
+  const getAllTokensMetadata = async (requests: Promise<TokenMetadata>[]) => {
     const metadata = await Promise.all(requests)
     const formattedMetadata = metadata.map((m) => {
       return {
@@ -48,14 +68,13 @@ export default function useTokensMetadata(currencies: any[]) {
   }
 
   useEffect(() => {
-    const requests = []
+    const requests: Promise<TokenMetadata>[] = []
     if (currencies) {
       currencies.forEach((currency) => {
         if (currency?.id.split("-")[1] === ethers.constants.AddressZero) {
           requests.push(getEthMetadata())
         } else {
           requests.push(getTokenMetadata(currency?.id.split("-")[1]))
-          console.log("currency", currency)
         }
       })
 

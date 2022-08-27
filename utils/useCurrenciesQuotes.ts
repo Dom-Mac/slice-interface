@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react"
+import { TokenMetadata } from "./useTokensMetadata"
 import fetcher from "./fetcher"
 
-const useCurrenciesQuotes = (tokensMetadata: any[]) => {
-  const [quotes, setQuotes] = useState({})
+export type Quotes = {
+  [key: string]: number
+}
+
+const useCurrenciesQuotes = (tokensMetadata: TokenMetadata[]): Quotes => {
+  const [quotes, setQuotes] = useState<Quotes>({})
 
   const getQuotes = async () => {
     const response = await fetcher("/api/getQuotes", {

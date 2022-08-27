@@ -156,7 +156,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
           />
         )
       })}
-      {/* {!currenciesToWithdraw.length && <FakeWithdrawItems />} */}
+      {!currenciesToWithdraw.length && <FakeWithdrawItems />}
     </div>
   )
 }

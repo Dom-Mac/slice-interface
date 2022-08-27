@@ -13,13 +13,13 @@ import {
 } from "@components/common/Head"
 import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
-import useTokensMetadata from "@utils/useTokensMetadata"
+import useTokensMetadata, { Currency } from "@utils/useTokensMetadata"
 import useCurrenciesQuotes from "@utils/useCurrenciesQuotes"
 import { useEffect, useState } from "react"
 
 export default function Dashboard() {
   const { account } = useAppContext()
-  const [currencies, setCurrencies] = useState([])
+  const [currencies, setCurrencies] = useState<Currency[]>([])
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
@@ -33,13 +33,12 @@ export default function Dashboard() {
       }
     `
   let subgraphData = useQuery(tokensQuery, [account])
-  const payee = subgraphData?.payee
-  const payeeCurrencies = payee?.currencies
+  const payeeCurrencies = subgraphData?.payee?.currencies as Currency[]
   const tokensMetadata = useTokensMetadata(payeeCurrencies)
   const tokensQuotes = useCurrenciesQuotes(tokensMetadata)
 
   useEffect(() => {
-    let formattedArray = []
+    let formattedArray: Currency[] = []
     if (Object.keys(tokensQuotes).length && tokensMetadata.length) {
       payeeCurrencies?.forEach((currency, index) => {
         const metadata = tokensMetadata[index]
