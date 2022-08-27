@@ -123,7 +123,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
               success={success}
               setSuccess={setSuccess}
               setLogs={setLogs}
-              confetti={true}
+              confetti={false}
               label={
                 <p className="text-sm font-normal border-b border-black dark:border-yellow-400 md:text-base">
                   {selectedTokens.length > 0
@@ -144,21 +144,19 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
       </div>
       {currenciesToWithdraw?.map((currency, index) => {
         return (
-          <>
-            <ToWithdrawItem
-              currency={currency}
-              currencies={currencies}
-              setCurrencies={setCurrencies}
-              account={account}
-              signer={signer}
-              isChecked={selectedTokens.includes(currency.id.split("-")[1])}
-              key={index}
-              handleSelected={handleSelected}
-            />
-          </>
+          <ToWithdrawItem
+            currency={currency}
+            currencies={currencies}
+            setCurrencies={setCurrencies}
+            account={account}
+            signer={signer}
+            isChecked={selectedTokens.includes(currency.id.split("-")[1])}
+            key={index}
+            handleSelected={handleSelected}
+          />
         )
       })}
-      {!currenciesToWithdraw.length && <FakeWithdrawItems />}
+      {/* {!currenciesToWithdraw.length && <FakeWithdrawItems />} */}
     </div>
   )
 }

@@ -90,7 +90,7 @@ const ToWithdrawItem = ({
           success={success}
           setSuccess={setSuccess}
           setLogs={setLogs}
-          confetti={true}
+          confetti={false}
           label={
             <Download className="h-6 text-black dark:text-yellow-300 md:h-8 md:w-8" />
           }
