@@ -4,7 +4,7 @@ const WalletIcon = ({ ...props }) => {
       viewBox="0 0 487.6 487.6"
       xmlSpace="preserve"
       stroke="currentColor"
-      fill="rgba(254, 249, 195,1)"
+      fill="rgba(254, 249, 195, 1)"
       {...props}
     >
       <g>
