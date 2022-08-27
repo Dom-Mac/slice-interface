@@ -1,3 +1,9 @@
 .container-list {
   min-height: calc(100vh - 265px);
 }
+
+.background-height {
+  height: -moz-available; /* WebKit-based browsers will ignore this. */
+  height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  height: fill-available;
+}

@@ -102,8 +102,9 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   }, [success])
 
   return (
-    <div className="w-screen px-4 pb-4 -mb-10 -ml-4 pt-7 bg-slate-800 rounded-t-2xl container-list">
-      <div className="flex justify-between mb-9">
+    <div className="px-4 pb-4 -mb-10 pt-7 container-list">
+      <div className="absolute left-0 w-screen -z-10 bg-slate-800 rounded-t-2xl background-height"></div>
+      <div className="flex justify-between mt-2 mb-9 ">
         <p
           className="self-end py-1 text-xs font-normal text-slate-400"
           onClick={handleSelectAll}

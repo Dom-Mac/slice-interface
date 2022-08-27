@@ -72,10 +72,11 @@ export default function Dashboard() {
         }}
       />
       <ConnectBlock>
-        <main className="max-w-[420px] sm:mx-auto sm:max-w-screen-md justify-self-start">
-          <h1 className="mb-6 text-2xl font-normal text-left">
+        <main className="sm:mx-auto sm:max-w-screen-md justify-self-start">
+          <h1 className="mb-6 text-2xl font-normal text-left md:text-5xl md:text-center md:mb-12">
             Earnings Dashboard
           </h1>
+
           <TotalBalance currencies={currencies} />
           <ToWithdrawList
             currencies={currencies}

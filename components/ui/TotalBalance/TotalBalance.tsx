@@ -53,7 +53,7 @@ const TotalBalance = ({ currencies }) => {
   return (
     <>
       <div className="flex items-center mb-4">
-        <p className="mr-3 text-lg ">My balance</p>
+        <p className="mr-3 text-lg md:text-3xl">My balance</p>
         <div onClick={() => setIsBlurred(!isBlurred)}>
           {isBlurred ? (
             <VisibilityClosed className="h-6" />
@@ -63,22 +63,28 @@ const TotalBalance = ({ currencies }) => {
         </div>
       </div>
       <div
-        className={`flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 ${
+        className={`flex justify-between w-3/5 md:w-full p-2 rounded-lg min-w-max bg-slate-800 md:bg-white md:mb-4 md:p-0 ${
           isBlurred ? "blur" : null
         }`}
       >
-        <div className="text-left ">
-          <p className="text-xs font-normal text-slate-400">Total earned</p>
-          <p className="text-lg font-semibold">$ {totalEarned}</p>
+        <div className="text-left">
+          <p className="text-xs font-normal md:text-base md:mb-4 text-slate-400">
+            Total earned
+          </p>
+          <p className="text-lg font-semibold md:text-4xl">$ {totalEarned}</p>
           {/* {cashback > 0 && (
             <p className="text-xs font-normal text-green-500">
               +{cashback} SLX cashback
             </p>
           )} */}
         </div>
-        <div className="text-left ">
-          <p className="text-xs font-normal text-slate-400">To withdraw</p>
-          <p className="text-lg font-semibold">$ {totalToWithdraw}</p>
+        <div className="text-left">
+          <p className="text-xs font-normal md:text-base md:mb-4 text-slate-400">
+            To withdraw
+          </p>
+          <p className="text-lg font-semibold md:text-4xl">
+            $ {totalToWithdraw}
+          </p>
           {plusTokens > 0 && (
             <p className="text-xs font-normal text-green-500">
               +{plusTokens} token{plusTokens > 1 ? "s" : null}
@@ -86,7 +92,7 @@ const TotalBalance = ({ currencies }) => {
           )}
         </div>
       </div>
-      <p className="p-2 mb-5 text-xs font-normal text-left text-slate-500 ">
+      <p className="p-2 mb-5 text-xs font-normal text-left text-slate-500 md:p-0">
         Current SLX cashback fee: 2.5%
       </p>
     </>
