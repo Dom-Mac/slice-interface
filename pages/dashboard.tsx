@@ -55,7 +55,7 @@ export default function Dashboard() {
   return (
     <Container page={true}>
       <NextSeo
-        title="Your slicers"
+        title="Earnings Dashboard"
         openGraph={{
           title: longTitle,
           description: defaultDescription,
