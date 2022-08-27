@@ -3,6 +3,7 @@ import { LogDescription } from "ethers/lib/utils"
 import { useEffect, useState } from "react"
 import { useSigner } from "wagmi"
 import BlockchainCall from "../BlockchainCall"
+import FakeWithdrawItems from "../FakeWithdrawItems"
 import ToWithdrawItem from "../ToWithdrawItem"
 
 type Props = {
@@ -135,20 +136,22 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
       {currencies?.map((currency, index) => {
         if (currency.toWithdraw > 1) {
           return (
-            <ToWithdrawItem
-              currency={currency}
-              currencies={currencies}
-              setCurrencies={setCurrencies}
-              account={account}
-              signer={signer}
-              isChecked={selectedTokens.includes(currency.id.split("-")[1])}
-              key={index}
-              handleSelected={handleSelected}
-            />
+            <>
+              <ToWithdrawItem
+                currency={currency}
+                currencies={currencies}
+                setCurrencies={setCurrencies}
+                account={account}
+                signer={signer}
+                isChecked={selectedTokens.includes(currency.id.split("-")[1])}
+                key={index}
+                handleSelected={handleSelected}
+              />
+            </>
           )
         }
       })}
-      {!currencies.length && <p>No woman no cry</p>}
+      {!currencies.length && <FakeWithdrawItems />}
     </div>
   )
 }
