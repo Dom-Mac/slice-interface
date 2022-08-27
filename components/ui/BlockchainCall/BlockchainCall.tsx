@@ -99,9 +99,15 @@ const BlockchainCall = ({
           />
         )}
       </div>
-      <div>
-        <MessageBlock msg={message} />
-      </div>
+      {isCustomButton ? (
+        <div className="absolute z-10 p-2 bg-slate-800 fade-out">
+          <MessageBlock msg={message} />
+        </div>
+      ) : (
+        <div>
+          <MessageBlock msg={message} />
+        </div>
+      )}
     </>
   )
 }
