@@ -1,31 +1,32 @@
 import { Withdraw, BatchWithdraw } from "@lib/handlers/chain"
+import { Currency } from "@utils/useTokensMetadata"
 import { LogDescription } from "ethers/lib/utils"
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useSigner } from "wagmi"
 import BlockchainCall from "../BlockchainCall"
 import FakeWithdrawItems from "../FakeWithdrawItems"
 import ToWithdrawItem from "../ToWithdrawItem"
 
 type Props = {
-  currencies: any
+  currencies: Currency[]
   account: string
-  setCurrencies: any
+  setCurrencies: Dispatch<SetStateAction<Currency[]>>
 }
 
 const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   const { data: signer } = useSigner()
-  const [selectedTokens, setSelectedTokens] = useState([])
+  const [selectedTokens, setSelectedTokens] = useState<string[]>([])
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
   const currenciesToWithdraw = currencies.filter(
-    (currency) => currency.toWithdraw > 1
+    (currency) => Number(currency.toWithdraw) > 1
   )
 
   const handleSelectAll = () => {
-    let addresses = []
+    let addresses: string[] = []
     if (selectedTokens.length === 0) {
       currencies.forEach((currency) => {
-        if (currency.toWithdraw > 0) {
+        if (Number(currency.toWithdraw) > 0) {
           addresses.push(currency.id.split("-")[1])
         }
       })

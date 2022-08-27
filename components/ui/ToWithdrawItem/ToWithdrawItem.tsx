@@ -1,10 +1,21 @@
 import Image from "next/image"
-import { ethers } from "ethers"
+import { ethers, Signer } from "ethers"
 import { Withdraw } from "@lib/handlers/chain"
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import BlockchainCall from "../BlockchainCall"
 import { LogDescription } from "ethers/lib/utils"
 import Download from "@components/icons/Download"
+import { Currency } from "@utils/useTokensMetadata"
+
+type Props = {
+  currency: Currency
+  currencies: Currency[]
+  setCurrencies: Dispatch<SetStateAction<Currency[]>>
+  account: string
+  signer: Signer
+  handleSelected: () => void
+  isChecked: boolean
+}
 
 const ToWithdrawItem = ({
   currency,
@@ -14,7 +25,7 @@ const ToWithdrawItem = ({
   signer,
   handleSelected,
   isChecked
-}) => {
+}: Props) => {
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
 
