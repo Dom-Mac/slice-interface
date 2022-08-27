@@ -3,7 +3,7 @@ import nightwind from "nightwind/helper"
 import Logo from "@components/icons/Logo"
 import Nightwind from "@components/icons/Nightwind"
 import ShoppingBag from "@components/icons/ShoppingBag"
-import WalletIcon from "@components/icons/WalletIcon"
+import CarouselPayments from "@components/icons/CarouselPayments"
 import { Dispatch, SetStateAction } from "react"
 import { DropdownMenuElement } from ".."
 type Props = {
@@ -51,7 +51,9 @@ function DropdownMenu({ showDropdown, setShowDropdown }: Props) {
       />
       <DropdownMenuElement
         href="/dashboard"
-        image={<WalletIcon className="w-5 h-5 text-yellow-100" />}
+        image={
+          <div className="w-5 h-5">{CarouselPayments("text-red-700")}</div>
+        }
         label="Dashboard"
         onClick={() => setShowDropdown(false)}
       />

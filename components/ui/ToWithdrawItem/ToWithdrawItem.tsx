@@ -1,10 +1,10 @@
 import Image from "next/image"
-import withdrawImg from "public/download.svg"
 import { ethers } from "ethers"
 import { Withdraw } from "@lib/handlers/chain"
 import { useEffect, useState } from "react"
 import BlockchainCall from "../BlockchainCall"
 import { LogDescription } from "ethers/lib/utils"
+import Download from "@components/icons/Download"
 
 const ToWithdrawItem = ({
   currency,
@@ -94,7 +94,11 @@ const ToWithdrawItem = ({
           confetti={true}
           label={
             <div className="h-6">
-              <Image src={withdrawImg} alt="download" width={24} height={24} />
+              <Download
+                width={24}
+                height={24}
+                className="text-black dark:text-yellow-300"
+              />
             </div>
           }
           isCustomButton={true}
