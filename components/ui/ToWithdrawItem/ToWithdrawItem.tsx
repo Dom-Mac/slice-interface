@@ -46,7 +46,7 @@ const ToWithdrawItem = ({
   return (
     <div
       className={`flex justify-between p-2 border rounded-lg border-sky-400 ${
-        isChecked ? "dark:bg-slate-900 bg-slate-900" : null
+        isChecked ? "bg-slate-900" : null
       }`}
     >
       <div className="flex items-center">

@@ -63,7 +63,7 @@ const TotalBalance = ({ currencies }) => {
         </div>
       </div>
       <div
-        className={`flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 dark:bg-slate-800 ${
+        className={`flex justify-between w-3/5 p-2 rounded-lg min-w-max bg-slate-800 ${
           isBlurred ? "blur" : null
         }`}
       >
