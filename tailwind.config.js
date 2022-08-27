@@ -32,6 +32,8 @@ module.exports = {
           50: "#001928"
         },
         slate: {
+          400: "#94a3b8",
+          500: "#64748b",
           800: "#1e293b",
           900: "#0f172a"
         }
@@ -47,6 +49,8 @@ module.exports = {
         cyan: colors.cyan,
         yellow: colors.yellow,
         slate: {
+          400: "#000000",
+          500: "#000000",
           800: "#e4e4e4",
           900: "#a4a4a4"
         },

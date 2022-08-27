@@ -102,11 +102,11 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   }, [success])
 
   return (
-    <div className="px-4 pb-4 -mb-10 pt-7 container-list">
+    <div className="px-4 pb-4 -mb-10 pt-7 container-list md:px-0">
       <div className="absolute left-0 w-screen -z-10 bg-slate-800 rounded-t-2xl background-height"></div>
-      <div className="flex justify-between mt-2 mb-9 ">
+      <div className="flex justify-between mt-2 md:mt-6 mb-9 ">
         <p
-          className="self-end py-1 text-xs font-normal text-slate-400"
+          className="self-end py-1 text-xs font-normal md:text-base text-slate-400"
           onClick={handleSelectAll}
         >
           {selectedTokens.length === 0 ? "Select all" : "Deselect all"}
@@ -122,7 +122,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
             setLogs={setLogs}
             confetti={true}
             label={
-              <p className="text-sm font-normal border-b border-yellow-400">
+              <p className="text-sm font-normal border-b border-black dark:border-yellow-400 md:text-base">
                 {selectedTokens.length > 0
                   ? "Widthraw selected"
                   : "Widthraw all"}

@@ -56,9 +56,9 @@ const TotalBalance = ({ currencies }) => {
         <p className="mr-3 text-lg md:text-3xl">My balance</p>
         <div onClick={() => setIsBlurred(!isBlurred)}>
           {isBlurred ? (
-            <VisibilityClosed className="h-6" />
+            <VisibilityClosed className="h-6 text-black" />
           ) : (
-            <VisibilityOpen className="h-6" />
+            <VisibilityOpen className="h-6 text-black" />
           )}
         </div>
       </div>

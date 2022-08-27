@@ -52,34 +52,33 @@ const ToWithdrawItem = ({
       <div className="flex items-center">
         <input
           type="checkbox"
-          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded md:w-6 md:h-6 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           checked={isChecked}
           onChange={handleSelected}
           id={currency?.id.split("-")[1]}
         />
-        <div className="h-6 mx-2">
+        <div className="w-6 mx-2 md:w-10 md:mx-4">
           {currency.metadata?.logo && (
             <Image
               src={currency.metadata?.logo}
               alt="Token logo"
-              width={24}
-              height={24}
+              layout="responsive"
             />
           )}
         </div>
         <div className="pt-1 text-left">
-          <p className="text-lg font-normal leading-none">
+          <p className="text-lg font-normal leading-none md:text-xl">
             {currency.metadata?.symbol}
           </p>
-          <p className="text-xs font-normal text-slate-400">
+          <p className="text-xs font-normal md:text-base text-slate-400">
             {currency.metadata?.name}
           </p>
         </div>
       </div>
       <div className="flex items-center">
         <div className="pt-1 pr-4 text-right">
-          <p className="text-lg font-normal">{toWithdrawToken}</p>
-          <p className="text-xs font-normal text-slate-400">
+          <p className="text-lg font-normal md:text-xl">{toWithdrawToken}</p>
+          <p className="text-xs font-normal md:text-base text-slate-400">
             $ {toWithdrawUsd}
           </p>
         </div>
@@ -93,13 +92,7 @@ const ToWithdrawItem = ({
           setLogs={setLogs}
           confetti={true}
           label={
-            <div className="h-6">
-              <Download
-                width={24}
-                height={24}
-                className="text-black dark:text-yellow-300"
-              />
-            </div>
+            <Download className="h-6 text-black dark:text-yellow-300 md:h-8 md:w-8" />
           }
           isCustomButton={true}
         />
