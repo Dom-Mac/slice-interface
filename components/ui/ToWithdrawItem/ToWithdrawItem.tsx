@@ -45,7 +45,7 @@ const ToWithdrawItem = ({
 
   return (
     <div
-      className={`flex justify-between p-2 border rounded-lg border-sky-400 ${
+      className={`flex justify-between p-2 mb-4 border rounded-lg border-sky-400 ${
         isChecked ? "bg-slate-900" : null
       }`}
     >
