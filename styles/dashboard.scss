@@ -7,3 +7,17 @@
   height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   height: fill-available;
 }
+
+.move-up {
+  display: block;
+  animation: MoveUp 0.3s cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes MoveUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

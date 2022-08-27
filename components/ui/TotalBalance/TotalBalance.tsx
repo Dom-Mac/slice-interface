@@ -66,12 +66,15 @@ const TotalBalance = ({ currencies }) => {
         className={`flex justify-between w-3/5 md:w-full p-2 rounded-lg min-w-max bg-slate-800 md:bg-white md:mb-4 md:p-0 ${
           isBlurred ? "blur" : null
         }`}
+        key={totalEarned}
       >
         <div className="text-left">
           <p className="text-xs font-normal md:text-base md:mb-4 text-slate-400">
             Total earned
           </p>
-          <p className="text-lg font-semibold md:text-4xl">$ {totalEarned}</p>
+          <p className="flex overflow-hidden text-lg font-semibold md:text-4xl">
+            $ <span className="move-up">{totalEarned}</span>
+          </p>
           {/* {cashback > 0 && (
             <p className="text-xs font-normal text-green-500">
               +{cashback} SLX cashback
@@ -82,8 +85,8 @@ const TotalBalance = ({ currencies }) => {
           <p className="text-xs font-normal md:text-base md:mb-4 text-slate-400">
             To withdraw
           </p>
-          <p className="text-lg font-semibold md:text-4xl">
-            $ {totalToWithdraw}
+          <p className="flex overflow-hidden text-lg font-semibold md:text-4xl">
+            $ <span className="move-up">{totalToWithdraw}</span>
           </p>
           {plusTokens > 0 && (
             <p className="text-xs font-normal text-green-500">
