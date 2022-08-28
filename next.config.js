@@ -2,8 +2,8 @@ const withMDX = require("@next/mdx")({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [],
-    rehypePlugins: [],
-  },
+    rehypePlugins: []
+  }
 })
 
 module.exports = withMDX({
@@ -13,11 +13,12 @@ module.exports = withMDX({
       process.env.NEXT_PUBLIC_APP_URL.split("://").pop().split(":")[0],
       process.env.NEXT_PUBLIC_SUPABASE_URL.split("://").pop(),
       "api.producthunt.com",
-      "",
-    ],
+      "static.alchemyapi.io",
+      ""
+    ]
   },
   experimental: {
-    esmExternals: true,
+    esmExternals: true
   },
-  pageExtensions: ["ts", "tsx", "md", "mdx"],
+  pageExtensions: ["ts", "tsx", "md", "mdx"]
 })

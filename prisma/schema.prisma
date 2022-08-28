@@ -76,3 +76,17 @@ model AccountCode {
   // @@index([shortcodeId], name:"shortcodeId")
   // @@index([buyerAddress], name:"buyerAddress")
 }
+
+model Currency {
+  id        Int      @id @default(autoincrement())
+  address   String   @unique
+  name      String
+  symbol    String
+  logo      String?
+  quote     Float?
+  cmcId     Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([address], type: Hash)
+}

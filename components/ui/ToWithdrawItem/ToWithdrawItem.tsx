@@ -74,6 +74,8 @@ const ToWithdrawItem = ({
               src={currency.metadata?.logo}
               alt="Token logo"
               layout="responsive"
+              width={24}
+              height={24}
             />
           )}
         </div>

@@ -21,34 +21,57 @@ export type TokenMetadata = {
   logo: any
 }
 
-// TODO: Save tokens metadata into a db/json file and call alchemy api just in case the metadata is not available
 export default function useTokensMetadata(
   currencies: Currency[]
 ): TokenMetadata[] {
   const [tokensMetadata, setTokensMetadata] = useState<TokenMetadata[]>([])
 
   const getTokenMetadata = async (currency: string): Promise<TokenMetadata> => {
-    const alchemyUrl = process.env.NEXT_PUBLIC_NETWORK_URL
-    const headers = {
-      "Content-Type": "application/json",
-      Accept: "application/json"
-    }
-
-    const body = {
-      id: 1,
-      jsonrpc: "2.0",
-      method: "alchemy_getTokenMetadata",
-      params: [currency]
-      // params: ["0xeb8f08a975ab53e34d8a0330e0d34de942c95926"]
-    }
-
-    const response = await fetcher(alchemyUrl, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body)
+    const dbCurrency = await fetcher("/api/currencies", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currency })
     })
 
-    return response.result
+    // Return if currency is already in slice database
+    if (dbCurrency) {
+      console.log("Currency already exists")
+      return dbCurrency
+    } else {
+      console.log("Currency doesn't exist")
+      const alchemyUrl = process.env.NEXT_PUBLIC_NETWORK_URL
+      const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      }
+
+      const body = {
+        id: 1,
+        jsonrpc: "2.0",
+        method: "alchemy_getTokenMetadata",
+        params: [currency]
+        // params: ["0xeb8f08a975ab53e34d8a0330e0d34de942c95926"]
+      }
+
+      const response = await fetcher(alchemyUrl, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(body)
+      })
+
+      fetcher("/api/currencies/new", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currency,
+          name: response.result.name,
+          symbol: response.result.symbol,
+          logo: response.result.logo || ""
+        })
+      })
+
+      return response.result
+    }
   }
 
   const getEthMetadata = async (): Promise<TokenMetadata> => {
