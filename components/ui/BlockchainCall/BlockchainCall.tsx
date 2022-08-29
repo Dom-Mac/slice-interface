@@ -100,9 +100,11 @@ const BlockchainCall = ({
         )}
       </div>
       {isCustomButton ? (
-        <div className="absolute z-10 p-2 bg-slate-800 fade-out">
-          <MessageBlock msg={message} />
-        </div>
+        message.message && (
+          <div className="absolute z-10 p-2 bg-slate-800 fade-out">
+            <MessageBlock msg={message} />
+          </div>
+        )
       ) : (
         <div>
           <MessageBlock msg={message} />
