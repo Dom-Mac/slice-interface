@@ -6,7 +6,7 @@ const newCurrency = async (req: NextApiRequest, res: NextApiResponse) => {
   await corsMiddleware(req, res)
   try {
     if (req.method === "POST") {
-      const { currency, name, symbol, logo } = JSON.parse(req.body)
+      const { currency, name, symbol, logo } = req.body
 
       const dbCurrency = await prisma.currency.create({
         data: {

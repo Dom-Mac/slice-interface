@@ -24,8 +24,7 @@ const getQuotes = async (req: NextApiRequest, res: NextApiResponse) => {
       const formattedData = {}
 
       Object.keys(response.data).forEach((key) => {
-        const { quote } = response.data[key][0]
-        formattedData[key] = quote.USD.price
+        formattedData[key] = response.data[key][0]?.quote?.USD?.price
       })
       // {ETH: 1986.5684695193536}
 

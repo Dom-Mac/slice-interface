@@ -27,11 +27,12 @@ export default function useTokensMetadata(
   const [tokensMetadata, setTokensMetadata] = useState<TokenMetadata[]>([])
 
   const getTokenMetadata = async (currency: string): Promise<TokenMetadata> => {
-    const dbCurrency = await fetcher("/api/currencies", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currency })
-    })
+    let dbCurrency = false
+    // const dbCurrency = await fetcher("/api/currencies", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ currency })
+    // })
 
     // Return if currency is already in slice database
     if (dbCurrency) {
@@ -59,16 +60,18 @@ export default function useTokensMetadata(
         body: JSON.stringify(body)
       })
 
-      fetcher("/api/currencies/new", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currency,
-          name: response.result.name,
-          symbol: response.result.symbol,
-          logo: response.result.logo || ""
-        })
-      })
+      // if (response.result) {
+      //   fetcher("/api/currencies/new", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       currency,
+      //       name: response.result.name,
+      //       symbol: response.result.symbol,
+      //       logo: response.result.logo || ""
+      //     })
+      //   })
+      // }
 
       return response.result
     }
@@ -82,9 +85,9 @@ export default function useTokensMetadata(
     const metadata = await Promise.all(requests)
     const formattedMetadata = metadata.map((m) => {
       return {
-        name: m.name || "",
-        symbol: m.symbol || "",
-        logo: m.logo || ethImg
+        name: m?.name || "",
+        symbol: m?.symbol || "",
+        logo: m?.logo || ethImg
       }
     })
     setTokensMetadata(formattedMetadata)

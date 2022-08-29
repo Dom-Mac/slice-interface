@@ -13,7 +13,7 @@ type Props = {
   setCurrencies: Dispatch<SetStateAction<Currency[]>>
   account: string
   signer: Signer
-  handleSelected: () => void
+  handleSelected: (e: any) => void
   isChecked: boolean
 }
 
@@ -28,10 +28,12 @@ const ToWithdrawItem = ({
 }: Props) => {
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
+  const addr0 = ethers.constants.AddressZero
 
-  const toWithdrawToken = Number(
-    ethers.utils.formatEther(currency?.toWithdraw || 0)
-  ).toFixed(6)
+  const toWithdrawToken =
+    currency.id.split("-")[1] === addr0
+      ? Number(ethers.utils.formatEther(currency?.toWithdraw || 0)).toFixed(6)
+      : currency?.toWithdraw
   const toWithdrawUsd = currency.quote
     ? (Number(toWithdrawToken) * Number(currency.quote)).toFixed(2)
     : 0
