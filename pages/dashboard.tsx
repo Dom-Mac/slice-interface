@@ -23,7 +23,7 @@ export default function Dashboard() {
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {
-        currencies(where: {toWithdraw_gt: "0"}) {
+        currencies {
           id
           withdrawn
           toWithdraw
