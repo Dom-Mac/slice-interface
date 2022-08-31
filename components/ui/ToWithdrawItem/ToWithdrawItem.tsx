@@ -6,6 +6,7 @@ import BlockchainCall from "../BlockchainCall"
 import { LogDescription } from "ethers/lib/utils"
 import Download from "@components/icons/Download"
 import { Currency } from "@utils/useTokensMetadata"
+import { darkColorList } from "@utils/colorList"
 
 type Props = {
   currency: Currency
@@ -29,6 +30,8 @@ const ToWithdrawItem = ({
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
   const addr0 = ethers.constants.AddressZero
+  const color =
+    darkColorList[Math.floor(Math.random() * darkColorList.length)][1]
 
   const toWithdrawToken =
     currency.id.split("-")[1] === addr0
@@ -71,7 +74,7 @@ const ToWithdrawItem = ({
           id={currency?.id.split("-")[1]}
         />
         <div className="w-6 mx-2 md:w-10 md:mx-4">
-          {currency.metadata?.logo && (
+          {currency.metadata?.logo ? (
             <Image
               src={currency.metadata?.logo}
               alt="Token logo"
@@ -79,6 +82,12 @@ const ToWithdrawItem = ({
               width={24}
               height={24}
             />
+          ) : (
+            <p
+              className={`w-6 h-6 md:w-10 md:h-10 text-white ${color} rounded-full align-middle leading-6 md:leading-10`}
+            >
+              {currency.metadata?.symbol?.slice(0, 3)}
+            </p>
           )}
         </div>
         <div className="pt-1 text-left">

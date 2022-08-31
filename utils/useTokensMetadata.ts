@@ -54,7 +54,7 @@ export default function useTokensMetadata(
           currency,
           name: response.result.name,
           symbol: response.result.symbol,
-          logo: response.result.logo || ""
+          logo: response.result.logo
         })
       })
     }
@@ -72,7 +72,7 @@ export default function useTokensMetadata(
       return {
         name: m?.name || "",
         symbol: m?.symbol || "",
-        logo: m?.logo || ethImg
+        logo: m?.logo || ""
       }
     })
     setTokensMetadata(formattedMetadata)
@@ -104,7 +104,7 @@ export default function useTokensMetadata(
           requests.push({
             name: dbCurrency?.name || "",
             symbol: dbCurrency?.symbol || "",
-            logo: dbCurrency?.logo || ethImg
+            logo: dbCurrency?.logo || ""
           })
         } else {
           // if not present search for the currency on alchemy
