@@ -86,7 +86,6 @@ export default function useTokensMetadata(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ currencies: currenciesAddresses })
     })
-    console.log(dbCurrencies)
 
     // Logic to mix currencies saved in our database with alchemy requests
     // without changin the currencies array order
