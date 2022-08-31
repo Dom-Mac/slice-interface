@@ -17,9 +17,6 @@ const newCurrency = async (req: NextApiRequest, res: NextApiResponse) => {
         }
       })
 
-      console.log("Create currency")
-      console.log(dbCurrency)
-
       res.status(200).json(dbCurrency)
     }
   } catch (err) {

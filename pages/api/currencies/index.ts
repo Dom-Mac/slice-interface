@@ -6,15 +6,12 @@ const currencies = async (req: NextApiRequest, res: NextApiResponse) => {
   await corsMiddleware(req, res)
   try {
     if (req.method === "POST") {
-      const { currency } = req.body
-      const dbCurrency = await prisma.currency.findFirst({
-        where: { address: currency }
+      const { currencies } = req.body
+      const dbCurrencies = await prisma.currency.findMany({
+        where: { address: { in: currencies } }
       })
 
-      console.log("Find currency")
-      console.log(dbCurrency)
-
-      res.status(200).json(dbCurrency)
+      res.status(200).json(dbCurrencies)
     }
   } catch (err) {
     res.status(500).send(err.message)
