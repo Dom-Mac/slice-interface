@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import BlockchainCall from "../BlockchainCall"
 import { LogDescription } from "ethers/lib/utils"
 import Download from "@components/icons/Download"
-import { Currency } from "@utils/useTokensMetadata"
+import { Currency } from "@utils/useCurrenciesData"
 import { darkColorList } from "@utils/colorList"
 
 type Props = {
@@ -74,9 +74,9 @@ const ToWithdrawItem = ({
           id={currency?.id.split("-")[1]}
         />
         <div className="w-6 mx-2 md:w-10 md:mx-4">
-          {currency.metadata?.logo ? (
+          {currency?.logo ? (
             <Image
-              src={currency.metadata?.logo}
+              src={currency?.logo}
               alt="Token logo"
               layout="responsive"
               width={24}
@@ -86,16 +86,16 @@ const ToWithdrawItem = ({
             <p
               className={`w-6 h-6 md:w-10 md:h-10 text-white ${color} rounded-full align-middle leading-6 md:leading-10 font-semibold`}
             >
-              {currency.metadata?.symbol?.slice(0, 3)}
+              {currency?.symbol?.slice(0, 3)}
             </p>
           )}
         </div>
         <div className="pt-1 text-left">
           <p className="text-lg font-normal leading-none md:text-xl">
-            {currency.metadata?.symbol}
+            {currency?.symbol}
           </p>
           <p className="text-xs font-normal md:text-base text-slate-400">
-            {currency.metadata?.name}
+            {currency?.name}
           </p>
         </div>
       </div>
@@ -108,7 +108,7 @@ const ToWithdrawItem = ({
         </div>
         {/* TODO: What if message ? */}
         <BlockchainCall
-          transactionDescription={`Withdraw ${toWithdrawToken} ${currency.metadata?.symbol} `}
+          transactionDescription={`Withdraw ${toWithdrawToken} ${currency?.symbol} `}
           saEventName="withdraw_to_owner"
           action={() => Withdraw(signer, account, currency.id.split("-")[1])}
           success={success}

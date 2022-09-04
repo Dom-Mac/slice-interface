@@ -36,23 +36,23 @@ export const graphQuery = async (
             toWithdraw: "1542",
             toPayToProtocol: "250000000000001",
             paidToProtocol: "404999999999997"
-          },
-          {
-            __typename: "PayeeCurrency",
-            id: "0x4d5d7d63989bbe6358a3352a2449d59aa5a08267-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-            withdrawn: "3670",
-            toWithdraw: "975000",
-            toPayToProtocol: "2500000",
-            paidToProtocol: "404999999999997"
-          },
-          {
-            __typename: "PayeeCurrency",
-            id: "0x4d5d7d63989bbe6358a3352a2449d59aa5a08267-0x6fa5FF63B2752265c6Bd9350591f97A7dAd9e918",
-            withdrawn: "3670",
-            toWithdraw: "975000",
-            toPayToProtocol: "2500000",
-            paidToProtocol: "404999999999997"
           }
+          // {
+          //   __typename: "PayeeCurrency",
+          //   id: "0x4d5d7d63989bbe6358a3352a2449d59aa5a08267-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          //   withdrawn: "3670",
+          //   toWithdraw: "975000",
+          //   toPayToProtocol: "2500000",
+          //   paidToProtocol: "404999999999997"
+          // },
+          // {
+          //   __typename: "PayeeCurrency",
+          //   id: "0x4d5d7d63989bbe6358a3352a2449d59aa5a08267-0x6fa5FF63B2752265c6Bd9350591f97A7dAd9e918",
+          //   withdrawn: "3670",
+          //   toWithdraw: "975000",
+          //   toPayToProtocol: "2500000",
+          //   paidToProtocol: "404999999999997"
+          // }
         ]
       }
     })

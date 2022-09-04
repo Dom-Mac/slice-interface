@@ -13,9 +13,8 @@ import {
 } from "@components/common/Head"
 import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
-import useTokensMetadata, { Currency } from "@utils/useTokensMetadata"
-import useCurrenciesQuotes from "@utils/useCurrenciesQuotes"
 import { useEffect, useState } from "react"
+import useCurrenciesData, { Currency } from "@utils/useCurrenciesData"
 
 export default function Dashboard() {
   const { account } = useAppContext()
@@ -34,23 +33,11 @@ export default function Dashboard() {
     `
   let subgraphData = useQuery(tokensQuery, [account])
   const payeeCurrencies = subgraphData?.payee?.currencies as Currency[]
-  const tokensMetadata = useTokensMetadata(payeeCurrencies)
-  const tokensQuotes = useCurrenciesQuotes(tokensMetadata)
+  const currenciesData = useCurrenciesData(payeeCurrencies)
 
   useEffect(() => {
-    let formattedArray: Currency[] = []
-    if (Object.keys(tokensQuotes).length && tokensMetadata.length) {
-      payeeCurrencies?.forEach((currency, index) => {
-        const metadata = tokensMetadata[index]
-        formattedArray.push({
-          ...currency,
-          metadata: metadata,
-          quote: tokensQuotes[metadata?.symbol]
-        })
-      })
-    }
-    setCurrencies(formattedArray)
-  }, [payeeCurrencies, tokensQuotes])
+    setCurrencies(currenciesData)
+  }, [currenciesData])
 
   return (
     <Container page={true}>
