@@ -86,7 +86,7 @@ const ToWithdrawItem = ({
             />
           ) : (
             <p
-              className={`w-6 h-6 md:w-10 md:h-10 text-white ${color} rounded-full align-middle leading-6 md:leading-10 font-semibold`}
+              className={`w-6 h-6 md:w-10 md:h-10 text-xs md:text-base text-white ${color} rounded-full align-middle leading-6 md:leading-10 font-semibold`}
             >
               {currency?.symbol?.slice(0, 3)}
             </p>
