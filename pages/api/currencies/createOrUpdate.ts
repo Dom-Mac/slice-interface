@@ -7,8 +7,6 @@ const newCurrency = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (req.method === "POST") {
       const { currencies } = req.body
-      console.log("create or update")
-      console.log(currencies)
 
       const dbCurrencies = currencies.map(
         async ({ id, symbol, name, logo, quote }) => {
@@ -36,7 +34,6 @@ const newCurrency = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(200).json(dbCurrencies)
     }
   } catch (err) {
-    console.log(err)
     res.status(500).send(err.message)
   }
 }
