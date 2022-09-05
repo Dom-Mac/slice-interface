@@ -452,7 +452,7 @@ export const PRODUCT_VIEW = (params: any) => {
               texts={texts}
               allowedAddresses={allowedAddresses}
               labelAdd={`Get it for ${productPrice.eth}`}
-              labelRemove={productPrice.eth}
+              labelRemove={productPrice.eth != "free" && productPrice.eth}
               preview={preview}
               shortcodes={purchaseInfo?.shortcodes}
               dbId={dbId}
@@ -537,8 +537,11 @@ export const REDEEM_PRODUCT_VIEW = (params: any) => {
     accountCodes
   } = params
 
-  const { thanks, instructions } = texts
-  const { notes } = decryptedTexts
+  const { thanks, instructions } = texts || {
+    thanks: undefined,
+    instructions: undefined
+  }
+  const { notes } = decryptedTexts || { nodes: undefined }
 
   const decodedInstructions = useDecodeShortcode(
     account,

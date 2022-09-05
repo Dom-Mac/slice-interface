@@ -1,31 +1,48 @@
-import { Signer } from "ethers"
+import { formatFlags } from "@utils/formatFlags"
+import { ethers, Signer } from "ethers"
+
+export type Payee = {
+  account: string
+  shares: number
+  transfersAllowedWhileLocked: boolean
+}
 
 const Slice = async (
   signer: Signer,
-  payees: {
-    account: string
-    shares: number
-  }[],
+  payees: Payee[],
   minimumShares: number,
   currencies: string[],
   releaseTimelock: number,
-  transferableTimelock: number,
-  isImmutable: boolean,
-  isControlled: boolean
+  transferTimelock: number,
+  isImmutable: boolean
 ) => {
   const { sliceCore } = await import("@lib/initProvider")
   const contract = sliceCore(signer)
 
+  const slicerFlags = formatFlags([
+    isImmutable
+    // controller.currenciesControlled,
+    // controller.productsControlled,
+    // acceptsAllCurrencies,
+  ])
+  // const sliceCoreFlags = formatFlags([
+  //   isCustomRoyaltyActive,
+  //   isRoyaltyReceiverSlicer,
+  //   isResliceAllowed,
+  //   isControlledTransferAllowed,
+  // ])
+
   try {
-    const call = await contract.slice(
+    const call = await contract.slice({
       payees,
       minimumShares,
       currencies,
       releaseTimelock,
-      transferableTimelock,
-      isImmutable,
-      isControlled
-    )
+      transferTimelock,
+      controller: ethers.constants.AddressZero,
+      slicerFlags,
+      sliceCoreFlags: 0
+    })
 
     return [contract, call]
   } catch (err) {

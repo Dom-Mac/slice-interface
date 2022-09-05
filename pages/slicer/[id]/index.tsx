@@ -22,7 +22,7 @@ import {
   SlicerSponsors
 } from "@components/ui"
 import fetcher from "@utils/fetcher"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 import multicall from "@utils/multicall"
 import decimalToHex from "@utils/decimalToHex"
 import formatCalldata from "@utils/formatCalldata"
@@ -52,7 +52,8 @@ const Id = ({
   slicerInfo,
   products,
   subgraphDataPayees,
-  subgraphDataProducts
+  subgraphDataProducts,
+  sponsors
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter()
   const { view } = router.query
@@ -60,7 +61,6 @@ const Id = ({
   const { isAllowed } = useAllowed(slicerInfo)
   const [editMode, setEditMode] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [sponsorLoading, setSponsorLoading] = useState(true)
   const [msg, setMsg] = useState<Message>({
     message: "",
     messageStatus: "success"
@@ -77,14 +77,15 @@ const Id = ({
   const [newDescription, setNewDescription] = useState(slicer.description)
   const [newTags, setNewTags] = useState(slicer.tags)
   const [newName, setNewName] = useState(slicer.name)
+  const [sponsorsList, setSponsorsList] = useState(sponsors)
   const [newImage, setNewImage] = useState<NewImage>({
     url: "",
     file: undefined
   })
   const [tempImageUrl, setTempImageUrl] = useState("")
-  const [sponsors, setSponsors] = useState<AddressAmount[]>([])
   const [owners, setOwners] = useState<AddressAmount[]>([])
   const [unreleased, setUnreleased] = useState([])
+  const [editAllowed, setEditAllowed] = useState(false)
   const pageTitle =
     slicer.name === `Slicer #${slicerInfo?.id}`
       ? slicer.name
@@ -95,41 +96,25 @@ const Id = ({
       ?.value
   )
 
-  // Todo: For collectibles save image on web3Storage instead of supabase? + Allow indefinite size? Figure it out
-  const editAllowed = !slicerInfo?.isImmutable
-    ? isAllowed == "metadata" || isAllowed == "full"
-    : slicer?.attributes?.filter((el) => el.trait_type === "Creator")[0]
-        .value === account?.toLowerCase() // only Creator
-    ? (newName === `Slicer #${slicerInfo?.id}` && // default name, descr & image
-        newDescription === "" &&
-        newImage.url === "" &&
-        slicer.imageUrl === "https://slice.so/slicer_default.png") ||
-      false // slicer?.attributes["Total slices"] === account.slices // creator has all slices
-    : false
-
   useEffect(() => {
     setEditMode(false)
+    // TODO: For collectibles save image on web3Storage instead of supabase? + Allow indefinite size? Figure it out
+    setEditAllowed(
+      !slicerInfo?.isImmutable
+        ? isAllowed == "metadata" || isAllowed == "full"
+        : slicer?.attributes?.filter((el) => el.trait_type === "Creator")[0]
+            .value === account?.toLowerCase() // only Creator
+        ? (newName === `Slicer #${slicerInfo?.id}` && // default name, descr & image
+            newDescription === "" &&
+            newImage.url === "" &&
+            slicer.imageUrl === "https://slice.so/slicer_default.png") ||
+          false // slicer?.attributes["Total slices"] === account.slices // creator has all slices
+        : false
+    )
   }, [account])
 
   useEffect(() => {
     if (subgraphDataPayees) {
-      const sponsorsList: AddressAmount[] = []
-      subgraphDataPayees.forEach((el) => {
-        const address = el.id.split("-")[0]
-        const ethSent = el.ethSent
-        if (
-          address != process.env.NEXT_PUBLIC_PRODUCTS_ADDRESS.toLowerCase() &&
-          ethSent &&
-          ethSent != "0"
-        ) {
-          const amount = Number(
-            BigNumber.from(ethSent).div(BigNumber.from(10).pow(15))
-          )
-          sponsorsList.push({ address, amount })
-        }
-      })
-      setSponsors(sponsorsList)
-
       const ownersList: AddressAmount[] = []
       subgraphDataPayees.forEach((el) => {
         const address = el.id.split("-")[0]
@@ -140,8 +125,6 @@ const Id = ({
       })
       const sortedOwners = ownersList.sort((a, b) => b.amount - a.amount)
       setOwners(sortedOwners)
-
-      setSponsorLoading(false)
     }
   }, [subgraphDataPayees])
 
@@ -289,13 +272,13 @@ const Id = ({
             blockchainProducts={subgraphDataProducts}
           />
           <SlicerSponsors
-            sponsors={sponsors}
+            sponsorsList={sponsorsList}
+            setSponsorsList={setSponsorsList}
             slicerId={slicerInfo?.id}
             slicerAddress={slicerInfo?.address}
             sponsorData={slicerInfo?.sponsors}
             editMode={editMode}
             tag={slicer.tags}
-            loading={sponsorLoading}
           />
           {editMode && (
             <SlicerSubmitBlock
@@ -352,19 +335,20 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   const hexId = decimalToHex(Number(id))
 
   /**
-   * TODO
-   * Add condition: or: [{slices_gt: "0"}, {ethSent_gt: "0"}]
+   * TODO:
    * Deal with pagination when number of payeeSlicers > 100
    */
   const tokensQuery = /* GraphQL */ `
   slicer(id: "${hexId}") {
     payees(
-      orderBy: "ethSent", 
+      where: {
+        slices_gt: "0"
+      },
+      orderBy: "slices", 
       orderDirection: "desc"
     ) {
       id
       slices
-      ethSent
     }
     products (
       where: {
@@ -378,6 +362,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
         }
         price
         dynamicPricing
+        externalAddress
       }
       isInfinite
       availableUnits
@@ -405,12 +390,62 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     })
   ])
 
+  let sponsors: AddressAmount[]
+  const sponsorsBody =
+    slicerInfo?.address && process.env.NEXT_PUBLIC_CHAIN_ID == "1"
+      ? {
+          body: JSON.stringify({
+            id: 1,
+            jsonrpc: "2.0",
+            method: "alchemy_getAssetTransfers",
+            params: [
+              {
+                fromBlock: "0xddefa8",
+                toBlock: "latest",
+                withMetadata: false,
+                excludeZeroValue: true,
+                maxCount: "0x3e8",
+                category: ["external"],
+                toAddress: slicerInfo?.address
+              }
+            ]
+          }),
+          method: "POST"
+        }
+      : null
+
+  if (sponsorsBody) {
+    const transfersQuery = await fetcher(
+      process.env.NEXT_PUBLIC_NETWORK_URL,
+      sponsorsBody
+    )
+    const transfers: {
+      from: string
+      value: number
+    }[] = transfersQuery?.result?.transfers
+    if (transfers) {
+      sponsors = transfers
+        .reduce((prev, curr) => {
+          const { from: address, value: amount } = curr
+          const index = prev.findIndex((el) => el.address == address)
+          if (index == -1) {
+            prev.push({ address, amount })
+          } else {
+            prev[index].amount += amount
+          }
+          return prev
+        }, [])
+        .sort((a, b) => b.amount - a.amount)
+    }
+  }
+
   return {
     props: {
       slicerInfo,
       products,
       subgraphDataPayees: subgraphData?.slicer?.payees || null,
       subgraphDataProducts: subgraphData?.slicer?.products || null,
+      sponsors: sponsors || null,
       key: slicerInfo.id
     },
     revalidate: 300
@@ -418,26 +453,3 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 }
 
 export default Id
-
-// TODO
-// - retrieve account.slices in editAllowed condition
-// - Clean stuff
-
-/**  
-Product created on interface - OK
-  - Present on backend, not subgraph
-  - Subgraph is indicized on revalidate
-
-  Product created on interface, successful and user has left create page
-    - Present on backend, not subgraph
-    - Handle reload condition?
-
-Product created on interface, not successful and user has left create page
-  - Present on backend, not subgraph
-  - Product will never appear (no productId)
-  - Handle cleanup condition?
-
-Product created on contracts
-  - Present on subgraph, not on backend
-  - Handle reload condition?
-*/

@@ -39,22 +39,4 @@ You can set 3 keys in the `params` object:
 - `deploy` (optional): If present, deploys and initializes the contract via a pre-deployed factory contract.
 - `allowedAddresses` (optional): Addresses used on the frontend to generate from the connected account a Merkle proof verification and send it as `buyerCustomData` param.
 
-See below the `Params` type as reference for the various fields
-
-```ts
-type Params = {
-  externalCall: {
-    data: BytesLike // `slicerCustomData` in purchase hook. Default: []
-    value: BigNumberish // Wei amount to be sent to the contract. Default: 0
-    externalAddress: string // Contract called upon purchase. Default: ZeroAddress
-    checkFunctionSignature: BytesLike // Selector of function to call from the frontend to check requirements are met. Default: "0x95db9368"
-    execFunctionSignature: BytesLike //  Selector of function called during product purchase. Default: "0xa23fffb9"
-  }
-  deploy?: {
-    factoryAddresses?: { [chainId: number]: string } // Deployment addresses of factory contracts based on chainId
-    abi: ContractInterface // factory contract abi
-    args: any[] // Initialization params (excluding productsModule address and slicerId)
-  }
-  allowedAddresses?: string[] // Array of allowlisted addresses
-}
-```
+See the `Params` type in `purchaseHooks.ts` as reference for the various fields

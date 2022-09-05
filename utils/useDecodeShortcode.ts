@@ -32,12 +32,12 @@ const useDecodeShortcode = (
   defaultShortcodes.productId.value = productId
 
   Object.entries(defaultShortcodes).map(([key, shortcode]) => {
-    instructions = instructions.replaceAll(`{{${key}}}`, shortcode.value)
+    instructions = instructions?.replaceAll(`{{${key}}}`, shortcode.value)
   })
 
   if (accountCodes && JSON.stringify(accountCodes) != "{}") {
     Object.entries(accountCodes).map(([key, val]) => {
-      instructions = instructions.replaceAll(`{{${key}}}`, val)
+      instructions = instructions?.replaceAll(`{{${key}}}`, val)
     })
   }
 

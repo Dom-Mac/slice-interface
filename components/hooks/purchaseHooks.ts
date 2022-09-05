@@ -3,11 +3,20 @@ import { Dispatch, SetStateAction } from "react"
 import { FunctionStruct } from "types/typechain/ProductsModule"
 import * as hooks from "./index"
 
+type DeployedAddresses = { [chainId: string]: string }
+export type Deployments = {
+  cloner: DeployedAddresses
+  factory: DeployedAddresses
+}
+
 export type Params = {
   externalCall: FunctionStruct
   deploy?: {
-    factoryAddresses?: { [chainId: number]: string }
-    abi: ContractInterface
+    deployments?: Deployments
+    abi: {
+      clonerInterface?: ContractInterface
+      factoryInterface?: ContractInterface
+    }
     args: any[]
   }
   allowedAddresses?: string[]
@@ -17,7 +26,7 @@ export type Hook = {
   label: string
   description: string
   Component: (args: any) => JSX.Element
-  factoryAddresses?: { [chainId: number]: string }
+  deployments?: Deployments
 }
 
 export type HookProps = {

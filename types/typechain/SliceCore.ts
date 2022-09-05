@@ -18,11 +18,47 @@ import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
-export type PayeeStruct = { account: string; shares: BigNumberish };
+export type PayeeStruct = {
+  account: string;
+  shares: BigNumberish;
+  transfersAllowedWhileLocked: boolean;
+};
 
-export type PayeeStructOutput = [string, number] & {
+export type PayeeStructOutput = [string, number, boolean] & {
   account: string;
   shares: number;
+  transfersAllowedWhileLocked: boolean;
+};
+
+export type SliceParamsStruct = {
+  payees: PayeeStruct[];
+  minimumShares: BigNumberish;
+  currencies: string[];
+  releaseTimelock: BigNumberish;
+  transferTimelock: BigNumberish;
+  controller: string;
+  slicerFlags: BigNumberish;
+  sliceCoreFlags: BigNumberish;
+};
+
+export type SliceParamsStructOutput = [
+  PayeeStructOutput[],
+  BigNumber,
+  string[],
+  BigNumber,
+  number,
+  string,
+  number,
+  number
+] & {
+  payees: PayeeStructOutput[];
+  minimumShares: BigNumber;
+  currencies: string[];
+  releaseTimelock: BigNumber;
+  transferTimelock: number;
+  controller: string;
+  slicerFlags: number;
+  sliceCoreFlags: number;
 };
 
 export interface SliceCoreInterface extends utils.Interface {
@@ -48,7 +84,7 @@ export interface SliceCoreInterface extends utils.Interface {
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setController(uint256,address)": FunctionFragment;
     "setRoyalty(uint256,bool,bool,uint256)": FunctionFragment;
-    "slice((address,uint32)[],uint256,address[],uint256,uint40,bool,bool)": FunctionFragment;
+    "slice(((address,uint32,bool)[],uint256,address[],uint256,uint40,address,uint8,uint8))": FunctionFragment;
     "slicerBatchTransfer(address,address[],uint256,uint256[],bool)": FunctionFragment;
     "slicers(uint256)": FunctionFragment;
     "supply()": FunctionFragment;
@@ -136,15 +172,7 @@ export interface SliceCoreInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "slice",
-    values: [
-      PayeeStruct[],
-      BigNumberish,
-      string[],
-      BigNumberish,
-      BigNumberish,
-      boolean,
-      boolean
-    ]
+    values: [SliceParamsStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "slicerBatchTransfer",
@@ -265,7 +293,7 @@ export interface SliceCoreInterface extends utils.Interface {
     "RoyaltySet(uint256,bool,bool,uint256)": EventFragment;
     "SlicerControllerSet(uint256,address)": EventFragment;
     "TokenResliced(uint256,address[],int32[])": EventFragment;
-    "TokenSliced(address,uint256,tuple[],uint256,address[],uint256,uint256,bool,bool,uint256)": EventFragment;
+    "TokenSliced(address,uint256,tuple,uint256)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
@@ -347,28 +375,11 @@ export type TokenReslicedEvent = TypedEvent<
 export type TokenReslicedEventFilter = TypedEventFilter<TokenReslicedEvent>;
 
 export type TokenSlicedEvent = TypedEvent<
-  [
-    string,
-    BigNumber,
-    PayeeStructOutput[],
-    BigNumber,
-    string[],
-    BigNumber,
-    BigNumber,
-    boolean,
-    boolean,
-    BigNumber
-  ],
+  [string, BigNumber, SliceParamsStructOutput, BigNumber],
   {
     slicerAddress: string;
     tokenId: BigNumber;
-    payees: PayeeStructOutput[];
-    minimumShares: BigNumber;
-    currencies: string[];
-    releaseTimelock: BigNumber;
-    transferableTimelock: BigNumber;
-    isImmutable: boolean;
-    isControlled: boolean;
+    params: SliceParamsStructOutput;
     slicerVersion: BigNumber;
   }
 >;
@@ -552,13 +563,7 @@ export interface SliceCore extends BaseContract {
     ): Promise<ContractTransaction>;
 
     slice(
-      payees: PayeeStruct[],
-      minimumShares: BigNumberish,
-      currencies: string[],
-      releaseTimelock: BigNumberish,
-      transferMintTimelock: BigNumberish,
-      isImmutable: boolean,
-      isControlled: boolean,
+      params: SliceParamsStruct,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -567,7 +572,7 @@ export interface SliceCore extends BaseContract {
       recipients: string[],
       id: BigNumberish,
       amounts: BigNumberish[],
-      release: boolean,
+      toRelease: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -712,13 +717,7 @@ export interface SliceCore extends BaseContract {
   ): Promise<ContractTransaction>;
 
   slice(
-    payees: PayeeStruct[],
-    minimumShares: BigNumberish,
-    currencies: string[],
-    releaseTimelock: BigNumberish,
-    transferMintTimelock: BigNumberish,
-    isImmutable: boolean,
-    isControlled: boolean,
+    params: SliceParamsStruct,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -727,7 +726,7 @@ export interface SliceCore extends BaseContract {
     recipients: string[],
     id: BigNumberish,
     amounts: BigNumberish[],
-    release: boolean,
+    toRelease: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -859,23 +858,14 @@ export interface SliceCore extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    slice(
-      payees: PayeeStruct[],
-      minimumShares: BigNumberish,
-      currencies: string[],
-      releaseTimelock: BigNumberish,
-      transferMintTimelock: BigNumberish,
-      isImmutable: boolean,
-      isControlled: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    slice(params: SliceParamsStruct, overrides?: CallOverrides): Promise<void>;
 
     slicerBatchTransfer(
       from: string,
       recipients: string[],
       id: BigNumberish,
       amounts: BigNumberish[],
-      release: boolean,
+      toRelease: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -983,28 +973,16 @@ export interface SliceCore extends BaseContract {
       tokensDiffs?: null
     ): TokenReslicedEventFilter;
 
-    "TokenSliced(address,uint256,tuple[],uint256,address[],uint256,uint256,bool,bool,uint256)"(
+    "TokenSliced(address,uint256,tuple,uint256)"(
       slicerAddress?: string | null,
       tokenId?: BigNumberish | null,
-      payees?: null,
-      minimumShares?: null,
-      currencies?: null,
-      releaseTimelock?: null,
-      transferableTimelock?: null,
-      isImmutable?: null,
-      isControlled?: null,
+      params?: null,
       slicerVersion?: BigNumberish | null
     ): TokenSlicedEventFilter;
     TokenSliced(
       slicerAddress?: string | null,
       tokenId?: BigNumberish | null,
-      payees?: null,
-      minimumShares?: null,
-      currencies?: null,
-      releaseTimelock?: null,
-      transferableTimelock?: null,
-      isImmutable?: null,
-      isControlled?: null,
+      params?: null,
       slicerVersion?: BigNumberish | null
     ): TokenSlicedEventFilter;
 
@@ -1158,13 +1136,7 @@ export interface SliceCore extends BaseContract {
     ): Promise<BigNumber>;
 
     slice(
-      payees: PayeeStruct[],
-      minimumShares: BigNumberish,
-      currencies: string[],
-      releaseTimelock: BigNumberish,
-      transferMintTimelock: BigNumberish,
-      isImmutable: boolean,
-      isControlled: boolean,
+      params: SliceParamsStruct,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1173,7 +1145,7 @@ export interface SliceCore extends BaseContract {
       recipients: string[],
       id: BigNumberish,
       amounts: BigNumberish[],
-      release: boolean,
+      toRelease: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1323,13 +1295,7 @@ export interface SliceCore extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     slice(
-      payees: PayeeStruct[],
-      minimumShares: BigNumberish,
-      currencies: string[],
-      releaseTimelock: BigNumberish,
-      transferMintTimelock: BigNumberish,
-      isImmutable: boolean,
-      isControlled: boolean,
+      params: SliceParamsStruct,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1338,7 +1304,7 @@ export interface SliceCore extends BaseContract {
       recipients: string[],
       id: BigNumberish,
       amounts: BigNumberish[],
-      release: boolean,
+      toRelease: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

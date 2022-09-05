@@ -13,7 +13,7 @@ export const getPurchases = async (
     payee (id: "${buyer.toLowerCase()}") {
       purchases (orderBy: "lastPurchasedAtTimestamp", orderDirection: "desc") {
         id
-        quantity
+        totalQuantity
       }
     }`
 
@@ -34,7 +34,7 @@ export const getPurchases = async (
     purchasesList.push({
       slicerId,
       productId,
-      quantity: p.quantity,
+      totalQuantity: p.totalQuantity,
       buyerCustomData: []
     })
   })
@@ -53,14 +53,14 @@ export const updatePurchases = (
         Number(purchase.productId) == p.productId
     )
     if (index != -1) {
-      purchases[index].quantity = String(
-        Number(purchases[index].quantity) + Number(p.quantity)
+      purchases[index].totalQuantity = String(
+        Number(purchases[index].totalQuantity) + Number(p.quantity)
       )
     } else {
       newPurchases.push({
         slicerId: String(p.slicerId),
         productId: String(p.productId),
-        quantity: String(p.quantity),
+        totalQuantity: String(p.quantity),
         buyerCustomData: p.buyerCustomData
       })
     }

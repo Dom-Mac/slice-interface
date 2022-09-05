@@ -31,8 +31,8 @@ const SponsorListItem = ({ slicerId, sponsor, sponsorLink }: Props) => {
       method: "POST",
       body: JSON.stringify({
         address,
-        link,
-      }),
+        link
+      })
     }
     await fetcher(`/api/slicer/${slicerId}/sponsor`, body)
     if (!link.includes("://")) {
@@ -104,7 +104,7 @@ const SponsorListItem = ({ slicerId, sponsor, sponsorLink }: Props) => {
               )}
             </>
           </div>
-          <span>Ξ {amount / 1000}</span>
+          <span>Ξ {amount}</span>
         </>
       )}
     </li>

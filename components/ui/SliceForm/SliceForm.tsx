@@ -13,6 +13,7 @@ import formatNumber from "@utils/formatNumber"
 import { ConnectButton, useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import { useSigner } from "wagmi"
 import saEvent from "@utils/saEvent"
+import { Payee } from "@lib/handlers/chain/Slice/Slice"
 
 type Props = {
   success: boolean
@@ -58,12 +59,12 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
 
     setloadingButton(true)
 
-    const payees = []
+    const payees: Payee[] = []
     for (let i = 0; i < cleanedAddresses.length; i++) {
       const account = cleanedAddresses[i]
       const shares = cleanedShares[i]
 
-      payees.push({ account, shares })
+      payees.push({ account, shares, transfersAllowedWhileLocked: false })
     }
 
     try {
@@ -75,8 +76,7 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
           [],
           0,
           0,
-          isImmutable,
-          false
+          isImmutable
         )) as [Contract, ContractTransaction]
 
         setLoading(true)

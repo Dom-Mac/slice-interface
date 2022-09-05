@@ -24,7 +24,7 @@ const clone = async (
 
     return [cloneAddress, contract, call]
   } catch (err) {
-    console.log(err)
+    throw Error()
   }
 }
 

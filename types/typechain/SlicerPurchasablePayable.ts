@@ -22,7 +22,7 @@ export interface SlicerPurchasablePayableInterface extends utils.Interface {
   contractName: "SlicerPurchasablePayable";
   functions: {
     "isPurchaseAllowed(uint256,uint256,address,uint256,bytes,bytes)": FunctionFragment;
-    "onProductPurchase(bytes)": FunctionFragment;
+    "onProductPurchase(uint256,uint256,address,uint256,bytes,bytes)": FunctionFragment;
     "releaseToCollector()": FunctionFragment;
   };
 
@@ -39,7 +39,14 @@ export interface SlicerPurchasablePayableInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "onProductPurchase",
-    values: [BytesLike]
+    values: [
+      BigNumberish,
+      BigNumberish,
+      string,
+      BigNumberish,
+      BytesLike,
+      BytesLike
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "releaseToCollector",
@@ -91,17 +98,22 @@ export interface SlicerPurchasablePayable extends BaseContract {
 
   functions: {
     isPurchaseAllowed(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      arg2: string,
+      arg3: BigNumberish,
+      arg4: BytesLike,
+      arg5: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    onProductPurchase(
       slicerId: BigNumberish,
       productId: BigNumberish,
       account: string,
       quantity: BigNumberish,
       slicerCustomData: BytesLike,
       buyerCustomData: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    onProductPurchase(
-      data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -111,17 +123,22 @@ export interface SlicerPurchasablePayable extends BaseContract {
   };
 
   isPurchaseAllowed(
+    arg0: BigNumberish,
+    arg1: BigNumberish,
+    arg2: string,
+    arg3: BigNumberish,
+    arg4: BytesLike,
+    arg5: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  onProductPurchase(
     slicerId: BigNumberish,
     productId: BigNumberish,
     account: string,
     quantity: BigNumberish,
     slicerCustomData: BytesLike,
     buyerCustomData: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  onProductPurchase(
-    data: BytesLike,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -131,17 +148,22 @@ export interface SlicerPurchasablePayable extends BaseContract {
 
   callStatic: {
     isPurchaseAllowed(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      arg2: string,
+      arg3: BigNumberish,
+      arg4: BytesLike,
+      arg5: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    onProductPurchase(
       slicerId: BigNumberish,
       productId: BigNumberish,
       account: string,
       quantity: BigNumberish,
       slicerCustomData: BytesLike,
       buyerCustomData: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    onProductPurchase(
-      data: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -152,17 +174,22 @@ export interface SlicerPurchasablePayable extends BaseContract {
 
   estimateGas: {
     isPurchaseAllowed(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      arg2: string,
+      arg3: BigNumberish,
+      arg4: BytesLike,
+      arg5: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    onProductPurchase(
       slicerId: BigNumberish,
       productId: BigNumberish,
       account: string,
       quantity: BigNumberish,
       slicerCustomData: BytesLike,
       buyerCustomData: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    onProductPurchase(
-      data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -173,17 +200,22 @@ export interface SlicerPurchasablePayable extends BaseContract {
 
   populateTransaction: {
     isPurchaseAllowed(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      arg2: string,
+      arg3: BigNumberish,
+      arg4: BytesLike,
+      arg5: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    onProductPurchase(
       slicerId: BigNumberish,
       productId: BigNumberish,
       account: string,
       quantity: BigNumberish,
       slicerCustomData: BytesLike,
       buyerCustomData: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    onProductPurchase(
-      data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

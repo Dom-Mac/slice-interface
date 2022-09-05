@@ -93,8 +93,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       } = JSON.parse(req.body)
       const pid = productId ? Number(productId) : null
 
-      console.log(filteredShortcodes)
-
       data = await CreateProduct(
         Number(id),
         name,

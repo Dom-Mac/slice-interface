@@ -310,7 +310,6 @@ export const handleCleanup = async (
       )
     }
   }
-
   await reload(slicerId, setLoading)
 }
 
@@ -369,7 +368,10 @@ export const reload = async (
     if (products.filter((p) => p.productId === productId).length == 0) {
       if (timeHasElapsed(blockchainProducts[i].createdAtTimestamp)) {
         // If product hasn't been removed
-        if (!blockchainProducts[i].isRemoved) {
+        if (
+          !blockchainProducts[i].isRemoved &&
+          blockchainProducts[i].data != "0x"
+        ) {
           const hash = "f" + blockchainProducts[i].data.substring(2)
           const dataHash = CID.parse(hash, base16.decoder).toV1().toString()
 
@@ -401,7 +403,7 @@ export const reload = async (
           })
         } else {
           productsToCreate.push({
-            name: "",
+            name: `Product #${productId}`,
             shortDescription: "",
             description: "",
             image: "",
@@ -421,7 +423,7 @@ export const reload = async (
             },
             slicerId,
             productId,
-            isRemoved: true
+            isRemoved: blockchainProducts[i].isRemoved
           })
         }
       }

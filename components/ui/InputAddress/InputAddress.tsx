@@ -72,7 +72,7 @@ const InputAddress: React.FC<Props> = (props) => {
             resolvedAddress === "Invalid ENS name"
               ? "text-red-500"
               : "text-blue-600 dark:text-sky-300"
-          } absolute text-xs opacity-80 font-black left-0 bottom-[-8x]
+          } absolute text-xs opacity-80 font-black left-0 bottom-[-23px]
           }`}
         >
           {addressReduced}

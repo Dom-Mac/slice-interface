@@ -21,6 +21,7 @@ import saEvent from "@utils/saEvent"
 import { emptyExternalCall, Params } from "@components/hooks/purchaseHooks"
 import openFingerprintingModal from "@utils/openFingerprintingModal"
 import { ReducedShortcode } from "@utils/useDecodeShortcode"
+import { deploy } from "@lib/handlers/chain"
 
 type Props = {
   slicerId: number
@@ -64,6 +65,7 @@ const AddProductForm = ({
   const [purchaseHookParams, setPurchaseHookParams] = useState<Params>({
     externalCall: emptyExternalCall
   })
+  const [clonePurchaseHook, setClonePurchaseHook] = useState(false)
   const [thankMessage, setThankMessage] = useState("")
   const [instructions, setInstructions] = useState("")
   const [notes, setNotes] = useState("")
@@ -95,53 +97,66 @@ const AddProductForm = ({
       }
     )
 
+    let image: string,
+      newProduct: any,
+      data: Uint8Array,
+      purchaseDataCID: string,
+      purchaseData: any[] | Uint8Array
+
     try {
-      const { image, newProduct, data, purchaseDataCID, purchaseData } =
-        await beforeCreate(
-          account,
-          slicerId,
-          name,
-          shortDescription,
-          description,
-          purchaseHookParams,
-          newImage,
-          files,
-          thankMessage,
-          instructions,
-          notes,
-          filteredShortcodes,
-          setUploadStep,
-          setUploadPct
-        )
+      const productInfo = await beforeCreate(
+        account,
+        slicerId,
+        name,
+        shortDescription,
+        description,
+        purchaseHookParams,
+        newImage,
+        files,
+        thankMessage,
+        instructions,
+        notes,
+        filteredShortcodes,
+        setUploadStep,
+        setUploadPct
+      )
+
+      image = productInfo.image
+      newProduct = productInfo.newProduct
+      data = productInfo.data
+      purchaseDataCID = productInfo.purchaseDataCID
+      purchaseData = productInfo.purchaseData
 
       if (purchaseHookParams?.deploy != undefined) {
-        const { factoryAddresses, abi, args } = purchaseHookParams.deploy
+        let hookAddress: string
+        let call: any
+
+        const { deployments, abi, args } = purchaseHookParams.deploy
         const deployParams = { slicerId, args }
-        const [hookAddress, , call] = await clone(
-          factoryAddresses[chainId],
-          abi,
-          signer,
-          deployParams
-        )
-        addRecentTransaction({
-          hash: call.hash,
-          description: "Deploy purchase hook"
-        })
+        if (clonePurchaseHook) {
+          ;[hookAddress, , call] = await clone(
+            deployments.cloner[chainId],
+            abi.clonerInterface,
+            signer,
+            deployParams
+          )
+        } else {
+          ;[hookAddress, , call] = await deploy(
+            deployments.factory[chainId],
+            abi.factoryInterface,
+            signer,
+            deployParams
+          )
+        }
         if (hookAddress) {
+          addRecentTransaction({
+            hash: call.hash,
+            description: "Deploy purchase hook"
+          })
           externalCall.externalAddress = hookAddress
           setCloneAddress(hookAddress)
         } else {
-          saEvent("create_product_fail")
-          setUploadStep(8)
-          await handleReject(
-            slicerId,
-            image,
-            data,
-            purchaseDataCID,
-            newProduct.id
-          )
-          setUploadStep(9)
-          throw new Error("Transaction not successful")
+          throw new Error()
         }
       }
       setUploadStep(7)
@@ -154,19 +169,23 @@ const AddProductForm = ({
               {
                 currency: ethers.constants.AddressZero,
                 value: productPrice,
-                dynamicPricing: isUSD
+                dynamicPricing: isUSD,
+                externalAddress: ethers.constants.AddressZero
               }
             ]
           : []
+
       const productParams: ProductParamsStruct = {
-        subSlicerProducts: [],
-        currencyPrices,
-        data,
-        purchaseData,
-        availableUnits: units,
         isFree,
         maxUnitsPerBuyer: maxUnits,
-        isInfinite: !isLimited
+        isInfinite: !isLimited,
+        availableUnits: units,
+        data,
+        purchaseData,
+        subSlicerProducts: [],
+        currencyPrices,
+        isExternalCallPaymentRelative: false,
+        isExternalCallPreferredToken: false
       }
       const eventLogs = await handleSubmit(
         AddProduct(signer, slicerId, productParams, externalCall),
@@ -188,22 +207,21 @@ const AddProductForm = ({
         setSuccess(true)
         setModalView({ name: "" })
       } else {
-        saEvent("create_product_fail")
-        setUploadStep(8)
-        await handleReject(
-          slicerId,
-          image,
-          data,
-          purchaseDataCID,
-          newProduct.id
-        )
-        setUploadStep(9)
+        throw new Error()
       }
     } catch (err) {
-      setMessage({
-        message: err.message,
-        messageStatus: "error"
-      })
+      saEvent("create_product_fail")
+      setUploadStep(8)
+
+      await handleReject(slicerId, image, data, purchaseDataCID, newProduct.id)
+      setUploadStep(9)
+      setCloneAddress("")
+      if (err.message) {
+        setMessage({
+          message: err.message,
+          messageStatus: "error"
+        })
+      }
       openFingerprintingModal(err, setModalView)
     }
   }
@@ -255,6 +273,8 @@ const AddProductForm = ({
         setIsUSD={setIsUSD}
       />
       <AddProductFormExternal
+        clonePurchaseHook={clonePurchaseHook}
+        setClonePurchaseHook={setClonePurchaseHook}
         params={purchaseHookParams}
         setParams={setPurchaseHookParams}
       />

@@ -103,5 +103,3 @@ const ProductPurchaseCard = ({
 }
 
 export default ProductPurchaseCard
-
-// TODO: Fix product not showing info and being redeemable if not in db

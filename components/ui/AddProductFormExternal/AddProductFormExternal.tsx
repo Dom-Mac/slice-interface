@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { CardText } from "../"
+import { CardText, DeployCloneSwitch } from "../"
 import {
   defaultPurchaseHooks,
   emptyExternalCall,
@@ -7,11 +7,18 @@ import {
 } from "@components/hooks/purchaseHooks"
 
 type Props = {
+  clonePurchaseHook: boolean
+  setClonePurchaseHook: Dispatch<SetStateAction<boolean>>
   params: Params
   setParams: Dispatch<SetStateAction<Params>>
 }
 
-const AddProductFormExternal = ({ params, setParams }: Props) => {
+const AddProductFormExternal = ({
+  clonePurchaseHook,
+  setClonePurchaseHook,
+  params,
+  setParams
+}: Props) => {
   const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
   const [selectedHook, setSelectedHook] = useState(undefined)
   const displayedHook =
@@ -21,6 +28,14 @@ const AddProductFormExternal = ({ params, setParams }: Props) => {
 
   useEffect(() => {
     setParams({ externalCall: emptyExternalCall })
+    if (
+      displayedHook?.deployments?.cloner[chainId] &&
+      !displayedHook?.deployments?.factory[chainId]
+    ) {
+      setClonePurchaseHook(true)
+    } else {
+      setClonePurchaseHook(false)
+    }
   }, [selectedHook])
 
   return (
@@ -32,11 +47,13 @@ const AddProductFormExternal = ({ params, setParams }: Props) => {
       </p>
       <div className="space-y-3">
         {defaultPurchaseHooks.map((hook, i) => {
-          const { label, factoryAddresses } = hook
+          const { label, deployments } = hook
           const isActive = selectedHook == i
 
           return (
-            (!factoryAddresses || factoryAddresses[chainId]) && (
+            (!deployments ||
+              deployments.cloner[chainId] ||
+              deployments.factory[chainId]) && (
               <div
                 key={i}
                 onClick={() =>
@@ -53,13 +70,18 @@ const AddProductFormExternal = ({ params, setParams }: Props) => {
         <>
           <p className="pt-6 pb-3 font-semibold">{displayedHook.description}</p>
           <HookComponent params={params} setParams={setParams} />
-          {displayedHook.factoryAddresses &&
-            displayedHook.factoryAddresses[chainId] && (
-              <p className="pt-6 font-semibold text-yellow-600">
-                Deploying this purchase hook requires an additional on-chain
-                transaction
-              </p>
-            )}
+
+          <DeployCloneSwitch
+            deployments={displayedHook?.deployments}
+            clonePurchaseHook={clonePurchaseHook}
+            setClonePurchaseHook={setClonePurchaseHook}
+          />
+          {displayedHook.deployments && (
+            <p className="pt-6 font-semibold text-yellow-600">
+              Deploying this purchase hook requires an additional on-chain
+              transaction
+            </p>
+          )}
         </>
       )}
       <div>

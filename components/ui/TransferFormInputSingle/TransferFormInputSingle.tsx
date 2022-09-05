@@ -55,7 +55,7 @@ const TransferFormInputSingle = ({
           required
         />
       </div>
-      <div className="mb-2">
+      <div className="pt-2">
         <Input
           type="number"
           placeholder={`Up to ${formatNumber(ownedSlices) || "..."}`}

@@ -23,7 +23,7 @@ export interface SlicerInterface extends utils.Interface {
     "_addCurrencies(address[])": FunctionFragment;
     "_handle1155Purchase(address,address,uint256,uint256)": FunctionFragment;
     "_handle721Purchase(address,address,uint256)": FunctionFragment;
-    "_initialize(uint256,bool,bool,address,uint256,uint256,address[])": FunctionFragment;
+    "_initialize(uint256,uint8,address,uint256,uint256,address[])": FunctionFragment;
     "_releaseFromFundsModule(address,address)": FunctionFragment;
     "_releaseFromSliceCore(address,address,uint256)": FunctionFragment;
     "_setChildSlicer(uint256,bool)": FunctionFragment;
@@ -60,8 +60,7 @@ export interface SlicerInterface extends utils.Interface {
     functionFragment: "_initialize",
     values: [
       BigNumberish,
-      boolean,
-      boolean,
+      BigNumberish,
       string,
       BigNumberish,
       BigNumberish,
@@ -222,7 +221,6 @@ export interface SlicerInterface extends utils.Interface {
     "ERC1155BatchReceived(address,address,uint256[],uint256[])": EventFragment;
     "ERC1155Received(address,address,uint256,uint256)": EventFragment;
     "ERC721Received(address,address,uint256)": EventFragment;
-    "PaymentReceived(address,uint256)": EventFragment;
     "Released(address,address,uint256,uint256)": EventFragment;
   };
 
@@ -232,7 +230,6 @@ export interface SlicerInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ERC1155BatchReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ERC1155Received"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ERC721Received"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "PaymentReceived"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Released"): EventFragment;
 }
 
@@ -288,13 +285,6 @@ export type ERC721ReceivedEvent = TypedEvent<
 >;
 
 export type ERC721ReceivedEventFilter = TypedEventFilter<ERC721ReceivedEvent>;
-
-export type PaymentReceivedEvent = TypedEvent<
-  [string, BigNumber],
-  { from: string; amount: BigNumber }
->;
-
-export type PaymentReceivedEventFilter = TypedEventFilter<PaymentReceivedEvent>;
 
 export type ReleasedEvent = TypedEvent<
   [string, string, BigNumber, BigNumber],
@@ -358,8 +348,7 @@ export interface Slicer extends BaseContract {
 
     _initialize(
       tokenId_: BigNumberish,
-      isImmutable_: boolean,
-      isControlled_: boolean,
+      flags_: BigNumberish,
       slicerCreator_: string,
       minimumShares_: BigNumberish,
       releaseTimelock_: BigNumberish,
@@ -470,12 +459,23 @@ export interface Slicer extends BaseContract {
     slicerInfo(
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, string, boolean, boolean, string[]] & {
+      [
+        BigNumber,
+        BigNumber,
+        string,
+        boolean,
+        boolean,
+        boolean,
+        boolean,
+        string[]
+      ] & {
         tokenId: BigNumber;
         minimumShares: BigNumber;
         creator: string;
         isImmutable: boolean;
-        isControlled: boolean;
+        currenciesControlled: boolean;
+        productsControlled: boolean;
+        acceptsAllCurrencies: boolean;
         currencies: string[];
       }
     >;
@@ -514,8 +514,7 @@ export interface Slicer extends BaseContract {
 
   _initialize(
     tokenId_: BigNumberish,
-    isImmutable_: boolean,
-    isControlled_: boolean,
+    flags_: BigNumberish,
     slicerCreator_: string,
     minimumShares_: BigNumberish,
     releaseTimelock_: BigNumberish,
@@ -621,12 +620,23 @@ export interface Slicer extends BaseContract {
   slicerInfo(
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, string, boolean, boolean, string[]] & {
+    [
+      BigNumber,
+      BigNumber,
+      string,
+      boolean,
+      boolean,
+      boolean,
+      boolean,
+      string[]
+    ] & {
       tokenId: BigNumber;
       minimumShares: BigNumber;
       creator: string;
       isImmutable: boolean;
-      isControlled: boolean;
+      currenciesControlled: boolean;
+      productsControlled: boolean;
+      acceptsAllCurrencies: boolean;
       currencies: string[];
     }
   >;
@@ -665,8 +675,7 @@ export interface Slicer extends BaseContract {
 
     _initialize(
       tokenId_: BigNumberish,
-      isImmutable_: boolean,
-      isControlled_: boolean,
+      flags_: BigNumberish,
       slicerCreator_: string,
       minimumShares_: BigNumberish,
       releaseTimelock_: BigNumberish,
@@ -774,12 +783,23 @@ export interface Slicer extends BaseContract {
     slicerInfo(
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, string, boolean, boolean, string[]] & {
+      [
+        BigNumber,
+        BigNumber,
+        string,
+        boolean,
+        boolean,
+        boolean,
+        boolean,
+        string[]
+      ] & {
         tokenId: BigNumber;
         minimumShares: BigNumber;
         creator: string;
         isImmutable: boolean;
-        isControlled: boolean;
+        currenciesControlled: boolean;
+        productsControlled: boolean;
+        acceptsAllCurrencies: boolean;
         currencies: string[];
       }
     >;
@@ -855,15 +875,6 @@ export interface Slicer extends BaseContract {
       tokenId?: null
     ): ERC721ReceivedEventFilter;
 
-    "PaymentReceived(address,uint256)"(
-      from?: string | null,
-      amount?: null
-    ): PaymentReceivedEventFilter;
-    PaymentReceived(
-      from?: string | null,
-      amount?: null
-    ): PaymentReceivedEventFilter;
-
     "Released(address,address,uint256,uint256)"(
       payee?: string | null,
       currency?: string | null,
@@ -901,8 +912,7 @@ export interface Slicer extends BaseContract {
 
     _initialize(
       tokenId_: BigNumberish,
-      isImmutable_: boolean,
-      isControlled_: boolean,
+      flags_: BigNumberish,
       slicerCreator_: string,
       minimumShares_: BigNumberish,
       releaseTimelock_: BigNumberish,
@@ -1045,8 +1055,7 @@ export interface Slicer extends BaseContract {
 
     _initialize(
       tokenId_: BigNumberish,
-      isImmutable_: boolean,
-      isControlled_: boolean,
+      flags_: BigNumberish,
       slicerCreator_: string,
       minimumShares_: BigNumberish,
       releaseTimelock_: BigNumberish,

@@ -8,7 +8,7 @@ import { useAccount, useProvider } from "wagmi"
 export type Purchase = {
   slicerId: string
   productId: string
-  quantity: string
+  totalQuantity: string
   buyerCustomData: BytesLike
 }
 

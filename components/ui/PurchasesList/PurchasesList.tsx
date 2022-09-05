@@ -70,7 +70,9 @@ const PurchasesList = () => {
                 account={account}
                 slicerId={slicerId}
                 productId={productId}
-                name={name}
+                name={
+                  index != -1 ? name : `Product ${slicerId} / #${productId}`
+                }
                 hash={hash}
                 image={image}
                 uid={uid}
