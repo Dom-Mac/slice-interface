@@ -7,6 +7,7 @@ import { LogDescription } from "ethers/lib/utils"
 import Download from "@components/icons/Download"
 import { Currency } from "@utils/useCurrenciesData"
 import { darkColorList } from "@utils/colorList"
+import ethImg from "public/eth.svg"
 
 type Props = {
   currency: Currency
@@ -30,11 +31,12 @@ const ToWithdrawItem = ({
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
   const addr0 = ethers.constants.AddressZero
+  const address = currency.id.split("-")[1]
   const color =
     darkColorList[Math.floor(Math.random() * darkColorList.length)][1]
 
   const toWithdrawToken =
-    currency.id.split("-")[1] === addr0
+    address === addr0
       ? Number(ethers.utils.formatEther(currency?.toWithdraw || 0)).toFixed(6)
       : currency?.toWithdraw
   const toWithdrawUsd = currency.quote
@@ -74,9 +76,9 @@ const ToWithdrawItem = ({
           id={currency?.id.split("-")[1]}
         />
         <div className="w-6 mx-2 md:w-10 md:mx-4">
-          {currency?.logo ? (
+          {currency?.logo || address === addr0 ? (
             <Image
-              src={currency?.logo}
+              src={address === addr0 ? ethImg : currency?.logo}
               alt="Token logo"
               layout="responsive"
               width={24}
