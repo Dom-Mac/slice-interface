@@ -96,6 +96,7 @@ const getCurrenciesMetadata = async (currencies, dbCurrencies) => {
 }
 
 const getQuotes = async (metadata, currencies) => {
+  // metadata could be either dbCurrencies ot metadata taken from alchemy API
   const formattedData = {}
 
   const response = await fetcher("/api/getQuotes", {
@@ -104,14 +105,14 @@ const getQuotes = async (metadata, currencies) => {
     body: JSON.stringify({ tokens: metadata })
   })
 
-  Object.keys(response.data).forEach((key, index) => {
-    const results = response.data[key] // array of currencies with the same key
-    const currencyAddress = metadata?.address
-      ? metadata.address
-      : currencies[index].id.split("-")[1]
+  metadata.forEach((currencyMetadata, index) => {
+    const results = response.data[currencyMetadata.symbol] // array of currencies with the same key
+    const currencyAddress =
+      currencyMetadata?.address || currencies[index].id.split("-")[1]
+
     if (currencyAddress === ethers.constants.AddressZero) {
       // if it's ETH take the first value of the array
-      formattedData[key] = results[0]?.quote?.USD?.price
+      formattedData[currencyMetadata.symbol] = results[0]?.quote?.USD?.price
     } else {
       results.forEach((result) => {
         // check if the currency found by symbol has the correct address,
@@ -121,12 +122,21 @@ const getQuotes = async (metadata, currencies) => {
           currencyAddress.toLowerCase()
             ? result.quote?.USD.price
             : 0
-        formattedData[key] = price
+
+        formattedData[currencyMetadata.symbol] = price
       })
     }
   })
 
   return formattedData
+}
+
+const createOrUpdateCurrencies = (currencies) => {
+  fetcher("/api/currencies/createOrUpdate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ currencies: currencies })
+  })
 }
 
 export default function useCurrenciesData(currencies: Currency[]): Currency[] {
@@ -142,22 +152,20 @@ export default function useCurrenciesData(currencies: Currency[]): Currency[] {
 
     // Case in which all the requested currencies are known
     if (dbCurrencies.length === currencies.length) {
-      console.log("Case in which all the requested currencies are known")
       const dateNow = new Date()
       const minutesBetweenUpdates = 5
       // check if there are quotes to be updated
-      const quotesToBeUpdated = dbCurrencies.filter(
-        (currency) =>
+      const quotesToBeUpdated = dbCurrencies.filter((currency) => {
+        const lastUpdated = new Date(currency.updatedAt)
+        return (
           !currency.quote ||
-          Number(currency.updatedAt) <
+          lastUpdated.getTime() <
             Number(dateNow) - minutesBetweenUpdates * 60000
-      )
-      let quotes
+        )
+      })
+      let quotes = {}
       // if there are tokens to be updated, get quotes from coin market cap
       if (quotesToBeUpdated.length) {
-        console.log(
-          "Case in which all the requested currencies are known and quotes to be updated"
-        )
         quotes = await getQuotes(dbCurrencies, currencies)
       }
 
@@ -177,12 +185,16 @@ export default function useCurrenciesData(currencies: Currency[]): Currency[] {
             : dbCurrency.quote
         })
       })
+
+      if (quotesToBeUpdated.length) {
+        // CREATE OR UPDATE CURRENCIES
+        createOrUpdateCurrencies(formattedData)
+      }
     } else {
       // Case in which one or more currencies are unknown
       // so are needed metadata from alchemy and quotes from coin market cap
       const metadata = await getCurrenciesMetadata(currencies, dbCurrencies)
       const quotes = await getQuotes(metadata, currencies)
-      console.log("Case in which one or more currencies are unknown")
       if (Object.keys(quotes).length && metadata.length) {
         currencies?.forEach((currency, index) => {
           const currencyMetadata = metadata[index]
@@ -195,6 +207,9 @@ export default function useCurrenciesData(currencies: Currency[]): Currency[] {
           })
         })
       }
+
+      // CREATE OR UPDATE CURRENCIES
+      createOrUpdateCurrencies(formattedData)
     }
 
     setCurrenciesData(formattedData)
