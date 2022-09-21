@@ -33,6 +33,7 @@ development.
 - [Pinata](#Pinata)
 - [Web3Storage](#Web3Storage)
 - [Supabase](#Supabase)
+- [CoinMarketCap](#CoinMarketCap)
 
 > A shared staging environment has also been set up on https://dev.slice.so. The shared environment uses the same contracts and subgraphs as the ones used for local development, so the slicers and products created locally will also appear there.
 
@@ -104,6 +105,15 @@ Follow these steps to set up your db and storage:
    ```
 
 > The interface uses incremental static regeneration to populate the db, so once you start the app you will see any slicer that other devs have created in their own local environments, but without their images or metadata.
+
+#### CoinMarketCap
+
+Slice uses [CoinMarketCap](https://coinmarketcap.com/) API to get and store currencies prices.
+
+Follow these steps to create a Coin Market Cap API key
+
+1. Create or log into your account on [Web3Storage](https://coinmarketcap.com/api/) by clicking on **Login**
+2. Create an API token and copy it in **COIN_MARKET_CAP_KEY** in your `.env` file
 
 ### Usage
 
