@@ -1,5 +1,5 @@
 import { Withdraw, BatchWithdraw } from "@lib/handlers/chain"
-import { Currency } from "@utils/useTokensMetadata"
+import { Currency } from "@utils/useCurrenciesData"
 import { LogDescription } from "ethers/lib/utils"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useSigner } from "wagmi"
