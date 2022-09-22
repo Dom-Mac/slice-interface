@@ -6,6 +6,7 @@ import ShoppingBag from "@components/icons/ShoppingBag"
 import CarouselPayments from "@components/icons/CarouselPayments"
 import { Dispatch, SetStateAction } from "react"
 import { DropdownMenuElement } from ".."
+import Banknotes from "@components/icons/Banknotes"
 type Props = {
   showDropdown: boolean
   setShowDropdown: Dispatch<SetStateAction<boolean>>
@@ -26,9 +27,6 @@ function DropdownMenu({ showDropdown, setShowDropdown }: Props) {
   return (
     <div
       className={`z-20 absolute top-0 right-0 w-56 p-1.5 mt-20 border border-gray-200 space-y-1 bg-white rounded-md shadow-base transition-opacity duration-200 nightwind-prevent-block`}
-      // ${
-      //   showDropdown ? " opacity-100" : "-z-10 opacity-0"
-      // }
     >
       <DropdownMenuElement
         href="/profile"
@@ -40,21 +38,19 @@ function DropdownMenu({ showDropdown, setShowDropdown }: Props) {
             single={true}
           />
         }
-        label="Your slicers"
+        label="My slicers"
+        onClick={() => setShowDropdown(false)}
+      />
+      <DropdownMenuElement
+        href="/earnings"
+        image={<Banknotes className="w-5 h-5" />}
+        label="Earnings"
         onClick={() => setShowDropdown(false)}
       />
       <DropdownMenuElement
         href="/purchases"
-        image={<ShoppingBag className="w-5 h-5 text-blue-300" />}
+        image={<ShoppingBag strokeWidth="1.5" className="w-5 h-5" />}
         label="Purchases"
-        onClick={() => setShowDropdown(false)}
-      />
-      <DropdownMenuElement
-        href="/dashboard"
-        image={
-          <div className="w-5 h-5">{CarouselPayments("text-red-700")}</div>
-        }
-        label="Dashboard"
         onClick={() => setShowDropdown(false)}
       />
       <div className="xs:hidden">
