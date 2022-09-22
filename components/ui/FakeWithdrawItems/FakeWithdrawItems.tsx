@@ -21,7 +21,7 @@ const FakeWithdrawItems = () => {
           <Download className="h-6 text-gray-100 dark:text-gray-700 md:h-8 md:w-8" />
         </div>
       </div>
-      <div className="flex justify-between p-2 mb-4 border rounded-lg opacity-80 opacity- animate-pulse border-sky-400">
+      <div className="flex justify-between p-2 mb-4 border rounded-lg opacity-80 animate-pulse border-sky-400">
         <div className="flex items-center">
           <div className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded md:w-6 md:h-6 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></div>
           <div className="w-6 h-6 mx-2 bg-gray-100 rounded-full dark:bg-gray-700 md:w-10 md:h-10 md:mx-4"></div>
@@ -39,7 +39,7 @@ const FakeWithdrawItems = () => {
           <Download className="h-6 text-gray-100 dark:text-gray-700 md:h-8 md:w-8" />
         </div>
       </div>
-      <div className="flex justify-between p-2 mb-4 border rounded-lg opacity-70 opacity- animate-pulse border-sky-400">
+      <div className="flex justify-between p-2 mb-4 border rounded-lg opacity-70 animate-pulse border-sky-400">
         <div className="flex items-center">
           <div className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded md:w-6 md:h-6 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></div>
           <div className="w-6 h-6 mx-2 bg-gray-100 rounded-full dark:bg-gray-700 md:w-10 md:h-10 md:mx-4"></div>

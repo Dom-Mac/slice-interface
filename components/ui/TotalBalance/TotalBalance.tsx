@@ -12,7 +12,7 @@ const TotalBalance = ({ currencies }) => {
   let cashback = 0
 
   // TokensQuotes is the last state to be updated, if it is available all other states are available
-  if (currencies.length) {
+  if (currencies?.length) {
     currencies.forEach((currency) => {
       // If the currency has been withdrawn, add the amount to the total to withdraw
       if (currency.withdrawn > 0 && currency.quote) {
@@ -73,7 +73,8 @@ const TotalBalance = ({ currencies }) => {
             Total earned
           </p>
           <p className="flex overflow-hidden text-lg font-semibold md:text-4xl">
-            $ <span className="move-up">{totalEarned}</span>
+            ${" "}
+            <span className="move-up">{currencies ? totalEarned : "..."}</span>
           </p>
           {/* {cashback > 0 && (
             <p className="text-xs font-normal text-green-500">
@@ -86,7 +87,10 @@ const TotalBalance = ({ currencies }) => {
             To withdraw
           </p>
           <p className="flex overflow-hidden text-lg font-semibold md:text-4xl">
-            $ <span className="move-up">{totalToWithdraw}</span>
+            ${" "}
+            <span className="move-up">
+              {currencies ? totalToWithdraw : "..."}
+            </span>
           </p>
           {plusTokens > 0 && (
             <p className="text-xs font-normal text-green-500">

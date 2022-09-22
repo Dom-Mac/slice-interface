@@ -18,14 +18,14 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   const [selectedTokens, setSelectedTokens] = useState<string[]>([])
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
-  const currenciesToWithdraw = currencies.filter(
+  const currenciesToWithdraw = currencies?.filter(
     (currency) => Number(currency.toWithdraw) > 1
   )
 
   const handleSelectAll = () => {
     let addresses: string[] = []
     if (selectedTokens.length === 0) {
-      currencies.forEach((currency) => {
+      currencies?.forEach((currency) => {
         if (Number(currency.toWithdraw) > 0) {
           addresses.push(currency.id.split("-")[1])
         }
@@ -46,7 +46,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   }
 
   const withdrawAction = () => {
-    const toWithdrawAddresses = currenciesToWithdraw.map((currency) => {
+    const toWithdrawAddresses = currenciesToWithdraw?.map((currency) => {
       return currency.id.split("-")[1]
     })
 
@@ -107,57 +107,60 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   return (
     <div className="px-4 pb-4 -mb-10 pt-7 container-list md:px-0">
       <div className="absolute left-0 w-screen -z-10 bg-slate-800 rounded-t-2xl background-height"></div>
-      <div className="flex justify-between mt-2 md:mt-6 mb-9 ">
-        <p
-          className="self-end py-1 text-xs font-normal md:text-base text-slate-400"
-          onClick={handleSelectAll}
-        >
-          {selectedTokens.length === 0 ? "Select all" : "Deselect all"}
-        </p>
-        <div>
-          {/* TODO: What if message ? */}
-          {currenciesToWithdraw.length ? (
-            <BlockchainCall
-              transactionDescription={`Withdraw tokens`}
-              saEventName="withdraw_to_owner"
-              action={() => withdrawAction()}
-              success={success}
-              setSuccess={setSuccess}
-              setLogs={setLogs}
-              confetti={false}
-              label={
-                <p className="text-sm font-normal border-b border-black dark:border-yellow-400 md:text-base">
-                  {selectedTokens.length > 0
-                    ? "Widthraw selected"
-                    : "Widthraw all"}
-                </p>
-              }
-              isCustomButton={true}
-            />
-          ) : (
-            <div className="py-1 pt-[7px] md:pt-[4px]">
-              <p className="text-sm font-normal border-b border-black dark:border-yellow-400 md:text-base">
-                Widthraw all
-              </p>
+      <div className="flex justify-between h-12 mt-2 md:mt-6 mb-9 ">
+        {currenciesToWithdraw && currenciesToWithdraw.length != 0 && (
+          <>
+            <p
+              className="self-end py-1 text-xs font-normal md:text-base text-slate-400"
+              onClick={handleSelectAll}
+            >
+              {selectedTokens.length === 0 ? "Select all" : "Deselect all"}
+            </p>
+            <div>
+              {/* TODO: What if message ? */}
+              <BlockchainCall
+                transactionDescription={`Withdraw tokens`}
+                saEventName="withdraw_to_owner"
+                action={() => withdrawAction()}
+                success={success}
+                setSuccess={setSuccess}
+                setLogs={setLogs}
+                confetti={false}
+                label={
+                  <p className="text-sm font-normal border-b border-black dark:border-yellow-400 md:text-base">
+                    {selectedTokens.length > 0
+                      ? "Widthraw selected"
+                      : "Widthraw all"}
+                  </p>
+                }
+                isCustomButton={true}
+              />
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
-      {currenciesToWithdraw?.map((currency, index) => {
-        return (
-          <ToWithdrawItem
-            currency={currency}
-            currencies={currencies}
-            setCurrencies={setCurrencies}
-            account={account}
-            signer={signer}
-            isChecked={selectedTokens.includes(currency.id.split("-")[1])}
-            key={index}
-            handleSelected={handleSelected}
-          />
+      {currencies ? (
+        currenciesToWithdraw?.length ? (
+          currenciesToWithdraw.map((currency, index) => {
+            return (
+              <ToWithdrawItem
+                currency={currency}
+                currencies={currencies}
+                setCurrencies={setCurrencies}
+                account={account}
+                signer={signer}
+                isChecked={selectedTokens.includes(currency.id.split("-")[1])}
+                key={index}
+                handleSelected={handleSelected}
+              />
+            )
+          })
+        ) : (
+          <p className="text-lg">There are no currencies to withdraw</p>
         )
-      })}
-      {!currenciesToWithdraw.length && <FakeWithdrawItems />}
+      ) : (
+        <FakeWithdrawItems />
+      )}
     </div>
   )
 }

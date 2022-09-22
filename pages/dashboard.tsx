@@ -18,7 +18,7 @@ import useCurrenciesData, { Currency } from "@utils/useCurrenciesData"
 
 export default function Dashboard() {
   const { account } = useAppContext()
-  const [currencies, setCurrencies] = useState<Currency[]>([])
+  const [currencies, setCurrencies] = useState<Currency[]>()
 
   const tokensQuery = /* GraphQL */ `
       payee(id: "${account?.toLowerCase()}") {

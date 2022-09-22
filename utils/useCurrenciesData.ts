@@ -143,7 +143,7 @@ export default function useCurrenciesData(currencies: Currency[]): Currency[] {
   // Custom hook, takes as param a list of currencies from the subgraph
   // and ads symbol, name, logo and quote
 
-  const [currenciesData, setCurrenciesData] = useState<Currency[]>([])
+  const [currenciesData, setCurrenciesData] = useState<Currency[]>()
 
   const getData = async () => {
     const currenciesAddresses = currencies.map((c) => c.id.split("-")[1])
