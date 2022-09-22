@@ -180,12 +180,11 @@ const SlicerCard = ({
               {((Number(ethReleased) * (1000 - protocolFee)) / 1000).toFixed(4)}{" "}
               ETH
             </span>
-            ! 🎉
-            <br />
-            Visit{" "}
-            <Link href="/dashboard">
-              <a className="text-green-500 underline">your dashboard</a>
+            , check{" "}
+            <Link href="/earnings">
+              <a className="text-green-500 underline">your earnings</a>
             </Link>{" "}
+            to withdraw them!
           </p>
         )}
       </div>
