@@ -111,7 +111,7 @@ const AddProductFormGeneral = ({
 
       <MessageBlock msg={msg} />
       <div>
-        <hr className="w-20 mx-auto border-gray-300 my-14" />
+        <hr className="w-20 mx-auto my-16 border-gray-300" />
       </div>
     </>
   )

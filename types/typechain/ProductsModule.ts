@@ -149,7 +149,7 @@ export interface ProductsModuleInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "paused()": FunctionFragment;
     "payProducts(address,(uint128,uint32,address,uint32,bytes)[])": FunctionFragment;
-    "productPrice(uint256,uint256,address,uint256)": FunctionFragment;
+    "productPrice(uint256,uint256,address,uint256,address,bytes)": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "releaseEthToSlicer(uint256)": FunctionFragment;
     "removeProduct(uint256,uint256)": FunctionFragment;
@@ -194,7 +194,14 @@ export interface ProductsModuleInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "productPrice",
-    values: [BigNumberish, BigNumberish, string, BigNumberish]
+    values: [
+      BigNumberish,
+      BigNumberish,
+      string,
+      BigNumberish,
+      string,
+      BytesLike
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "proxiableUUID",
@@ -545,6 +552,8 @@ export interface ProductsModule extends BaseContract {
       productId: BigNumberish,
       currency: string,
       quantity: BigNumberish,
+      buyer: string,
+      data: BytesLike,
       overrides?: CallOverrides
     ): Promise<[PriceStructOutput] & { price: PriceStructOutput }>;
 
@@ -656,6 +665,8 @@ export interface ProductsModule extends BaseContract {
     productId: BigNumberish,
     currency: string,
     quantity: BigNumberish,
+    buyer: string,
+    data: BytesLike,
     overrides?: CallOverrides
   ): Promise<PriceStructOutput>;
 
@@ -765,6 +776,8 @@ export interface ProductsModule extends BaseContract {
       productId: BigNumberish,
       currency: string,
       quantity: BigNumberish,
+      buyer: string,
+      data: BytesLike,
       overrides?: CallOverrides
     ): Promise<PriceStructOutput>;
 
@@ -1006,6 +1019,8 @@ export interface ProductsModule extends BaseContract {
       productId: BigNumberish,
       currency: string,
       quantity: BigNumberish,
+      buyer: string,
+      data: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1116,6 +1131,8 @@ export interface ProductsModule extends BaseContract {
       productId: BigNumberish,
       currency: string,
       quantity: BigNumberish,
+      buyer: string,
+      data: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

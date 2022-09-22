@@ -14,13 +14,14 @@ const supabaseUpload = async (
   const { supabaseKey } = await fetcher("/api/supabase")
   const fileExt = newImage.file.name.split(".").pop()
   const randomString = Math.random().toString(36).slice(4)
-  const filename =
-    name
-      .replaceAll(
-        /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
-        ""
-      )
-      .trim() + `_${randomString}`
+
+  const nameArr = name.split("/")
+  const unformattedFilename = nameArr.pop()
+  nameArr.push(
+    unformattedFilename.replaceAll(/[^a-zA-Z0-9]/g, "").trim() +
+      `_${randomString}`
+  )
+  const filename = nameArr.join("/")
 
   let mainImage: File
   // IMAGE COMPRESSION

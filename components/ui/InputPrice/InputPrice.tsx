@@ -11,9 +11,11 @@ type Props = {
   loading?: boolean
   error?: boolean
   required?: boolean
+  disabled?: boolean
   label?: string
   actionLabel?: string
   marginLabel?: string
+  question?: JSX.Element
   action?: () => any
 }
 
@@ -25,9 +27,11 @@ const InputPrice = ({
   loading,
   error,
   required,
+  disabled,
   label,
   actionLabel,
   marginLabel,
+  question,
   action
 }: Props) => {
   const { data } = useSWR(
@@ -58,7 +62,7 @@ const InputPrice = ({
   }, [isEth])
 
   return (
-    <div className="w-full max-w-sm mx-auto space-y-6">
+    <div className="w-full mx-auto space-y-6">
       <div className="relative">
         {action ? (
           <Input
@@ -76,6 +80,8 @@ const InputPrice = ({
             loading={loading}
             error={error}
             required={required}
+            disabled={disabled}
+            question={question}
           />
         ) : (
           <Input
@@ -88,28 +94,31 @@ const InputPrice = ({
             prefixAction={() => setIsEth((isEth) => !isEth)}
             value={isEth ? ethValue || "" : usdValue || ""}
             onChange={handleChange}
-            disabled={loading}
+            disabled={disabled}
             error={error}
             required={required}
+            question={question}
           />
         )}
-        <div
-          className={`absolute top-0 right-0 flex items-center h-full pb-0.5 ${
-            marginLabel || "mr-8"
-          }
-          ${label ? "pt-7" : ""}`}
-        >
-          <p className="text-sm text-gray-600">
-            {destinationCurrency}{" "}
-            {isEth
-              ? usdValue
-                ? Math.floor(usdValue * 100) / 100
-                : 0
-              : ethValue
-              ? Math.floor(ethValue * 10000) / 10000
-              : 0}
-          </p>
-        </div>
+        {ethValue != 0 && (
+          <div
+            className={`absolute top-0 right-0 flex items-center h-full pb-0.5 ${
+              marginLabel || "mr-8"
+            }
+          ${label ? (question ? "pt-11" : "pt-7") : ""}`}
+          >
+            <p className="text-sm text-gray-600">
+              {destinationCurrency}{" "}
+              {isEth
+                ? usdValue
+                  ? Math.floor(usdValue * 100) / 100
+                  : 0
+                : ethValue
+                ? Math.floor(ethValue * 10000) / 10000
+                : 0}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

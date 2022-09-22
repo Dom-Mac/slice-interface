@@ -49,7 +49,7 @@ export const updatePurchases = (
   cookieCart.map((p) => {
     const index = purchases.findIndex(
       (purchase) =>
-        purchase.slicerId == p.slicerId &&
+        Number(purchase.slicerId) == p.slicerId &&
         Number(purchase.productId) == p.productId
     )
     if (index != -1) {

@@ -21,8 +21,8 @@ const HomeSection = ({ text, image, side = "left" }: Props) => {
       >
         {text}
       </div>
-      <div className="flex-1 pt-16 md:pt-0">
-        <div className="flex items-center justify-center w-full h-full">
+      <div className="flex-1 pt-16 md:max-w-[420px] md:pt-0">
+        <div className="flex items-center justify-center w-full h-full ">
           <div className="cursor-pointer" onClick={() => shuffleColors()}>
             {image}
           </div>

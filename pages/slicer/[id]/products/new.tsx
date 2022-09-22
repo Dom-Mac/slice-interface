@@ -19,6 +19,7 @@ import { LogDescription } from "ethers/lib/utils"
 import getLog from "@utils/getLog"
 import Spinner from "@components/icons/Spinner"
 import { useAppContext } from "@components/ui/context"
+import { StrategyParams } from "@components/priceStrategies/strategies"
 
 export default function NewProduct() {
   const { setModalView } = useAppContext()
@@ -28,6 +29,7 @@ export default function NewProduct() {
   const [uploadStep, setUploadStep] = useState(0)
   const [uploadPct, setUploadPct] = useState(0)
   const [cloneAddress, setCloneAddress] = useState("")
+  const [priceParams, setPriceParams] = useState<StrategyParams>()
   const [success, setSuccess] = useState(false)
   const [logs, setLogs] = useState<LogDescription[]>()
   const eventLog = getLog(logs, "ProductAdded")
@@ -38,7 +40,13 @@ export default function NewProduct() {
       setModalView({
         cross: false,
         name: `CREATE_PRODUCT_VIEW`,
-        params: { uploadStep, uploadPct, setModalView, cloneAddress }
+        params: {
+          uploadStep,
+          uploadPct,
+          setModalView,
+          cloneAddress,
+          strategyLabel: priceParams?.label
+        }
       })
     }
   }, [loading, uploadStep])
@@ -91,6 +99,8 @@ export default function NewProduct() {
                 setSuccess={setSuccess}
                 setLogs={setLogs}
                 setCloneAddress={setCloneAddress}
+                priceParams={priceParams}
+                setPriceParams={setPriceParams}
               />
             </main>
           ) : (

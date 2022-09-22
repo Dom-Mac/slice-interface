@@ -6,6 +6,7 @@ import { Question } from ".."
 export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   className?: string
   label?: string
+  helpText?: string
   prefix?: string
   after?: string
   error?: boolean
@@ -24,6 +25,7 @@ const Input: React.FC<Props> = (props) => {
   const {
     className,
     label,
+    helpText,
     prefix = "",
     after,
     children,
@@ -41,7 +43,7 @@ const Input: React.FC<Props> = (props) => {
     ...rest
   } = props
 
-  const rootClassName = `peer py-2 pl-5 w-full appearance-none transition-all duration-150 rounded-t-sm ${
+  const rootClassName = `peer py-2 pl-5 w-full appearance-none rounded-t-sm ${
     !prefix && !error ? "shadow-light-focusable" : ""
   } ease-in-out pr-3 border-t-0 border-r-0 border-l-0 border-b-[3px] focus:outline-none ${className} ${
     error
@@ -59,19 +61,24 @@ const Input: React.FC<Props> = (props) => {
   }
 
   return (
-    <label>
+    <label className="text-left">
       {label && (
         <>
-          <div className="relative flex items-center pb-2">
-            <p
-              className={`text-sm font-semibold text-left pr-1 ${
-                inverted ? "text-gray-200" : "text-gray-700"
-              }`}
-            >
-              {label}
-            </p>
-            {question && (
-              <Question position={questionPosition} text={question} />
+          <div className="pb-2">
+            <div className="relative flex items-center">
+              <p
+                className={`text-sm font-semibold pr-1 ${
+                  inverted ? "text-gray-200" : "text-gray-700"
+                }`}
+              >
+                {label}
+              </p>
+              {question && (
+                <Question position={questionPosition} text={question} />
+              )}
+            </div>
+            {helpText && (
+              <p className="pb-2 text-sm text-gray-600">{helpText}</p>
             )}
           </div>
         </>
@@ -83,7 +90,7 @@ const Input: React.FC<Props> = (props) => {
       >
         {onClick && (
           <div
-            className={`relative text-sm font-medium group flex items-center justify-center px-5 transition-colors duration-150 text-white nightwind-prevent ${
+            className={`relative text-sm font-medium group flex items-center justify-center px-5 text-white nightwind-prevent ${
               error
                 ? "cursor-pointer shadow-error bg-red-500"
                 : `bg-blue-600 ${
@@ -126,7 +133,7 @@ const Input: React.FC<Props> = (props) => {
         ></input>
         {prefix && (
           <div
-            className={`flex transition duration-150 items-center justify-center px-5 text-gray-600 bg-gray-200 dark:bg-gray-700 border-b-[3px]  ${
+            className={`flex items-center justify-center px-5 text-gray-600 bg-gray-200 dark:bg-gray-700 border-b-[3px] ${
               error
                 ? "border-red-400 peer-focus:border-red-400 dark:peer-focus:border-red-500 shadow-error"
                 : !disabled && !loading

@@ -3,14 +3,14 @@ import { CardText, DeployCloneSwitch } from "../"
 import {
   defaultPurchaseHooks,
   emptyExternalCall,
-  Params
+  HookParams
 } from "@components/hooks/purchaseHooks"
 
 type Props = {
   clonePurchaseHook: boolean
   setClonePurchaseHook: Dispatch<SetStateAction<boolean>>
-  params: Params
-  setParams: Dispatch<SetStateAction<Params>>
+  params: HookParams
+  setParams: Dispatch<SetStateAction<HookParams>>
 }
 
 const AddProductFormExternal = ({
@@ -85,7 +85,7 @@ const AddProductFormExternal = ({
         </>
       )}
       <div>
-        <hr className="w-20 mx-auto border-gray-300 my-14" />
+        <hr className="w-20 mx-auto border-gray-300 my-16" />
       </div>
     </>
   )

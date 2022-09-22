@@ -143,37 +143,37 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
           setIsImmutable={setIsImmutable}
           setIsCreatorMetadata={setIsCreatorMetadata}
         />
-        <div className="py-8 sm:px-6 ">
+        <div className="py-8 space-y-4 text-yellow-600 sm:px-6">
           {totalShares > 4000000000 && (
-            <p className="pt-4 text-red-500">
-              <strong className="text-yellow-600">Note:</strong> you can create
-              slicers with up to 4 Billion total slices.
+            <p>
+              <strong>Note:</strong> you can create slicers with up to 4 Billion
+              total slices.
             </p>
           )}
           {totalShares === 1 && (
-            <p className="pt-4">
-              <strong className="text-yellow-600">Note:</strong> you are about
-              to create a non-fractionalized Slicer. That means that there can
-              only be a single owner at any given time.
+            <p>
+              <strong>Note:</strong> you are about to create a
+              non-fractionalized Slicer. That means that there can only be a
+              single owner at any given time.
             </p>
           )}
           {minimumShares != 0 && totalShares == minimumShares && (
-            <p className="pt-4">
-              <strong className="text-yellow-600">Note:</strong> a user would
-              need to own all of the slices to add products or change metadata
-              of this slicer. Superowner slices cannot be changed later, so make
-              sure this is the desired behaviour.
+            <p>
+              <strong>Note:</strong> a user would need to own all of the slices
+              to add products or change metadata of this slicer. Superowner
+              slices cannot be changed later, so make sure this is the desired
+              behaviour.
             </p>
           )}
-          <p className="pt-4">
-            <strong className="text-yellow-600">Note:</strong> superowner slices
-            and total slices cannot be changed later.
+          <p>
+            <strong>Note:</strong> superowner slices and total slices cannot be
+            changed later.
           </p>
           {process.env.NEXT_PUBLIC_CHAIN_ID === "4" && (
-            <p className="pt-4">
-              <strong className="text-yellow-600">Note:</strong> this version of
-              Slice runs on Rinkeby Testnet, so it does not use real ETH. You
-              can get some ETH on Rinkeby{" "}
+            <p>
+              <strong>Note:</strong> this version of Slice runs on Rinkeby
+              Testnet, so it does not use real ETH. You can get some ETH on
+              Rinkeby{" "}
               <a
                 href="https://rinkebyfaucet.com/"
                 target="_blank"

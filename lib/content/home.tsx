@@ -14,9 +14,9 @@ export const section1 = (
       <DoubleText logoText="slices 🍰" size="text-normal" inactive />
     </p>
     <p>
-      At the same time each slicer is a{" "}
-      <b>decentralized store from where owners can sell anything</b>, enabling
-      trustless commerce at the blockchain layer.
+      Each slicer also provides a{" "}
+      <b>decentralized storefront from where owners can sell anything</b>,
+      enabling trustless commerce at the blockchain layer.
     </p>
   </>
 )
@@ -24,18 +24,21 @@ export const section1 = (
 export const section2 = (
   <>
     <h1>
-      <DoubleText inactive logoText="Dynamic ownership" size="text-normal" />
+      <DoubleText
+        inactive
+        logoText="Split payments, dynamically"
+        size="text-normal"
+      />
     </h1>
     <p>
       Slices are ERC1155{" "}
       <DoubleText inactive logoText="Semi-Fungible Tokens" size="text-normal" />{" "}
-      (fractionalized NFTs) that represent ownership over a slicer and its
-      earnings, much like{" "}
+      which represent ownership over a slicer and its earnings. Much like{" "}
       <DoubleText inactive logoText="tradable royalties" size="text-normal" />.
     </p>
     <p>
-      <b>Owners can transfer/sell slices anytime</b> (even on NFT marketplaces)
-      and any subsequent payment will be split accordingly.
+      <b>Owners can transfer or sell slices</b>, even on NFT marketplaces, and
+      future payments will be split based on the new slice distribution.
     </p>
   </>
 )
@@ -43,17 +46,20 @@ export const section2 = (
 export const section3 = (
   <>
     <h1>
-      <DoubleText inactive logoText="Sell anything on" size="text-normal" />{" "}
-      <DoubleText inactive logoText="d-stores" size="text-normal" />
+      <DoubleText
+        inactive
+        logoText="Sell anything, on-chain"
+        size="text-normal"
+      />
     </h1>
     <p>
-      Each slicer comes with its own{" "}
+      Each slicer comes with a{" "}
       <b>decentralized store that can sell anything and accept any currency</b>.
     </p>
     <p>
-      Tickets for events, physical items, merch, digital files, professional
-      services, NFTs, handle allowlists, even interact with other contracts. The
-      best part? <b>It&apos;s all on-chain.</b>
+      NFTs, event tickets, physical and digital items, merch, services,
+      allowlisted drops, or interact with other protocols.{" "}
+      <b>Fully on-chain.</b>
     </p>
     <Link href="/slice">
       <a className="inline-flex items-center group highlight">

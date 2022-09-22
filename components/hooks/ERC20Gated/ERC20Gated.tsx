@@ -1,7 +1,12 @@
 import { Input, InputAddress } from "@components/ui"
 import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
-import { defaultExternalCall, Hook, HookProps } from "../purchaseHooks"
+import {
+  defaultExternalCall,
+  emptyExternalCall,
+  Hook,
+  HookProps
+} from "../purchaseHooks"
 
 import clonerInterface from "./abi/cloner.json"
 import factoryInterface from "./abi/factory.json"
@@ -18,17 +23,23 @@ const Component = ({ setParams }: HookProps) => {
   const [gateAmount, setGateAmount] = useState(0)
 
   useEffect(() => {
-    setParams({
-      externalCall: defaultExternalCall,
-      deploy: {
-        deployments,
-        abi: {
-          clonerInterface: clonerInterface.abi,
-          factoryInterface: factoryInterface.abi
-        },
-        args: [address, BigNumber.from(10).pow(18).mul(gateAmount)]
-      }
-    })
+    if (gateAmount) {
+      setParams({
+        externalCall: defaultExternalCall,
+        deploy: {
+          deployments,
+          abi: {
+            clonerInterface: clonerInterface.abi,
+            factoryInterface: factoryInterface.abi
+          },
+          args: [address, BigNumber.from(10).pow(18).mul(gateAmount)]
+        }
+      })
+    } else {
+      setParams({
+        externalCall: emptyExternalCall
+      })
+    }
   }, [address, gateAmount])
 
   return (
@@ -48,6 +59,7 @@ const Component = ({ setParams }: HookProps) => {
         <Input
           type="number"
           label="Token gate amount (mul by 10^18)"
+          min={0}
           value={gateAmount}
           onChange={setGateAmount}
           required

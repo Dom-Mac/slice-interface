@@ -14,8 +14,20 @@ import calculateRoot from "@utils/calculateRoot"
 
 const label = "Existing hook"
 
-const description =
-  "Send ETH to an external address and/or execute on-chain logic by linking it to an existing hook."
+const description = (
+  <>
+    Send ETH and/or execute on-chain logic on an existing hook inheriting{" "}
+    <a
+      className="font-bold highlight"
+      href="https://github.com/slice-so/contracts-purchasable-template/blob/master/contracts/extensions/Purchasable/SlicerPurchasable.sol"
+      target="_blank"
+      rel="noreferrer"
+    >
+      SlicerPurchasable
+    </a>
+    .
+  </>
+)
 
 const Component = ({ setParams }: HookProps) => {
   const [allowedAddresses, setAllowedAddresses] = useState([])
@@ -116,6 +128,7 @@ const Component = ({ setParams }: HookProps) => {
       <div>
         <InputAddress
           label="External address"
+          placeholder="0x…"
           address={address}
           onChange={setAddress}
           required={isPayable || isContractCall}

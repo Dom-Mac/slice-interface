@@ -76,7 +76,7 @@ const SlicersGrid = ({ data }: Props) => {
         setShowCollectibles={setShowCollectibles}
       />
       {filteredData.length != 0 ? (
-        <div className="grid items-center justify-center grid-cols-1 gap-2 max-w-[400px] gap-y-6 sm:gap-6 lg:gap-8 sm:max-w-[550px] mx-auto sm:grid-cols-2 md:max-w-none md:grid-cols-3 my-14">
+        <div className="grid items-center justify-center grid-cols-1 gap-2 max-w-[400px] gap-y-6 sm:gap-6 lg:gap-8 sm:max-w-[550px] mx-auto sm:grid-cols-2 md:max-w-none md:grid-cols-3 my-16">
           {[...Array(iterator)].map((el, key) => {
             const slicerData = filteredData[key]
             const { id, name, tags, image, isImmutable } = slicerData

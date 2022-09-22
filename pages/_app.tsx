@@ -24,7 +24,7 @@ const defaultChains =
     : [chain.rinkeby, chain.mainnet]
 
 const { chains, provider } = configureChains(defaultChains, [
-  alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }),
+  alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
   publicProvider()
 ])
 

@@ -70,7 +70,7 @@ const AddProductFormPurchases = ({
       />
 
       <div>
-        <hr className="w-20 mx-auto border-gray-300 my-14" />
+        <hr className="w-20 mx-auto border-gray-300 my-16" />
       </div>
       <h2 className="pb-6">Encrypted notes & files</h2>
       <p className="pb-3">

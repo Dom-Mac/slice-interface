@@ -1,5 +1,6 @@
 import { ReducedShortcode } from "@utils/useDecodeShortcode"
 import { useRouter } from "next/dist/client/router"
+import { BlockchainProduct } from "pages/slicer/[id]"
 import { useEffect, useState } from "react"
 import { ProductsGrid } from ".."
 import Button from "../Button"
@@ -33,7 +34,7 @@ type Props = {
   slicerId: string
   slicerAddress: string
   products: any
-  blockchainProducts: any
+  blockchainProducts: BlockchainProduct[]
   editMode: boolean
 }
 
@@ -90,7 +91,7 @@ const SlicerProducts = ({
       productsToShow?.filter(
         (product: Product) =>
           !blockchainProducts?.find(
-            (p) => p.id.split("-").pop() == product?.productId
+            (p) => Number(p.id.split("-").pop()) == product?.productId
           )
       ).length != 0
     )
@@ -155,6 +156,6 @@ const SlicerProducts = ({
 
 export default SlicerProducts
 
-// TODO: Make pendingSlicer section appear only if 15 minutes have elapsed
+// TODO: Make pendingSlicer section appear only if 15 minutes have elapsed (??)
 
-// TODO: Detect removed products for refresh/reload button
+// TODO: Detect removed products for refresh/reload button (already done??)

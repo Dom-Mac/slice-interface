@@ -114,23 +114,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           })
         }
         if (stats !== "false") {
-          const { data } = await client.query({
-            query: gql`
-              query Slicers {
-                slicer(id: "${hexId}") {
-                  ethReceived
-                }
-              }
-            `
-          })
-
-          const totalReceived = getEthFromWei(data.slicer.ethReceived, true)
-
-          slicerInfo.attributes.push({
-            display_type: "number",
-            trait_type: "ETH Received",
-            value: totalReceived || "0"
-          })
+          // const { data } = await client.query({
+          //   query: gql`
+          //     query Slicers {
+          //       slicer(id: "${hexId}") {
+          //         ethReceived
+          //       }
+          //     }
+          //   `
+          // })
+          // // TODO: Switch this query from subgraph to Alchemy tokenAPI
+          // const totalReceived = getEthFromWei(data.slicer.ethReceived, true)
+          // slicerInfo.attributes.push({
+          //   display_type: "number",
+          //   trait_type: "ETH Received",
+          //   value: totalReceived || "0"
+          // })
         }
       } else {
         slicerInfo = {

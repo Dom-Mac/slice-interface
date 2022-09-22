@@ -24,6 +24,8 @@ import Share from "@components/icons/Share"
 import { domain } from "@components/common/Head"
 import copyText from "@utils/copyText"
 import useDecodeShortcode from "@utils/useDecodeShortcode"
+import Bolt from "@components/icons/Bolt"
+import { strategiesList } from "@components/priceStrategies/strategies"
 
 export type View = {
   name: ViewNames
@@ -211,8 +213,9 @@ export const CREATE_PRODUCT_CONFIRM_VIEW = (params: any) => {
 }
 
 export const CREATE_PRODUCT_VIEW = (params: any) => {
-  const { uploadStep, uploadPct, setModalView, cloneAddress } = params
-  const processing = uploadStep !== 9
+  const { uploadStep, uploadPct, setModalView, cloneAddress, strategyLabel } =
+    params
+  const processing = uploadStep !== 10
 
   let uploadState: string
   switch (uploadStep) {
@@ -238,15 +241,18 @@ export const CREATE_PRODUCT_VIEW = (params: any) => {
       uploadState = "Transaction in progress ..."
       break
     case 8:
-      uploadState = "Reverting"
+      uploadState = `Configuring ${strategyLabel} ...`
       break
     case 9:
-      uploadState = "Done, reverted!"
+      uploadState = "Reverting"
       break
     case 10:
-      uploadState = "Finalizing"
+      uploadState = "Done, reverted!"
       break
     case 11:
+      uploadState = "Finalizing"
+      break
+    case 12:
       uploadState = "Almost done"
       break
   }
@@ -289,23 +295,29 @@ export const CREATE_PRODUCT_VIEW = (params: any) => {
         />
         <LoadingStep
           nullCondition={uploadStep < 7}
-          initCondition={processing}
+          initCondition={strategyLabel ? uploadStep < 8 : processing}
           uploadState={uploadState}
           waitingState="Blockchain interaction"
+          endState={strategyLabel && "Done"}
         />
+        {strategyLabel && (
+          <LoadingStep
+            nullCondition={uploadStep < 8}
+            initCondition={processing}
+            uploadState={uploadState}
+            waitingState="Pricing strategy"
+          />
+        )}
       </div>
       <div className="pt-10">
-        {uploadStep === 9 ? (
+        {uploadStep === 10 ? (
           <Button
             label={"Go back to product"}
             onClick={() => setModalView({ name: "" })}
           />
         ) : (
-          <p className="max-w-sm mx-auto text-sm">
-            To make the product immediately appear on the website{" "}
-            <b className="text-yellow-600">
-              do not leave this page until the process has completed
-            </b>
+          <p className="max-w-sm mx-auto text-sm font-bold text-yellow-600">
+            Do not leave this page until the process has completed
           </p>
         )}
       </div>
@@ -343,7 +355,10 @@ export const PRODUCT_VIEW = (params: any) => {
     editMode,
     purchasedQuantity,
     availabilityColor,
-    preview
+    preview,
+    externalAddress,
+    externalPrices,
+    isCustomPriced
   } = params
 
   const [isCopied, setIsCopied] = useState(false)
@@ -356,6 +371,12 @@ export const PRODUCT_VIEW = (params: any) => {
     (el) => purchaseInfo[el] == true
   )
   const purchaseEl = purchaseElArray.join(", ")
+
+  const strategy = Object.values(strategiesList).find(
+    (val) =>
+      String(val.deployments[process.env.NEXT_PUBLIC_CHAIN_ID]).toLowerCase() ==
+      externalAddress
+  )
 
   useEffect(() => {
     saEvent("product_view_open_modal")
@@ -397,7 +418,7 @@ export const PRODUCT_VIEW = (params: any) => {
             content: (
               <>
                 <p className="mr-2 text-indigo-600">
-                  {formatNumber(totalPurchases)}
+                  {totalPurchases ? formatNumber(totalPurchases) : 0}
                 </p>
                 <ShoppingBag className="w-[18px] h-[18px] text-indigo-600" />
               </>
@@ -406,12 +427,20 @@ export const PRODUCT_VIEW = (params: any) => {
           topRight={{
             title: "Product price",
             content: (
-              <p className="text-sm font-medium text-black">
-                {productPrice.usd}
-              </p>
+              <div className="flex items-center justify-center">
+                {isCustomPriced && (
+                  <div className="w-5 h-5 mr-2 -ml-1 text-yellow-500 animate-pulse">
+                    <Bolt />
+                  </div>
+                )}
+                <p className="text-sm font-medium text-black">
+                  {productPrice.usd}
+                </p>
+              </div>
             )
           }}
           bottomLeft={
+            extAddress &&
             !isInfinite && {
               title: "Available units",
               content: (
@@ -430,35 +459,51 @@ export const PRODUCT_VIEW = (params: any) => {
             <MarkdownBlock content={description} />
           </div>
         </div>
-        {extAddress && !editMode && (
-          <div className="mx-auto cursor-pointer w-60">
-            <CartButton
-              slicerId={slicerId}
-              productCart={productCart}
-              slicerAddress={slicerAddress}
-              productId={productId}
-              price={price}
-              isUSD={isUSD}
-              extAddress={extAddress}
-              extCallValue={extValue}
-              extCheckSig={extCheckSig}
-              name={name}
-              image={image}
-              maxUnits={Number(maxUnits)}
-              availableUnits={isInfinite ? -1 : availableUnits}
-              purchasedQuantity={purchasedQuantity}
-              uid={uid}
-              creator={creator}
-              texts={texts}
-              allowedAddresses={allowedAddresses}
-              labelAdd={`Get it for ${productPrice.eth}`}
-              labelRemove={productPrice.eth != "free" && productPrice.eth}
-              preview={preview}
-              shortcodes={purchaseInfo?.shortcodes}
-              dbId={dbId}
-            />
-          </div>
-        )}
+        {extAddress &&
+          (!isCustomPriced ||
+            (externalPrices[slicerId] &&
+              externalPrices[slicerId][productId])) &&
+          !editMode && (
+            <div className="mx-auto cursor-pointer w-60">
+              <CartButton
+                slicerId={slicerId}
+                productCart={productCart}
+                slicerAddress={slicerAddress}
+                productId={productId}
+                price={
+                  isCustomPriced &&
+                  externalPrices[slicerId] &&
+                  externalPrices[slicerId][productId]
+                    ? parseInt(
+                        externalPrices[slicerId][productId][
+                          ethers.constants.AddressZero
+                        ].ethPrice,
+                        16
+                      ).toString()
+                    : price
+                }
+                isUSD={isCustomPriced ? false : isUSD}
+                extAddress={extAddress}
+                extCallValue={extValue}
+                extCheckSig={extCheckSig}
+                name={name}
+                image={image}
+                maxUnits={Number(maxUnits)}
+                availableUnits={isInfinite ? -1 : availableUnits}
+                purchasedQuantity={purchasedQuantity}
+                uid={uid}
+                creator={creator}
+                texts={texts}
+                allowedAddresses={allowedAddresses}
+                labelAdd={`Get it for ${productPrice.eth}`}
+                labelRemove={productPrice.eth != "free" && productPrice.eth}
+                preview={preview}
+                shortcodes={purchaseInfo?.shortcodes}
+                dbId={dbId}
+                externalAddress={externalAddress}
+              />
+            </div>
+          )}
         {!editMode &&
           productPrice.eth != "free" &&
           Number(maxUnits) != 1 &&
@@ -471,6 +516,27 @@ export const PRODUCT_VIEW = (params: any) => {
                     1000
                 ) / 1000
               }`}
+            </p>
+          )}
+        {isCustomPriced &&
+          externalPrices[slicerId] &&
+          externalPrices[slicerId][productId] && (
+            <p className="pt-6 mx-auto text-sm text-center">
+              Price dynamically calculated from{" "}
+              <a
+                className="font-bold highlight"
+                href={`https://${
+                  process.env.NEXT_PUBLIC_CHAIN_ID === "4" ? "rinkeby." : ""
+                }etherscan.io/address/${externalAddress}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {externalAddress.replace(
+                  externalAddress.substring(5, externalAddress.length - 3),
+                  `\xa0\xa0\xa0\xa0\xa0\xa0`
+                )}
+              </a>{" "}
+              {strategy && `(${strategy.label})`}
             </p>
           )}
         {extAddress &&
@@ -633,6 +699,5 @@ export const FINGERPRINTING_VIEW = () => {
     </>
   )
 }
-// TODO: Do not decrypt thankMessage and instructions
 
 // Todo: Add 'download all' button

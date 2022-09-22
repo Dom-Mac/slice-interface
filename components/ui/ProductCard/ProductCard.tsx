@@ -1,28 +1,29 @@
-import { domain } from "@components/common/Head"
+import Bolt from "@components/icons/Bolt"
 import ShoppingBag from "@components/icons/ShoppingBag"
 import Units from "@components/icons/Units"
 import { ProductCart } from "@lib/handleUpdateCart"
 import formatNumber from "@utils/formatNumber"
 import { ethers, utils } from "ethers"
-import { NextSeo } from "next-seo"
-import Head from "next/head"
+import { BlockchainProduct } from "pages/slicer/[id]"
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie"
 import { Card, CartButton } from ".."
 import { Purchase, useAppContext } from "../context"
+import { ExternalPrices } from "../ProductsGrid/ProductsGrid"
 import { Product } from "../SlicerProducts/SlicerProducts"
 
 type Props = {
   slicerId: number
   slicerAddress: string
   product: Product
-  chainInfo: any
+  chainInfo: BlockchainProduct
   ethUsd: {
     symbol: string
     price: string
   }
   editMode: boolean
   displayProduct: boolean
+  externalPrices: ExternalPrices
 }
 
 const ProductCard = ({
@@ -32,7 +33,8 @@ const ProductCard = ({
   chainInfo,
   ethUsd,
   editMode,
-  displayProduct
+  displayProduct,
+  externalPrices
 }: Props) => {
   const [cookies] = useCookies(["cart"])
   const { setModalView, purchases } = useAppContext()
@@ -70,21 +72,34 @@ const ProductCard = ({
   const ethPrice = prices?.find(
     (price) => price.currency.id == ethers.constants.AddressZero
   )
-  const isUSD = ethPrice?.dynamicPricing
   const price = ethPrice?.price
+  const isUSD = ethPrice?.dynamicPricing
+  const externalAddress = ethPrice?.externalAddress
+  const isCustomPriced =
+    externalAddress &&
+    externalAddress != "0x00000000" &&
+    externalAddress != ethers.constants.AddressZero
 
   // TODO Refactor this to handle  multiple currencies
 
   const isInfinite = chainInfo?.isInfinite
   const maxUnits = chainInfo?.maxUnitsPerBuyer
-  const availableUnits = chainInfo?.availableUnits
-  const totalPurchases = chainInfo?.totalPurchases
+  const availableUnits = Number(chainInfo?.availableUnits)
+  const totalPurchases = Number(chainInfo?.totalPurchases)
   const extAddress = chainInfo?.extAddress
   const extValue = chainInfo?.extValue
   const extCheckSig = chainInfo?.extCheckSig
   const extExecSig = chainInfo?.extExecSig
 
-  const totalPrice = price && extValue && Number(price) + Number(extValue)
+  const totalPrice = isCustomPriced
+    ? externalPrices[slicerId] &&
+      externalPrices[slicerId][productId] &&
+      parseInt(
+        externalPrices[slicerId][productId][ethers.constants.AddressZero]
+          .ethPrice,
+        16
+      ) + Number(extValue)
+    : (price ? Number(price) : 0) + (extValue ? Number(extValue) : 0)
   const externalCallEth = extValue && utils.formatEther(extValue)
   const externalCallUsd =
     externalCallEth && Number(externalCallEth) * Number(ethUsd?.price) * 100
@@ -94,18 +109,31 @@ const ProductCard = ({
   const [convertedEthUsd, setConvertedEthUsd] = useState(0)
   const [purchasedQuantity, setPurchasedQuantity] = useState(0)
 
+  const formattedEthPrice = totalPrice
+    ? `Ξ ${Math.floor(totalPrice / 10 ** 14) / 10000}`
+    : "free"
+  const formattedUsdPrice = convertedEthUsd ? `$ ${convertedEthUsd}` : "$ 0"
+
   const productPrice = chainInfo
-    ? ethPrice && extValue
-      ? {
-          eth: `Ξ ${
-            isUSD ? convertedEthUsd : Math.floor(totalPrice / 10 ** 14) / 10000
-          }`,
-          usd: `$ ${
-            isUSD
-              ? formatNumber((Number(price) + externalCallUsd) / 100)
-              : convertedEthUsd
-          }`
-        }
+    ? ethPrice || extValue
+      ? isCustomPriced
+        ? externalPrices &&
+          externalPrices[slicerId] &&
+          externalPrices[slicerId][productId]
+          ? {
+              eth: formattedEthPrice,
+              usd: `$ ${convertedEthUsd}`
+            }
+          : {
+              eth: "Ξ ...",
+              usd: "$ ..."
+            }
+        : {
+            eth: isUSD ? `Ξ ${convertedEthUsd}` : formattedEthPrice,
+            usd: isUSD
+              ? `$ ${formatNumber((Number(price) + externalCallUsd) / 100)}`
+              : formattedUsdPrice
+          }
       : {
           eth: "free",
           usd: "$ 0"
@@ -114,6 +142,7 @@ const ProductCard = ({
         eth: "Ξ ...",
         usd: "$ ..."
       }
+
   const cookieCart: ProductCart[] = cookies?.cart
   const productCart: ProductCart = cookieCart?.find(
     (product) =>
@@ -171,7 +200,10 @@ const ProductCard = ({
         price,
         editMode,
         purchasedQuantity,
-        availabilityColor
+        availabilityColor,
+        externalAddress,
+        externalPrices,
+        isCustomPriced
       }
     })
   }
@@ -237,11 +269,9 @@ const ProductCard = ({
             title: "Purchases",
             content: (
               <>
-                {totalPurchases && (
-                  <p className="mr-2 text-indigo-600">
-                    {formatNumber(totalPurchases)}
-                  </p>
-                )}
+                <p className="mr-2 text-indigo-600">
+                  {totalPurchases ? formatNumber(totalPurchases) : 0}
+                </p>
                 <ShoppingBag className="w-[18px] h-[18px] text-indigo-600" />
               </>
             )
@@ -249,13 +279,20 @@ const ProductCard = ({
           topRight={{
             title: "Product price",
             content: (
-              <p
-                className={`text-sm capitalize font-medium text-black${
-                  chainInfo && !ethPrice ? " text-green-600" : ""
-                }`}
-              >
-                {productPrice.eth}
-              </p>
+              <div className="flex items-center justify-center">
+                {isCustomPriced && (
+                  <div className="w-5 h-5 mr-2 -ml-1 text-yellow-500 animate-pulse">
+                    <Bolt />
+                  </div>
+                )}
+                <p
+                  className={`text-sm capitalize font-medium text-black${
+                    chainInfo && !totalPrice ? " text-green-600" : ""
+                  }`}
+                >
+                  {productPrice.eth}
+                </p>
+              </div>
             )
           }}
           bottomLeft={
@@ -288,32 +325,48 @@ const ProductCard = ({
                 className="absolute w-full h-full"
                 onClick={() => handleOnClick()}
               />
-              {chainInfo && !editMode && (
-                <CartButton
-                  slicerId={slicerId}
-                  productCart={productCart}
-                  slicerAddress={slicerAddress}
-                  productId={productId}
-                  price={price}
-                  isUSD={isUSD}
-                  extAddress={extAddress}
-                  extCallValue={extValue}
-                  extCheckSig={extCheckSig}
-                  image={image}
-                  name={name}
-                  maxUnits={Number(maxUnits)}
-                  availableUnits={
-                    purchases != null ? (isInfinite ? -1 : availableUnits) : 0
-                  }
-                  purchasedQuantity={purchasedQuantity}
-                  uid={uid}
-                  creator={creator}
-                  texts={texts}
-                  allowedAddresses={allowedAddresses}
-                  shortcodes={purchaseInfo?.shortcodes}
-                  dbId={dbId}
-                />
-              )}
+              {chainInfo &&
+                (!isCustomPriced ||
+                  (externalPrices[slicerId] &&
+                    externalPrices[slicerId][productId])) &&
+                !editMode && (
+                  <CartButton
+                    slicerId={slicerId}
+                    productCart={productCart}
+                    slicerAddress={slicerAddress}
+                    productId={productId}
+                    price={
+                      isCustomPriced &&
+                      externalPrices[slicerId] &&
+                      externalPrices[slicerId][productId]
+                        ? parseInt(
+                            externalPrices[slicerId][productId][
+                              ethers.constants.AddressZero
+                            ].ethPrice,
+                            16
+                          ).toString()
+                        : price
+                    }
+                    isUSD={isCustomPriced ? false : isUSD}
+                    extAddress={extAddress}
+                    extCallValue={extValue}
+                    extCheckSig={extCheckSig}
+                    image={image}
+                    name={name}
+                    maxUnits={Number(maxUnits)}
+                    availableUnits={
+                      purchases != null ? (isInfinite ? -1 : availableUnits) : 0
+                    }
+                    purchasedQuantity={purchasedQuantity}
+                    uid={uid}
+                    creator={creator}
+                    texts={texts}
+                    allowedAddresses={allowedAddresses}
+                    shortcodes={purchaseInfo?.shortcodes}
+                    dbId={dbId}
+                    externalAddress={externalAddress}
+                  />
+                )}
             </div>
             {shortDescription && (
               <div>
@@ -330,5 +383,3 @@ const ProductCard = ({
 }
 
 export default ProductCard
-
-// Todo: solve absolute element not covering the whole card when content doesn't reach the end

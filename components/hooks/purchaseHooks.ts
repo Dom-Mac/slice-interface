@@ -9,7 +9,7 @@ export type Deployments = {
   factory: DeployedAddresses
 }
 
-export type Params = {
+export type HookParams = {
   externalCall: FunctionStruct
   deploy?: {
     deployments?: Deployments
@@ -24,13 +24,13 @@ export type Params = {
 
 export type Hook = {
   label: string
-  description: string
+  description: string | JSX.Element
   Component: (args: any) => JSX.Element
   deployments?: Deployments
 }
 
 export type HookProps = {
-  setParams: Dispatch<SetStateAction<Params>>
+  setParams: Dispatch<SetStateAction<HookParams>>
 }
 
 export const defaultCheckSelector = "0x95db9368"

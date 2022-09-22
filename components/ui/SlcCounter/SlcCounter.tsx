@@ -33,5 +33,3 @@ const SlcCounter = () => {
 }
 
 export default SlcCounter
-
-// Todo: GetSlcBalance using apposite chain handler, not through api

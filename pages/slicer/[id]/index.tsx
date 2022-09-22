@@ -47,12 +47,31 @@ export type AddressAmount = {
   address: string
   amount: number
 }
+export type BlockchainPrice = {
+  currency: { id: string }
+  dynamicPricing: boolean
+  externalAddress: string
+  price: string
+}
+export type BlockchainProduct = {
+  availableUnits: string
+  createdAtTimestamp: string
+  extAddress: string
+  extCheckSig: string
+  extExecSig: string
+  extValue: string
+  id: string
+  isInfinite: boolean
+  maxUnitsPerBuyer: string
+  prices: BlockchainPrice[]
+  totalPurchases: string
+}
 
 const Id = ({
   slicerInfo,
   products,
   subgraphDataPayees,
-  subgraphDataProducts,
+  blockchainProducts,
   sponsors
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter()
@@ -111,7 +130,7 @@ const Id = ({
           false // slicer?.attributes["Total slices"] === account.slices // creator has all slices
         : false
     )
-  }, [account])
+  }, [account, isAllowed])
 
   useEffect(() => {
     if (subgraphDataPayees) {
@@ -269,7 +288,7 @@ const Id = ({
             slicerId={slicerInfo?.id}
             slicerAddress={slicerInfo?.address}
             products={products}
-            blockchainProducts={subgraphDataProducts}
+            blockchainProducts={blockchainProducts}
           />
           <SlicerSponsors
             sponsorsList={sponsorsList}
@@ -444,7 +463,8 @@ export async function getStaticProps(context: GetStaticPropsContext) {
       slicerInfo,
       products,
       subgraphDataPayees: subgraphData?.slicer?.payees || null,
-      subgraphDataProducts: subgraphData?.slicer?.products || null,
+      blockchainProducts: (subgraphData?.slicer?.products ||
+        null) as BlockchainProduct[],
       sponsors: sponsors || null,
       key: slicerInfo.id
     },

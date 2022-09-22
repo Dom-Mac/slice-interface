@@ -2,6 +2,7 @@ import { useState, Dispatch, SetStateAction, useEffect, useRef } from "react"
 import {
   Button,
   MessageBlock,
+  AddProductFormAvailability,
   AddProductFormPrice,
   AddProductFormGeneral,
   AddProductFormPurchases,
@@ -18,10 +19,11 @@ import ethToWei from "@utils/ethToWei"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import { useSigner } from "wagmi"
 import saEvent from "@utils/saEvent"
-import { emptyExternalCall, Params } from "@components/hooks/purchaseHooks"
+import { emptyExternalCall, HookParams } from "@components/hooks/purchaseHooks"
 import openFingerprintingModal from "@utils/openFingerprintingModal"
 import { ReducedShortcode } from "@utils/useDecodeShortcode"
 import { deploy } from "@lib/handlers/chain"
+import { StrategyParams } from "@components/priceStrategies/strategies"
 
 type Props = {
   slicerId: number
@@ -31,6 +33,8 @@ type Props = {
   setSuccess: Dispatch<SetStateAction<boolean>>
   setLogs: Dispatch<SetStateAction<LogDescription[]>>
   setCloneAddress: Dispatch<SetStateAction<string>>
+  priceParams: StrategyParams
+  setPriceParams: Dispatch<SetStateAction<StrategyParams>>
 }
 
 const AddProductForm = ({
@@ -40,7 +44,9 @@ const AddProductForm = ({
   setUploadPct,
   setSuccess,
   setLogs,
-  setCloneAddress
+  setCloneAddress,
+  priceParams,
+  setPriceParams
 }: Props) => {
   const { account, setModalView } = useAppContext()
   const { data: signer } = useSigner()
@@ -62,7 +68,7 @@ const AddProductForm = ({
   const [maxUnits, setMaxUnits] = useState(1)
 
   const [customShortcodes, setCustomShortcodes] = useState<ReducedShortcode>({})
-  const [purchaseHookParams, setPurchaseHookParams] = useState<Params>({
+  const [purchaseHookParams, setPurchaseHookParams] = useState<HookParams>({
     externalCall: emptyExternalCall
   })
   const [clonePurchaseHook, setClonePurchaseHook] = useState(false)
@@ -163,20 +169,22 @@ const AddProductForm = ({
       // Create product on smart contract
       const weiValue = ethToWei(ethValue)
       const productPrice = isUSD ? Math.floor(usdValue * 100) : weiValue
+      const isStrategyConfigurable = priceParams?.abi != undefined
       const currencyPrices =
-        productPrice != 0
+        productPrice != 0 || priceParams?.address
           ? [
               {
                 currency: ethers.constants.AddressZero,
                 value: productPrice,
                 dynamicPricing: isUSD,
-                externalAddress: ethers.constants.AddressZero
+                externalAddress:
+                  priceParams?.address || ethers.constants.AddressZero
               }
             ]
           : []
 
       const productParams: ProductParamsStruct = {
-        isFree,
+        isFree: priceParams?.address ? false : isFree,
         maxUnitsPerBuyer: maxUnits,
         isInfinite: !isLimited,
         availableUnits: units,
@@ -192,18 +200,30 @@ const AddProductForm = ({
         setMessage,
         null,
         null,
-        true,
+        !isStrategyConfigurable,
         addRecentTransaction,
         `Create product | Slicer #${slicerId}`
       )
       if (eventLogs) {
         saEvent("create_product_success")
         setLogs(eventLogs)
-        setUploadStep(10)
-        setTimeout(() => {
+
+        if (!isStrategyConfigurable) {
           setUploadStep(11)
-        }, 3000)
-        await handleSuccess(slicerId, newProduct.id, eventLogs)
+
+          setTimeout(() => {
+            setUploadStep(12)
+          }, 3000)
+        }
+
+        await handleSuccess(
+          signer,
+          slicerId,
+          newProduct.id,
+          eventLogs,
+          priceParams,
+          setUploadStep
+        )
         setSuccess(true)
         setModalView({ name: "" })
       } else {
@@ -211,10 +231,10 @@ const AddProductForm = ({
       }
     } catch (err) {
       saEvent("create_product_fail")
-      setUploadStep(8)
+      setUploadStep(9)
 
       await handleReject(slicerId, image, data, purchaseDataCID, newProduct.id)
-      setUploadStep(9)
+      setUploadStep(10)
       setCloneAddress("")
       if (err.message) {
         setMessage({
@@ -237,12 +257,11 @@ const AddProductForm = ({
   return (
     <form className="w-full py-6 mx-auto space-y-6" onSubmit={submit}>
       <p>
-        Products can be used to sell any physical or digital item, or to execute
-        custom on-chain logic upon purchase (such as minting an NFT).
+        Products can be used to sell anything, including executing custom
+        on-chain logic upon purchase (such as minting NFTs).
       </p>
-      <p>Create one by setting up the info below.</p>
       <div>
-        <hr className="w-20 mx-auto border-gray-300 my-14" />
+        <hr className="w-20 mx-auto my-16 border-gray-300" />
       </div>
       <AddProductFormGeneral
         slicerId={slicerId}
@@ -255,22 +274,26 @@ const AddProductForm = ({
         setDescription={setDescription}
         setShortDescription={setShortDescription}
       />
-      <AddProductFormPrice
+      <AddProductFormAvailability
         isMultiple={isMultiple}
         isLimited={isLimited}
-        isFree={isFree}
         units={units}
         maxUnits={maxUnits}
-        ethValue={ethValue}
-        usdValue={usdValue}
-        isUSD={isUSD}
         setIsMultiple={setIsMultiple}
         setIsLimited={setIsLimited}
         setUnits={setUnits}
         setMaxUnits={setMaxUnits}
+      />
+      <AddProductFormPrice
+        isFree={isFree}
+        ethValue={ethValue}
+        usdValue={usdValue}
+        isUSD={isUSD}
         setEthValue={setEthValue}
         setUsdValue={setUsdValue}
         setIsUSD={setIsUSD}
+        units={units}
+        setPriceParams={setPriceParams}
       />
       <AddProductFormExternal
         clonePurchaseHook={clonePurchaseHook}
@@ -299,7 +322,7 @@ const AddProductForm = ({
         newImage={newImage}
         maxUnits={Number(maxUnits)}
         isLimited={isLimited}
-        units={units}
+        units={Number(units)}
         ethValue={ethValue}
         usdValue={usdValue}
         isUSD={isUSD}
@@ -312,6 +335,15 @@ const AddProductForm = ({
         extAddress={externalCall?.externalAddress}
         extCheckSig={externalCall?.checkFunctionSignature}
         extExecSig={externalCall?.execFunctionSignature}
+        externalAddress={priceParams?.address}
+        targetPrice={
+          priceParams?.args &&
+          Number(
+            ethers.BigNumber.from(priceParams.args[0]).div(
+              ethers.BigNumber.from(10).pow(15)
+            )
+          ) / 1000
+        }
       />
       <div className="pb-1">
         <Button

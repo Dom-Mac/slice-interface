@@ -11,10 +11,14 @@ import useSWR from "swr"
 import { CartList } from ".."
 import { useAppContext } from "../context"
 import { updatePurchases } from "@utils/getPurchases"
-import { utils } from "ethers"
+import { ethers, utils } from "ethers"
 import { ConnectButton, useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import { useSigner } from "wagmi"
 import saEvent from "@utils/saEvent"
+import Cross from "@components/icons/Cross"
+import { getExternalPrices } from "@lib/useExternalPrices"
+import formatCalldata from "@utils/formatCalldata"
+import decimalToHex from "@utils/decimalToHex"
 
 type Props = {
   cookieCart: ProductCart[]
@@ -30,6 +34,7 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
   const [showCartList, setShowCartList] = useState(false)
   const [showCart, setShowCart] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingState, setLoadingState] = useState("")
   const [message, setMessage] = useState<Message>({
     message: "",
     messageStatus: "success"
@@ -41,12 +46,12 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
   )
 
   const reducer = (previousValue: number, currentValue: ProductCart) => {
-    const { quantity, price, isUSD, extCallValue } = currentValue
+    const { price, isUSD, extCallValue } = currentValue
     const productPrice = isUSD
-      ? Math.floor((price * 100) / Number(ethUsd?.price)) / 10000
-      : Math.floor(price / 10 ** 14) / 10000
+      ? Math.floor((Number(price) * 100) / Number(ethUsd?.price)) / 10000
+      : Math.floor(Number(price) / 10 ** 14) / 10000
     const externalCallEth = utils.formatEther(extCallValue)
-    return previousValue + (productPrice + Number(externalCallEth)) * quantity
+    return previousValue + Number(productPrice) + Number(externalCallEth)
   }
   const totalPrice: number = cookieCart?.reduce(reducer, 0) || 0
 
@@ -77,8 +82,52 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
     try {
       saEvent("checkout_cart_attempt")
       setLoading(true)
+      const updatedCart = cookieCart
+
+      const dynamicItems = cookieCart.filter(
+        (el) => el.externalAddress != ethers.constants.AddressZero
+      )
+
+      if (dynamicItems.length != 0) {
+        setLoadingState("Updating prices")
+        const ids: [number, number][] = []
+        const args = []
+
+        dynamicItems.forEach((el) => {
+          const { slicerId, productId, quantity } = el
+          ids.push([slicerId, productId])
+          args.push(
+            formatCalldata(
+              decimalToHex(slicerId),
+              decimalToHex(productId),
+              ethers.constants.AddressZero,
+              decimalToHex(quantity),
+              account,
+              "0x"
+            )
+          )
+        })
+
+        const dynamicPrices = await getExternalPrices(args, ids)
+
+        Object.entries(dynamicPrices).forEach(([slicerId, productVal]) => {
+          Object.entries(productVal).forEach(([productId, currencyVal]) => {
+            const ethPrice = currencyVal[ethers.constants.AddressZero].ethPrice
+            const index = updatedCart.findIndex(
+              (el) =>
+                el.slicerId == Number(slicerId) &&
+                el.productId == Number(productId)
+            )
+            updatedCart[index].price = "0x" + ethPrice
+          })
+        })
+
+        setCookie("cart", updatedCart)
+        setLoadingState("")
+      }
+
       await handleSubmit(
-        PayProducts(signer, account, cookieCart),
+        PayProducts(signer, account, updatedCart),
         setMessage,
         setLoading,
         setSuccess,
@@ -93,35 +142,28 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
       console.log(err)
     }
   }
-
   return (
     <>
-      {/* Todo: fix errors in console without breaking opacity transition */}
-      {/* {showCart && showCartList && ( */}
       <div
         className={`fixed bottom-0 mb-[80px] sm:mb-[100px] right-[20px] sm:right-[32px] transition-opacity duration-200 ${
           showCart && showCartList ? "z-50 opacity-100" : "-z-10 opacity-0"
         }`}
       >
-        <CartList
-          cookieCart={cookieCart}
-          ethUsd={ethUsd}
-          setCookie={setCookie}
-        />
+        {showCartList && (
+          <CartList
+            cookieCart={cookieCart}
+            ethUsd={ethUsd}
+            setCookie={setCookie}
+          />
+        )}
       </div>
-      {/* } */}
       {(showCart || loading || success) && (
         <div
           className={`fixed z-50 bottom-0 mb-[20px] sm:mb-[32px] right-[20px] sm:right-[32px] nightwind-prevent-block transition-opacity duration-200`}
-          // ${
-          //   showCart || loading || success
-          //     ? "z-20 opacity-100"
-          //     : "-z-10 opacity-0"
-          // }
         >
           <div className="flex h-12 pl-3 overflow-hidden font-medium text-black bg-white border-2 border-transparent rounded-full shadow-base">
             <div
-              className="flex items-center pl-2 pr-4 min-w-[100px] cursor-pointer group"
+              className="flex items-center pl-2 pr-4 cursor-pointer group"
               onClick={() =>
                 success
                   ? setSuccess(false)
@@ -129,7 +171,9 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
               }
             >
               {success ? (
-                <p className="px-2 text-sm">Close</p>
+                <div className="mx-auto">
+                  <Cross />
+                </div>
               ) : (
                 <>
                   <Chevron
@@ -146,7 +190,7 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
             <ConnectButton.Custom>
               {({ account, openConnectModal }) => (
                 <div
-                  className={`flex items-center h-full px-4 text-sm text-white transition-colors duration-150 bg-blue-600 ${
+                  className={`flex items-center h-full min-w-[80px] px-6 text-sm text-white bg-blue-600 ${
                     !loading ? "cursor-pointer hover:bg-green-500" : ""
                   } nightwind-prevent`}
                   onClick={
@@ -159,12 +203,15 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
                 >
                   {success ? (
                     <Link href="/purchases">
-                      <a className="px-2 text-white hover:text-white">
+                      <a className="text-white hover:text-white">
                         Go to purchases
                       </a>
                     </Link>
                   ) : loading ? (
-                    <div className="px-4">
+                    <div className="flex items-center justify-center w-full">
+                      {loadingState && (
+                        <p className="pr-4 text-sm">{loadingState}</p>
+                      )}
                       <Spinner color="text-white" />
                     </div>
                   ) : (
@@ -172,7 +219,7 @@ const FloatingCart = ({ cookieCart, success, setSuccess }: Props) => {
                       <p className="pr-2 text-sm ">
                         {account ? "Checkout" : "Connect"}
                       </p>
-                      <ShoppingBag className="w-[18px] h-[18px]" />{" "}
+                      <ShoppingBag className="w-[18px] h-[18px]" />
                     </>
                   )}
                 </div>

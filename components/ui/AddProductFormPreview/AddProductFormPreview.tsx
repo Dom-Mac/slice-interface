@@ -1,7 +1,7 @@
 import { NewImage } from "pages/slicer/[id]"
 import React, { Dispatch, SetStateAction } from "react"
 import { View } from "@lib/content/modals"
-import { BigNumberish, BytesLike, utils } from "ethers"
+import { BigNumberish, BytesLike, ethers, utils } from "ethers"
 import useSWR from "swr"
 import fetcher from "@utils/fetcher"
 
@@ -26,6 +26,8 @@ type Props = {
   extAddress: string
   extCheckSig: BytesLike
   extExecSig: BytesLike
+  externalAddress?: string
+  targetPrice?: number
 }
 
 const AddProductFormPreview = ({
@@ -48,28 +50,35 @@ const AddProductFormPreview = ({
   externalCallValue,
   extAddress,
   extCheckSig,
-  extExecSig
+  extExecSig,
+  externalAddress,
+  targetPrice
 }: Props) => {
   const { data: ethUsd } = useSWR(
     "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT",
     fetcher
   )
 
+  const val = targetPrice || ethValue
+
+  const usdVal = targetPrice
+    ? Number(targetPrice) * Number(ethUsd?.price)
+    : usdValue
+
   const externalCallEth = utils.formatEther(externalCallValue)
   const externalCallUsd = Number(externalCallEth) * Number(ethUsd?.price)
   const productPrice = {
-    eth: ethValue
-      ? "Ξ " +
-        Math.floor((Number(ethValue) + Number(externalCallEth)) * 1000) / 1000
+    eth: val
+      ? "Ξ " + Math.floor((Number(val) + Number(externalCallEth)) * 1000) / 1000
       : "free",
-    usd: usdValue
-      ? "$ " + Math.floor((Number(usdValue) + externalCallUsd) * 100) / 100
+    usd: usdVal
+      ? "$ " + Math.floor((Number(usdVal) + externalCallUsd) * 100) / 100
       : "$ 0"
   }
 
   return (
     <div>
-      <hr className="w-20 mx-auto border-gray-300 my-14" />
+      <hr className="w-20 mx-auto my-16 border-gray-300" />
       <h3 className="pb-6 font-bold">Preview</h3>
       <p className="pb-12">
         See how the product will appear to buyers before the purchase and after
@@ -104,7 +113,7 @@ const AddProductFormPreview = ({
                 isInfinite: !isLimited,
                 maxUnits,
                 availableUnits: units,
-                totalPurchases: 69000,
+                totalPurchases: 0,
                 purchaseInfo: {
                   files: files.length != 0,
                   instructions: instructions.length != 0,
@@ -117,7 +126,16 @@ const AddProductFormPreview = ({
                     ? units == 0
                       ? "text-red-500"
                       : "text-yellow-600"
-                    : "text-green-600"
+                    : "text-green-600",
+                externalAddress,
+                isCustomPriced: externalAddress && true,
+                externalPrices: {
+                  [slicerId]: {
+                    0: {
+                      [ethers.constants.AddressZero]: { ethPrice: targetPrice }
+                    }
+                  }
+                }
               }
             })
           }
@@ -149,7 +167,7 @@ const AddProductFormPreview = ({
           Redeem purchase
         </a>
       </div>
-      <hr className="w-20 mx-auto border-gray-300 my-14" />
+      <hr className="w-20 mx-auto my-16 border-gray-300" />
     </div>
   )
 }

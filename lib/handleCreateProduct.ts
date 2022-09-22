@@ -3,6 +3,8 @@ import { NewImage } from "pages/slicer/[id]"
 import { LogDescription } from "@ethersproject/abi"
 import decimalToHex from "@utils/decimalToHex"
 import timeout from "@utils/timeout"
+import { StrategyParams } from "@components/priceStrategies/strategies"
+import { ethers, Signer } from "ethers"
 // import { mutate } from "swr"
 
 export const beforeCreate = async (
@@ -168,9 +170,12 @@ export const beforeCreate = async (
 }
 
 export const handleSuccess = async (
+  signer: Signer,
   slicerId: number,
   id: string,
-  eventLogs: LogDescription[]
+  eventLogs: LogDescription[],
+  priceParams: StrategyParams,
+  setUploadStep: Dispatch<SetStateAction<number>>
 ) => {
   const fetcher = (await import("@utils/fetcher")).default
   const getLog = (await import("@utils/getLog")).default
@@ -188,7 +193,27 @@ export const handleSuccess = async (
     })
   }
   await fetcher(`/api/slicer/${slicerId}/products`, putBody)
-  await timeout(3500)
+  if (priceParams?.address && priceParams?.abi) {
+    const launchConfetti = (await import("utils/launchConfetti")).default
+    setUploadStep(8)
+    const contract = new ethers.Contract(
+      priceParams.address,
+      priceParams.abi,
+      signer
+    )
+
+    const tx = await contract.setProductPrice(
+      slicerId,
+      productId,
+      ethers.constants.AddressZero,
+      ...priceParams.args
+    )
+    await tx.wait()
+    launchConfetti()
+    setUploadStep(12)
+  } else {
+    await timeout(3500)
+  }
   await fetcher(`/api/slicer/${slicerId}/refresh`)
 }
 
@@ -445,4 +470,4 @@ export const reload = async (
   setLoading(false)
 }
 
-// TODO: Fix reload, productIDs are wrong
+// TODO: Verify reload and cleanup work as intended
