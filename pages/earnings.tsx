@@ -1,6 +1,7 @@
 import {
   ConnectBlock,
   Container,
+  DoubleText,
   TotalBalance,
   ToWithdrawList
 } from "@components/ui"
@@ -42,7 +43,7 @@ export default function Dashboard() {
   return (
     <Container page={true}>
       <NextSeo
-        title="Earnings Dashboard"
+        title="Your earnings"
         openGraph={{
           title: longTitle,
           description: defaultDescription,
@@ -58,10 +59,18 @@ export default function Dashboard() {
         }}
       />
       <ConnectBlock>
-        <main className="sm:mx-auto sm:max-w-screen-md justify-self-start">
-          <h1 className="mb-6 text-2xl font-normal text-left md:text-5xl md:text-center md:mb-12">
+        <main className="sm:mx-auto sm:max-w-screen-md">
+          {/* <h1 className="mb-6 text-2xl font-normal text-left md:text-5xl md:text-center md:mb-12">
             Earnings Dashboard
-          </h1>
+          </h1> */}
+          <div className="text-left sm:text-center">
+            <DoubleText
+              inactive
+              logoText="My earnings"
+              size="text-3xl sm:text-5xl"
+              position="pb-6 sm:pb-20"
+            />
+          </div>
 
           <TotalBalance currencies={currencies} />
           <ToWithdrawList

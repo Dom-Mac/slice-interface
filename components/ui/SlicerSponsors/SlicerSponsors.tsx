@@ -29,28 +29,28 @@ const SlicerSponsors = ({
       {sponsorsList && sponsorsList.length != 0 && (
         <>
           <div className="pt-8 text-center">
-            <h2 className="pb-12">
-              {tag === "Charity" ? "Donors" : "Sponsors"}
-            </h2>
-            <ListLayout
-              elementsArray={sponsorsList}
-              setIterator={setIterator}
-              itemsIncrement={10}
-            >
-              <ul className="space-y-5">
-                {[...Array(iterator)].map((el, key) => {
-                  const sponsor = sponsorsList[Number(key)]
-                  return (
-                    <SponsorListItem
-                      slicerId={slicerId}
-                      sponsor={sponsor}
-                      key={key}
-                      sponsorLink={sponsorData[sponsor.address]}
-                    />
-                  )
-                })}
-              </ul>
-            </ListLayout>
+            <h2>{tag === "Charity" ? "Donors" : "Sponsors"}</h2>
+            <div className="py-12">
+              <ListLayout
+                elementsArray={sponsorsList}
+                setIterator={setIterator}
+                itemsIncrement={10}
+              >
+                <ul className="space-y-5">
+                  {[...Array(iterator)].map((el, key) => {
+                    const sponsor = sponsorsList[Number(key)]
+                    return (
+                      <SponsorListItem
+                        slicerId={slicerId}
+                        sponsor={sponsor}
+                        key={key}
+                        sponsorLink={sponsorData[sponsor.address]}
+                      />
+                    )
+                  })}
+                </ul>
+              </ListLayout>
+            </div>
           </div>
           <hr className="w-20 mx-auto mt-6 mb-6 border-gray-300" />
         </>

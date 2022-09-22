@@ -2,14 +2,14 @@ import {
   ConnectBlock,
   Container,
   DoubleText,
-  PurchasesList,
+  PurchasesList
 } from "@components/ui"
 import { NextSeo } from "next-seo"
 import {
   defaultDescription,
   defaultTitle,
   longTitle,
-  domain,
+  domain
 } from "@components/common/Head"
 
 export default function Purchases() {
@@ -26,9 +26,9 @@ export default function Purchases() {
               url: `${domain}/og_image.jpg`,
               width: 1000,
               height: 1000,
-              alt: `${defaultTitle} cover image`,
-            },
-          ],
+              alt: `${defaultTitle} cover image`
+            }
+          ]
         }}
       />
       <ConnectBlock>
@@ -37,7 +37,7 @@ export default function Purchases() {
             inactive
             logoText="Your purchases"
             size="text-4xl sm:text-5xl"
-            position="pb-12"
+            position="pb-16 sm:pb-20"
           />
           <div className="space-y-4 text-left">
             <PurchasesList />

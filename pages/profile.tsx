@@ -73,9 +73,9 @@ export default function Profile() {
         <main className="max-w-[420px] mx-auto sm:max-w-screen-md">
           <DoubleText
             inactive
-            logoText="Your slicers"
+            logoText="My slicers"
             size="text-4xl sm:text-5xl"
-            position="pb-12"
+            position="pb-20"
           />
           {/* <AccountBalance
             account={account}

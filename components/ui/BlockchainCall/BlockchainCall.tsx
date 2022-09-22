@@ -79,26 +79,24 @@ const BlockchainCall = ({
 
   return (
     <>
-      <div className="py-1">
-        {isCustomButton ? (
-          <Button
-            label={label}
-            loading={loading}
-            onClick={() => submit()}
-            className={""}
-            color={""}
-            double={false}
-            rootClassNameProp={""}
-          />
-        ) : (
-          <Button
-            label={label}
-            loading={loading}
-            onClick={() => submit()}
-            double={!isCustomButton}
-          />
-        )}
-      </div>
+      {isCustomButton ? (
+        <Button
+          label={label}
+          loading={loading}
+          onClick={() => submit()}
+          className={""}
+          color={""}
+          double={false}
+          rootClassNameProp={""}
+        />
+      ) : (
+        <Button
+          label={label}
+          loading={loading}
+          onClick={() => submit()}
+          double={!isCustomButton}
+        />
+      )}
       {isCustomButton ? (
         message.message && (
           <div className="absolute z-10 p-2 bg-slate-800 fade-out">

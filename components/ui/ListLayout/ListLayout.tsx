@@ -52,26 +52,24 @@ const ListLayout = ({
       <Spinner size="w-10 h-10" />
     </div>
   ) : elementsArray?.length != 0 ? (
-    <div className="pt-4 sm:pt-8">
+    <>
       <div className={wrapperClassName}>{children}</div>
-      <div className="py-12">
-        {items < elementsArray?.length && (
-          <p className="text-center">
-            <a
-              className="underline"
-              onClick={() => setItems(items + itemsIncrement)}
-            >
-              Load more
-            </a>
-          </p>
-        )}
-        {endpageButtonLabel && (
-          <div className="flex justify-center pt-8 sm:pt-12">
-            <Button label={endpageButtonLabel} href={endpageHref} />
-          </div>
-        )}
-      </div>
-    </div>
+      {items < elementsArray?.length && (
+        <p className="pt-12 text-center">
+          <a
+            className="underline"
+            onClick={() => setItems(items + itemsIncrement)}
+          >
+            Load more
+          </a>
+        </p>
+      )}
+      {endpageButtonLabel && (
+        <div className="flex justify-center pt-8 sm:pt-12">
+          <Button label={endpageButtonLabel} href={endpageHref} />
+        </div>
+      )}
+    </>
   ) : (
     <ActionScreen
       text={actionScreenText}
