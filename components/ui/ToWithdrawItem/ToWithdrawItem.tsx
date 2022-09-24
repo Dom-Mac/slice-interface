@@ -73,6 +73,7 @@ const ToWithdrawItem = ({
         1
     )
     updatedCurrencies[index].toWithdraw = "1"
+    updatedCurrencies[index].toPayToProtocol = "1"
 
     setCurrencies(updatedCurrencies)
   }
@@ -85,7 +86,7 @@ const ToWithdrawItem = ({
           onChange={handleSelected}
           id={address}
         />
-        <div className="ml-4 mr-3 w-9 h-9">
+        <div className="ml-3 mr-2 sm:ml-4 sm:mr-3 w-9 h-9">
           {currency?.logo || address === addr0 ? (
             <Image
               src={address === addr0 ? ethImg : currency?.logo}
@@ -108,7 +109,7 @@ const ToWithdrawItem = ({
         </div>
       </div>
       <div className="flex items-center">
-        <div className="pr-4 text-right sm:pr-6">
+        <div className="pr-3 text-right sm:pr-6">
           <p>{Math.floor(Number(toWithdrawToken) * 10000) / 10000}</p>
           <p className="text-sm text-gray-400">$ {toWithdrawUsd}</p>
         </div>

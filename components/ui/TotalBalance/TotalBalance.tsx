@@ -1,26 +1,37 @@
-import VisibilityOpen from "@components/icons/VisibilityOpen"
-import VisibilityClosed from "@components/icons/VisibilityClosed"
-import { ethers } from "ethers"
-import { useState } from "react"
+import { BigNumber, ethers } from "ethers"
+import { useEffect, useState } from "react"
 import QuestionMark from "@components/icons/QuestionMark"
+import { useContractRead } from "wagmi"
+import JBFundingCycles from "artifacts/contracts/JBFundingCycles.sol/JBFundingCycles.json"
+import formatNumber from "@utils/formatNumber"
 
 const TotalBalance = ({ currencies }) => {
   const [show, setShow] = useState(false)
-  const addr0 = ethers.constants.AddressZero
+  const [slxCashback, setSlxCashback] = useState(0)
+
+  const { data } = useContractRead({
+    addressOrName: process.env.NEXT_PUBLIC_JB_FUNDINGCYCLES_ADDRESS,
+    contractInterface: JBFundingCycles.abi,
+    functionName: "currentOf",
+    args: [process.env.NEXT_PUBLIC_JB_PROJECT_ID]
+  })
+
+  let weiToWithdraw: BigNumber
   let totalToWithdraw = 0
   let totalEarned = 0
   let plusTokens = 0
-  let cashback = 0
+
+  const addr0 = ethers.constants.AddressZero
+  const reservedRate = 50
+  const slxRate: BigNumber =
+    data && data[6].div(BigNumber.from(10).pow(18)).mul(reservedRate).div(100)
 
   // TokensQuotes is the last state to be updated, if it is available all other states are available
   if (currencies?.length) {
     currencies.forEach((currency) => {
       // If the currency has been withdrawn, add the amount to the total to withdraw
       if (currency.withdrawn > 0 && currency.quote) {
-        const withdrawn =
-          currency.id.split("-")[1] == addr0
-            ? Number(ethers.utils.formatEther(currency.withdrawn))
-            : Number(currency.withdrawn)
+        const withdrawn = Number(ethers.utils.formatEther(currency.withdrawn))
 
         totalEarned += withdrawn * currency.quote
       }
@@ -38,8 +49,7 @@ const TotalBalance = ({ currencies }) => {
 
       // only if the currency is eth calculate SLX cashback
       if (currency.id.split("-")[1] == addr0) {
-        cashback +=
-          Number(currency.toPayToProtocol) + Number(currency.paidToProtocol)
+        weiToWithdraw = BigNumber.from(currency.toPayToProtocol)
       }
     })
 
@@ -47,6 +57,18 @@ const TotalBalance = ({ currencies }) => {
     totalToWithdraw = Number(totalToWithdraw.toFixed(2))
     totalEarned = Number(totalEarned.toFixed(2))
   }
+
+  useEffect(() => {
+    if (slxRate && weiToWithdraw) {
+      setSlxCashback(
+        Number(
+          weiToWithdraw.sub(1).mul(slxRate).div(BigNumber.from(10).pow(18))
+        )
+      )
+    } else if (slxCashback != 0) {
+      setSlxCashback(0)
+    }
+  }, [slxRate])
 
   return (
     <div className="relative px-4 pb-16 text-left sm:px-8">
@@ -62,6 +84,11 @@ const TotalBalance = ({ currencies }) => {
               {currencies ? totalToWithdraw : "..."}
             </span>
           </p>
+          {slxCashback > 0 && (
+            <p className="pt-1 text-xs text-green-500">
+              + {formatNumber(slxCashback)} SLX cashback
+            </p>
+          )}
           {plusTokens > 0 && (
             <p className="pt-1 text-xs text-green-500">
               + tokens
@@ -74,7 +101,6 @@ const TotalBalance = ({ currencies }) => {
           <p className="flex justify-end gap-1 text-lg font-semibold sm:text-3xl">
             $<span className="move-up">{currencies ? totalEarned : "..."}</span>
           </p>
-          {/* TODO:  Add SLX Cashback for ToWithdraw amount*/}
           {/* TODO:  Use alchemy erc20 API to fetch SLX received by Juciebox? TBD*/}
           {/* {cashback > 0 && (
             <p className="pt-1 text-xs text-green-500">
