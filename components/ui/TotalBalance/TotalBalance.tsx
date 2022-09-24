@@ -1,20 +1,17 @@
 import { BigNumber, ethers } from "ethers"
 import { useEffect, useState } from "react"
 import QuestionMark from "@components/icons/QuestionMark"
-import { useContractRead } from "wagmi"
-import JBFundingCycles from "artifacts/contracts/JBFundingCycles.sol/JBFundingCycles.json"
 import formatNumber from "@utils/formatNumber"
+import { Currency } from "@utils/useCurrenciesData"
 
-const TotalBalance = ({ currencies }) => {
+type Props = {
+  currencies: Currency[]
+  slxRate: string
+}
+
+const TotalBalance = ({ currencies, slxRate }: Props) => {
   const [show, setShow] = useState(false)
   const [slxCashback, setSlxCashback] = useState(0)
-
-  const { data } = useContractRead({
-    addressOrName: process.env.NEXT_PUBLIC_JB_FUNDINGCYCLES_ADDRESS,
-    contractInterface: JBFundingCycles.abi,
-    functionName: "currentOf",
-    args: [process.env.NEXT_PUBLIC_JB_PROJECT_ID]
-  })
 
   let weiToWithdraw: BigNumber
   let totalToWithdraw = 0
@@ -22,22 +19,19 @@ const TotalBalance = ({ currencies }) => {
   let plusTokens = 0
 
   const addr0 = ethers.constants.AddressZero
-  const reservedRate = 50
-  const slxRate: BigNumber =
-    data && data[6].div(BigNumber.from(10).pow(18)).mul(reservedRate).div(100)
 
   // TokensQuotes is the last state to be updated, if it is available all other states are available
   if (currencies?.length) {
     currencies.forEach((currency) => {
       // If the currency has been withdrawn, add the amount to the total to withdraw
-      if (currency.withdrawn > 0 && currency.quote) {
+      if (Number(currency.withdrawn) > 0 && currency.quote) {
         const withdrawn = Number(ethers.utils.formatEther(currency.withdrawn))
 
         totalEarned += withdrawn * currency.quote
       }
 
       // If the currency is available to withdrawn, add the amount to the total to withdraw
-      if (currency.toWithdraw > 1) {
+      if (Number(currency.toWithdraw) > 1) {
         const toWithdraw = Number(ethers.utils.formatEther(currency.toWithdraw))
 
         if (currency.quote) {
@@ -68,7 +62,7 @@ const TotalBalance = ({ currencies }) => {
     } else if (slxCashback != 0) {
       setSlxCashback(0)
     }
-  }, [slxRate])
+  }, [weiToWithdraw])
 
   return (
     <div className="relative px-4 pb-16 text-left sm:px-8">
@@ -135,8 +129,9 @@ const TotalBalance = ({ currencies }) => {
             to fund protocol development.
           </p>
           <p>
-            In exchange for ETH, it gives back a corresponding amount of SLX
-            governance tokens.
+            When withdrawing ETH, you also receive SLX governance tokens at the
+            current emission rate{" "}
+            <b>({formatNumber(Number(slxRate))} SLX / ETH)</b>.
           </p>
         </div>
       </div>

@@ -16,8 +16,13 @@ import { useAppContext } from "@components/ui/context"
 import useQuery from "@utils/subgraphQuery"
 import { useEffect, useState } from "react"
 import useCurrenciesData, { Currency } from "@utils/useCurrenciesData"
+import { GetStaticPropsContext } from "next"
+import { BigNumber, ethers } from "ethers"
+import { defaultProvider } from "@lib/useProvider"
+import { FundingCycles } from "types/typechain/FundingCycles"
+import JBFundingCycles from "artifacts/contracts/JBFundingCycles.sol/JBFundingCycles.json"
 
-export default function Dashboard() {
+export default function Earnings({ slxRate }) {
   const { account } = useAppContext()
   const [currencies, setCurrencies] = useState<Currency[]>()
 
@@ -65,7 +70,7 @@ export default function Dashboard() {
             size="text-3xl sm:text-5xl"
             position="pb-16 sm:pb-20"
           />
-          <TotalBalance currencies={currencies} />
+          <TotalBalance currencies={currencies} slxRate={slxRate} />
           <ToWithdrawList
             currencies={currencies}
             account={account}
@@ -75,4 +80,27 @@ export default function Dashboard() {
       </ConnectBlock>
     </Container>
   )
+}
+
+export async function getStaticProps(context: GetStaticPropsContext) {
+  const fundingCycles = new ethers.Contract(
+    process.env.NEXT_PUBLIC_JB_FUNDINGCYCLES_ADDRESS,
+    JBFundingCycles.abi,
+    defaultProvider
+  ) as FundingCycles
+
+  const data = await fundingCycles.currentOf(
+    process.env.NEXT_PUBLIC_JB_PROJECT_ID
+  )
+
+  const reservedRate = 50
+  const slxRate: BigNumber =
+    data && data[6].div(BigNumber.from(10).pow(18)).mul(reservedRate).div(100)
+
+  return {
+    props: {
+      slxRate: slxRate._hex
+    },
+    revalidate: 3600
+  }
 }
