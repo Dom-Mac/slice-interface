@@ -176,11 +176,7 @@ const SlicerCard = ({
         {ethReleased != "" && (
           <p className="pt-4 text-sm text-green-500">
             You have released{" "}
-            <span className="font-medium">
-              {((Number(ethReleased) * (1000 - protocolFee)) / 1000).toFixed(4)}{" "}
-              ETH
-            </span>
-            , check{" "}
+            <span className="font-medium">{ethReleased} ETH</span>, check{" "}
             <Link href="/earnings">
               <a className="text-green-500 underline">your earnings</a>
             </Link>{" "}

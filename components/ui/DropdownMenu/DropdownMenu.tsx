@@ -15,18 +15,18 @@ type Props = {
 function DropdownMenu({ showDropdown, setShowDropdown }: Props) {
   const { theme, setTheme } = useTheme()
 
-  const toggle = () => {
-    nightwind.beforeTransition()
-    if (theme !== "dark") {
-      setTheme("dark")
-    } else {
-      setTheme("light")
-    }
-  }
+  // const toggle = () => {
+  //   nightwind.beforeTransition()
+  //   if (theme !== "dark") {
+  //     setTheme("dark")
+  //   } else {
+  //     setTheme("light")
+  //   }
+  // }
 
   return (
     <div
-      className={`z-20 absolute top-0 right-0 w-56 p-1.5 mt-20 border border-gray-200 space-y-1 bg-white rounded-md shadow-base transition-opacity duration-200 nightwind-prevent-block`}
+      className={`z-20 absolute top-0 right-0 w-56 p-1.5 mt-20 border border-opacity-80 border-gray-200 space-y-1 bg-white rounded-md shadow-base transition-opacity duration-200 nightwind-prevent-block`}
     >
       <DropdownMenuElement
         href="/profile"
@@ -53,13 +53,13 @@ function DropdownMenu({ showDropdown, setShowDropdown }: Props) {
         label="Purchases"
         onClick={() => setShowDropdown(false)}
       />
-      <div className="xs:hidden">
+      {/* <div className="xs:hidden">
         <DropdownMenuElement
           image={<Nightwind size="h-5" onClick={null} />}
           label="Toggle dark mode"
           onClick={() => toggle()}
         />
-      </div>
+      </div> */}
     </div>
   )
 }

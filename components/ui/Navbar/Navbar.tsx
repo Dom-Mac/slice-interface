@@ -34,13 +34,17 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="relative z-10 flex items-center space-x-6">
-            <div className={`${isConnected ? "hidden xs:block" : ""}`}>
+            <div>
               <Nightwind size="h-[24px]" />
             </div>
             <div onClick={() => saEvent("connect_wallet_attempt")}>
               <ConnectButton
                 accountStatus={{
                   smallScreen: "avatar",
+                  largeScreen: "full"
+                }}
+                chainStatus={{
+                  smallScreen: "none",
                   largeScreen: "full"
                 }}
               />
