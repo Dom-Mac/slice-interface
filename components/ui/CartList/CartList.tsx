@@ -11,7 +11,7 @@ type Props = {
 
 const CartList = ({ cookieCart, ethUsd, setCookie }: Props) => {
   return (
-    <div className="p-3 space-y-3 shadow-lg bg-gray-300 rounded-xl max-h-[300px] sm:max-h-[450px] w-[21rem] sm:w-[22rem] overflow-y-scroll">
+    <div className="p-3 space-y-3 shadow-lg bg-gray-300 bg-opacity-30 backdrop-blur-md rounded-xl max-h-[300px] sm:max-h-[450px] w-[21rem] sm:w-[22rem] overflow-y-scroll">
       {cookieCart?.map((product, key) => {
         const {
           slicerId,
