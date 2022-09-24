@@ -6,6 +6,7 @@ import { AddressAmount, NewImage } from "pages/slicer/[id]"
 import { Message } from "@utils/handleMessage"
 import formatNumber from "@utils/formatNumber"
 import { useAppContext } from "../context"
+import constants from "constants.json"
 
 type Props = {
   name: string
@@ -172,7 +173,9 @@ const SlicerImageBlock = ({
             href={`https://${
               process.env.NEXT_PUBLIC_CHAIN_ID === "4" ? "testnets." : ""
             }opensea.io/assets/${
-              process.env.NEXT_PUBLIC_SLICECORE_ADDRESS
+              constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+                process.env.NEXT_PUBLIC_ENVIRONMENT
+              ].addresses.SliceCore
             }/${slicerId}`}
             target="_blank"
             rel="noreferrer"

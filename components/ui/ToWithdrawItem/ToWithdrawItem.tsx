@@ -11,6 +11,7 @@ import WithdrawIcon from "@components/icons/WithdrawIcon"
 import executeTransaction from "@utils/executeTransaction"
 import Spinner from "@components/icons/Spinner"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
+import constants from "constants.json"
 
 type Props = {
   account: string
@@ -55,7 +56,10 @@ const ToWithdrawItem = ({
 
   const addRecentTransaction = useAddRecentTransaction()
   const { config, error } = usePrepareContractWrite({
-    addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
+    addressOrName:
+      constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+        process.env.NEXT_PUBLIC_ENVIRONMENT
+      ].addresses.FundsModule,
     contractInterface: FundsModuleContract.abi,
     functionName: "withdraw",
     args: [account, address]

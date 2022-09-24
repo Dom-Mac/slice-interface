@@ -1,4 +1,5 @@
 import { ContractInterface, ethers, Signer } from "ethers"
+import constants from "constants"
 
 export type DeployParamsClone = {
   slicerId: number
@@ -11,7 +12,10 @@ const deploy = async (
   signer: Signer,
   deployParams: DeployParamsClone
 ) => {
-  const productsModule = process.env.NEXT_PUBLIC_PRODUCTS_ADDRESS
+  const productsModule =
+    constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+      process.env.NEXT_PUBLIC_ENVIRONMENT
+    ].addresses.ProductsModule
 
   const { slicerId, args } = deployParams
 

@@ -7,6 +7,7 @@ import FundsModuleContract from "artifacts/contracts/FundsModule.sol/FundsModule
 import WithdrawIcon from "@components/icons/WithdrawIcon"
 import executeTransaction from "@utils/executeTransaction"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
+import constants from "constants"
 
 type Props = {
   currencies: Currency[]
@@ -63,7 +64,10 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
       : "Batch withdraw"
   const addRecentTransaction = useAddRecentTransaction()
   const { config, error } = usePrepareContractWrite({
-    addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
+    addressOrName:
+      constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+        process.env.NEXT_PUBLIC_ENVIRONMENT
+      ].addresses.FundsModule,
     contractInterface: FundsModuleContract.abi,
     functionName:
       toWithdrawAddresses?.length === 1 || selectedTokens?.length === 1

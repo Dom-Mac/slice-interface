@@ -3,6 +3,7 @@ import multicall from "@utils/multicall"
 import formatCalldata from "@utils/formatCalldata"
 import { ethers } from "ethers"
 import { BlockchainProduct } from "pages/slicer/[id]"
+import constants from "constants"
 
 export const getExternalPrices = async (
   args: string[],
@@ -10,7 +11,9 @@ export const getExternalPrices = async (
 ) => {
   const returnedPrices = {}
   const result = await multicall(
-    process.env.NEXT_PUBLIC_PRODUCTS_ADDRESS,
+    constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+      process.env.NEXT_PUBLIC_ENVIRONMENT
+    ].addresses.ProductsModule,
     "productPrice(uint256,uint256,address,uint256,address,bytes)",
     args,
     false

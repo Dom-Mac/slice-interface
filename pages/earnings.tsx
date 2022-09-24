@@ -21,6 +21,7 @@ import { BigNumber, ethers } from "ethers"
 import { defaultProvider } from "@lib/useProvider"
 import { FundingCycles } from "types/typechain/FundingCycles"
 import JBFundingCycles from "artifacts/contracts/JBFundingCycles.sol/JBFundingCycles.json"
+import constants from "../constants.json"
 
 export default function Earnings({ slxRate }) {
   const { account } = useAppContext()
@@ -84,13 +85,17 @@ export default function Earnings({ slxRate }) {
 
 export async function getStaticProps(context: GetStaticPropsContext) {
   const fundingCycles = new ethers.Contract(
-    process.env.NEXT_PUBLIC_JB_FUNDINGCYCLES_ADDRESS,
+    constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+      process.env.NEXT_PUBLIC_ENVIRONMENT
+    ].addresses.JBFundingCycles,
     JBFundingCycles.abi,
     defaultProvider
   ) as FundingCycles
 
   const data = await fundingCycles.currentOf(
-    process.env.NEXT_PUBLIC_JB_PROJECT_ID
+    constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+      process.env.NEXT_PUBLIC_ENVIRONMENT
+    ].constants.JBProjectId
   )
 
   const reservedRate = 50

@@ -1,6 +1,6 @@
 import Button from "../Button"
 import JbPayerFormBlock from "../JbPayerFormBlock"
-import addresses from "../../../addresses.json"
+import constants from "constants.json"
 import { ConnectButton, useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import { useState } from "react"
 import cloneProjectPayer, {
@@ -15,8 +15,10 @@ import ActionScreen from "../ActionScreen"
 const JbPayerForm = () => {
   const { data: signer } = useSigner()
   const addRecentTransaction = useAddRecentTransaction()
-  const env = process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? "mainnet" : "testnet"
-  const directory = addresses[env].JBDirectory
+  const directory =
+    constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+      process.env.NEXT_PUBLIC_ENVIRONMENT
+    ].addresses.JBDirectory
 
   const [params, setParams] = useState<DeployParams>({
     projectId: 0,

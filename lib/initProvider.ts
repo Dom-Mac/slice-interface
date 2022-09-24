@@ -10,13 +10,21 @@ import { ProductsModule } from "../types/typechain/ProductsModule"
 import { FundsModule } from "../types/typechain/FundsModule"
 import { Slicer } from "../types/typechain/Slicer"
 import { JBETHERC20ProjectPayerTokensReceiverCloneDeployer } from "../types/typechain/JBETHERC20ProjectPayerTokensReceiverCloneDeployer"
-import addresses from "../addresses.json"
+import constants from "../constants.json"
 
-const env = process.env.NEXT_PUBLIC_CHAIN_ID === "1" ? "mainnet" : "testnet"
+const {
+  SliceCore: sliceCoreAddress,
+  ProductsModule: productsModuleAddress,
+  FundsModule: fundsModuleAddress,
+  ChainlinkFeed: chainlinkFeedAddress,
+  DeployCloneFactory: deployCloneFactoryAddress
+} = constants[process.env.NEXT_PUBLIC_CHAIN_ID][
+  process.env.NEXT_PUBLIC_ENVIRONMENT
+].addresses
 
 export const sliceCore = (signer: ethers.Signer | ethers.providers.Provider) =>
   new ethers.Contract(
-    process.env.NEXT_PUBLIC_SLICECORE_ADDRESS,
+    sliceCoreAddress,
     SliceCoreContract.abi,
     signer
   ) as SliceCore
@@ -24,7 +32,7 @@ export const productsModule = (
   signer: ethers.Signer | ethers.providers.Provider
 ) =>
   new ethers.Contract(
-    process.env.NEXT_PUBLIC_PRODUCTS_ADDRESS,
+    productsModuleAddress,
     ProductsModuleContract.abi,
     signer
   ) as ProductsModule
@@ -32,7 +40,7 @@ export const fundsModule = (
   signer: ethers.Signer | ethers.providers.Provider
 ) =>
   new ethers.Contract(
-    process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
+    fundsModuleAddress,
     FundsModuleContract.abi,
     signer
   ) as FundsModule
@@ -52,19 +60,14 @@ export const slicer = async (
 export const jbCloner = async (
   signer: ethers.Signer | ethers.providers.Provider
 ) => {
-  const jbClonerAddress = addresses[env].DeployCloneFactory
   return new ethers.Contract(
-    jbClonerAddress,
+    deployCloneFactoryAddress,
     jbPayerContract.abi,
     signer
   ) as JBETHERC20ProjectPayerTokensReceiverCloneDeployer
 }
 
 export const chainlink = (signer: ethers.Signer | ethers.providers.Provider) =>
-  new ethers.Contract(
-    process.env.NEXT_PUBLIC_CHAINLINK_FEED,
-    ChainlinkContract.abi,
-    signer
-  )
+  new ethers.Contract(chainlinkFeedAddress, ChainlinkContract.abi, signer)
 
 // export const gasPrice = { gasPrice: 1000000000 }
