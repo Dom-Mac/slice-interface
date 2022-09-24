@@ -1,11 +1,11 @@
 import { Currency } from "@utils/useCurrenciesData"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { useContractWrite, usePrepareContractWrite, useSigner } from "wagmi"
+import { useContractWrite, usePrepareContractWrite } from "wagmi"
 import FakeWithdrawItems from "../FakeWithdrawItems"
 import { Button, InputCheckbox, ToWithdrawItem } from "@components/ui"
 import FundsModuleContract from "artifacts/contracts/FundsModule.sol/FundsModule.json"
 import WithdrawIcon from "@components/icons/WithdrawIcon"
-import executeTransaction, { TxData } from "@utils/executeTransaction"
+import executeTransaction from "@utils/executeTransaction"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 
 type Props = {
@@ -17,7 +17,6 @@ type Props = {
 const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   const [selectedTokens, setSelectedTokens] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<TxData>()
 
   const currenciesToWithdraw = currencies?.filter(
     (currency) => Number(currency.toWithdraw) > 1
@@ -58,6 +57,10 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
     }
   }
 
+  const txDescription =
+    toWithdrawAddresses?.length === 1 || selectedTokens?.length === 1
+      ? `Withdraw`
+      : "Batch withdraw"
   const addRecentTransaction = useAddRecentTransaction()
   const { config, error } = usePrepareContractWrite({
     addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
@@ -71,24 +74,28 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
 
   const { writeAsync } = useContractWrite(config)
 
-  useEffect(() => {
-    if (data?.tx) {
-      addRecentTransaction({
-        hash: data.tx.hash,
-        description:
-          toWithdrawAddresses?.length === 1 || selectedTokens?.length === 1
-            ? `Withdraw`
-            : "Batch withdraw"
+  const settlementLogic = () => {
+    const updatedCurrencies = [...currencies]
+
+    if (selectedTokens.length === 0) {
+      updatedCurrencies.forEach((currency, index) => {
+        updatedCurrencies[index].withdrawn = String(
+          Number(updatedCurrencies[index].withdrawn) +
+            Number(updatedCurrencies[index].toWithdraw) -
+            1
+        )
+        updatedCurrencies[index].toWithdraw = "1"
       })
-    }
-  }, [data])
+    } else {
+      updatedCurrencies
+        .filter((currency) =>
+          selectedTokens.includes(currency.id.split("-")[1])
+        )
+        .forEach((currency) => {
+          const index = currencies
+            .map((currency) => currency.id)
+            .indexOf(currency.id)
 
-  useEffect(() => {
-    if (data?.wait) {
-      const updatedCurrencies = [...currencies]
-
-      if (selectedTokens.length === 0) {
-        updatedCurrencies.forEach((currency, index) => {
           updatedCurrencies[index].withdrawn = String(
             Number(updatedCurrencies[index].withdrawn) +
               Number(updatedCurrencies[index].toWithdraw) -
@@ -96,29 +103,11 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
           )
           updatedCurrencies[index].toWithdraw = "1"
         })
-      } else {
-        updatedCurrencies
-          .filter((currency) =>
-            selectedTokens.includes(currency.id.split("-")[1])
-          )
-          .forEach((currency) => {
-            const index = currencies
-              .map((currency) => currency.id)
-              .indexOf(currency.id)
-
-            updatedCurrencies[index].withdrawn = String(
-              Number(updatedCurrencies[index].withdrawn) +
-                Number(updatedCurrencies[index].toWithdraw) -
-                1
-            )
-            updatedCurrencies[index].toWithdraw = "1"
-          })
-      }
-
-      setCurrencies(updatedCurrencies)
-      setSelectedTokens([])
     }
-  }, [data])
+
+    setCurrencies(updatedCurrencies)
+    setSelectedTokens([])
+  }
 
   useEffect(() => {
     setSelectedTokens([])
@@ -151,7 +140,13 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
                 }
                 double={false}
                 onClick={async () =>
-                  await executeTransaction(writeAsync, setLoading, setData)
+                  await executeTransaction(
+                    writeAsync,
+                    setLoading,
+                    txDescription,
+                    addRecentTransaction,
+                    settlementLogic
+                  )
                 }
                 loading={loading}
               />

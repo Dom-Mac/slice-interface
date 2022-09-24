@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import InputPrice from "../InputPrice"
 import { useSendTransaction, usePrepareSendTransaction } from "wagmi"
 import { BigNumber } from "ethers"
@@ -6,6 +6,7 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import { AddressAmount } from "pages/slicer/[id]"
 import fetcher from "@utils/fetcher"
 import { useAppContext } from "../context"
+import executeTransaction from "@utils/executeTransaction"
 
 type Props = {
   slicerId: string
@@ -21,46 +22,38 @@ const PaySlicer = ({
   setSponsorsList
 }: Props) => {
   const { account } = useAppContext()
-  const addRecentTransaction = useAddRecentTransaction()
+  const [loading, setLoading] = useState(false)
   const [usdValue, setUsdValue] = useState(0)
   const [ethValue, setEthValue] = useState(0)
   const value = BigNumber.from(Math.floor(ethValue * 100000)).mul(
     BigNumber.from(10).pow(13)
   )._hex
+
+  const addRecentTransaction = useAddRecentTransaction()
   const { config } = usePrepareSendTransaction({
     request: { to: slicerAddress, value }
   })
-  const { data, isLoading, sendTransaction } = useSendTransaction({
-    ...config,
-    onSettled() {
-      let newSponsorsList = sponsorsList ? [...sponsorsList] : []
+  const { sendTransactionAsync } = useSendTransaction(config)
 
-      const index = newSponsorsList.findIndex((el) => el.address == account)
+  const settlementLogic = () => {
+    let newSponsorsList = sponsorsList ? [...sponsorsList] : []
 
-      if (index == -1) {
-        newSponsorsList.push({ address: account, amount: ethValue })
-      } else {
-        newSponsorsList[index].amount += Number(ethValue)
-      }
+    const index = newSponsorsList.findIndex((el) => el.address == account)
 
-      setSponsorsList(newSponsorsList.sort((a, b) => b.amount - a.amount))
-      setEthValue(0)
-      setUsdValue(0)
-
-      setTimeout(() => {
-        fetcher(`/api/slicer/${slicerId}/refresh`)
-      }, 15000)
+    if (index == -1) {
+      newSponsorsList.push({ address: account, amount: ethValue })
+    } else {
+      newSponsorsList[index].amount += Number(ethValue)
     }
-  })
 
-  useEffect(() => {
-    if (data?.hash) {
-      addRecentTransaction({
-        hash: data.hash,
-        description: `Send ETH to Slicer`
-      })
-    }
-  }, [data])
+    setSponsorsList(newSponsorsList.sort((a, b) => b.amount - a.amount))
+    setEthValue(0)
+    setUsdValue(0)
+
+    setTimeout(() => {
+      fetcher(`/api/slicer/${slicerId}/refresh`)
+    }, 3000)
+  }
 
   return (
     <InputPrice
@@ -68,10 +61,18 @@ const PaySlicer = ({
       setEthValue={setEthValue}
       usdValue={usdValue}
       setUsdValue={setUsdValue}
-      loading={isLoading}
+      loading={loading}
       actionLabel="Send"
       marginLabel="mr-32"
-      action={() => sendTransaction()}
+      action={async () =>
+        await executeTransaction(
+          sendTransactionAsync,
+          setLoading,
+          `Send ETH to Slicer #${slicerId}`,
+          addRecentTransaction,
+          settlementLogic
+        )
+      }
     />
   )
 }
