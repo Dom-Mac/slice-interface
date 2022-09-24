@@ -33,18 +33,11 @@ export default function Dashboard() {
       }
     `
   let subgraphData = useQuery(tokensQuery, [account])
-  const payeeCurrencies = subgraphData?.payee?.currencies as Currency[]
-  const currenciesData = useCurrenciesData(payeeCurrencies)
+  const currenciesData = useCurrenciesData(subgraphData, account)
 
   useEffect(() => {
     setCurrencies(currenciesData)
   }, [currenciesData])
-
-  useEffect(() => {
-    if (currenciesData) {
-      setCurrencies(null)
-    }
-  }, [account])
 
   return (
     <Container page={true}>

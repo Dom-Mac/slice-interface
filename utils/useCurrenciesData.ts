@@ -139,9 +139,18 @@ const createOrUpdateCurrencies = (currencies) => {
   })
 }
 
-export default function useCurrenciesData(currencies: Currency[]): Currency[] {
+export default function useCurrenciesData(
+  subgraphData: {
+    payee: {
+      currencies: Currency[]
+    }
+  },
+  account: string
+): Currency[] {
   // Custom hook, takes as param a list of currencies from the subgraph
   // and ads symbol, name, logo and quote
+
+  const currencies = subgraphData?.payee?.currencies
 
   const [currenciesData, setCurrenciesData] = useState<Currency[]>()
 
@@ -216,10 +225,22 @@ export default function useCurrenciesData(currencies: Currency[]): Currency[] {
   }
 
   useEffect(() => {
-    if (currencies) {
-      getData()
+    if (subgraphData) {
+      // Handle unexisting payee
+      if (!subgraphData.payee) {
+        setCurrenciesData([])
+      } else {
+        getData()
+      }
     }
-  }, [currencies])
+  }, [subgraphData])
+
+  // Cleanup on account change
+  useEffect(() => {
+    if (currenciesData) {
+      setCurrenciesData(null)
+    }
+  }, [account])
 
   return currenciesData
 }
