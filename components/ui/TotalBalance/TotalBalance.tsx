@@ -4,7 +4,6 @@ import { ethers } from "ethers"
 import { useState } from "react"
 
 const TotalBalance = ({ currencies }) => {
-  const [isBlurred, setIsBlurred] = useState(false)
   const addr0 = ethers.constants.AddressZero
   let totalToWithdraw = 0
   let totalEarned = 0
@@ -26,10 +25,7 @@ const TotalBalance = ({ currencies }) => {
 
       // If the currency is available to withdrawn, add the amount to the total to withdraw
       if (currency.toWithdraw > 1) {
-        const toWithdraw =
-          currency.id.split("-")[1] == addr0
-            ? Number(ethers.utils.formatEther(currency.toWithdraw))
-            : Number(currency.toWithdraw)
+        const toWithdraw = Number(ethers.utils.formatEther(currency.toWithdraw))
 
         if (currency.quote) {
           totalToWithdraw += toWithdraw * currency.quote
@@ -51,58 +47,44 @@ const TotalBalance = ({ currencies }) => {
   }
 
   return (
-    <>
-      <div className="flex items-center mb-4">
-        <p className="mr-3 text-lg sm:text-3xl">Balance</p>
-        <div onClick={() => setIsBlurred(!isBlurred)}>
-          {isBlurred ? (
-            <VisibilityClosed className="h-6 text-black" />
-          ) : (
-            <VisibilityOpen className="h-6 text-black" />
-          )}
-        </div>
-      </div>
+    <div className="relative px-4 pb-16 text-left sm:px-8">
       <div
-        className={`flex justify-between w-3/5 sm:w-full p-2 rounded-lg min-w-max bg-slate-800 sm:bg-white sm:mb-4 sm:p-0 ${
-          isBlurred ? "blur" : null
-        }`}
+        className="flex justify-between rounded-lg sm:mb-4 sm:p-0"
         key={totalEarned}
       >
-        <div className="text-left">
-          <p className="text-xs font-normal sm:text-base sm:mb-4 text-slate-400">
-            Total earned
-          </p>
-          <p className="flex overflow-hidden text-lg font-semibold sm:text-4xl">
-            ${" "}
-            <span className="move-up">{currencies ? totalEarned : "..."}</span>
-          </p>
-          {/* {cashback > 0 && (
-            <p className="text-xs font-normal text-green-500">
-              +{cashback} SLX cashback
-            </p>
-          )} */}
-        </div>
-        <div className="text-left">
-          <p className="text-xs font-normal sm:text-base sm:mb-4 text-slate-400">
-            To withdraw
-          </p>
-          <p className="flex overflow-hidden text-lg font-semibold sm:text-4xl">
-            ${" "}
+        <div>
+          <p className="mb-1 text-gray-500">To withdraw</p>
+          <p className="flex gap-1 text-lg font-semibold sm:text-3xl">
+            $
             <span className="move-up">
               {currencies ? totalToWithdraw : "..."}
             </span>
           </p>
           {plusTokens > 0 && (
-            <p className="text-xs font-normal text-green-500">
-              +{plusTokens} token{plusTokens > 1 ? "s" : null}
+            <p className="pt-1 text-xs text-green-500">
+              + tokens
+              {/* + {Math.floor(plusTokens * 10000) / 10000} tokens */}
             </p>
           )}
         </div>
+        <div>
+          <p className="mb-1 text-gray-500">Total earned</p>
+          <p className="flex justify-end gap-1 text-lg font-semibold sm:text-3xl">
+            $<span className="move-up">{currencies ? totalEarned : "..."}</span>
+          </p>
+          {/* TODO:  Add SLX Cashback for ToWithdraw amount*/}
+          {/* TODO:  Use alchemy erc20 API to fetch SLX received by Juciebox? TBD*/}
+          {/* {cashback > 0 && (
+            <p className="pt-1 text-xs text-green-500">
+              +{cashback} SLX cashback
+            </p>
+          )} */}
+        </div>
       </div>
-      <p className="p-2 mb-5 text-xs font-normal text-left text-slate-500 sm:p-0">
-        Current SLX cashback fee: 2.5%
+      <p className="absolute bottom-0 right-0 pr-4 mb-2 text-xs text-right text-gray-500 sm:pr-8">
+        SLX cashback fee: 2.5%
       </p>
-    </>
+    </div>
   )
 }
 

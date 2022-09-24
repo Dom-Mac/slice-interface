@@ -87,7 +87,6 @@ const BlockchainCall = ({
           className={""}
           color={""}
           double={false}
-          rootClassNameProp={""}
         />
       ) : (
         <Button
@@ -99,7 +98,7 @@ const BlockchainCall = ({
       )}
       {isCustomButton ? (
         message.message && (
-          <div className="absolute z-10 p-2 bg-slate-800 fade-out">
+          <div className="absolute z-10 p-2 bg-gray-800 fade-out">
             <MessageBlock msg={message} />
           </div>
         )

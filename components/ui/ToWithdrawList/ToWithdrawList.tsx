@@ -1,11 +1,12 @@
-import { Withdraw, BatchWithdraw } from "@lib/handlers/chain"
 import { Currency } from "@utils/useCurrenciesData"
-import { LogDescription } from "ethers/lib/utils"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { useSigner } from "wagmi"
-import BlockchainCall from "../BlockchainCall"
+import { useContractWrite, usePrepareContractWrite, useSigner } from "wagmi"
 import FakeWithdrawItems from "../FakeWithdrawItems"
-import ToWithdrawItem from "../ToWithdrawItem"
+import { Button, InputCheckbox, ToWithdrawItem } from "@components/ui"
+import FundsModuleContract from "artifacts/contracts/FundsModule.sol/FundsModule.json"
+import WithdrawIcon from "@components/icons/WithdrawIcon"
+import executeTransaction from "@utils/executeTransaction"
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 
 type Props = {
   currencies: Currency[]
@@ -14,13 +15,34 @@ type Props = {
 }
 
 const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
-  const { data: signer } = useSigner()
   const [selectedTokens, setSelectedTokens] = useState<string[]>([])
-  const [success, setSuccess] = useState(false)
-  const [logs, setLogs] = useState<LogDescription[]>()
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<any>()
+
   const currenciesToWithdraw = currencies?.filter(
     (currency) => Number(currency.toWithdraw) > 1
   )
+
+  const toWithdrawAddresses = currenciesToWithdraw?.map((currency) => {
+    return currency.id.split("-")[1]
+  })
+
+  const currenciesParam = currenciesToWithdraw
+    ? // If there is only one currency available, single withdraw
+      toWithdrawAddresses?.length === 1
+      ? toWithdrawAddresses[0]
+      : // If no currency is selected, batch withdraw (all)
+      selectedTokens?.length === 0
+      ? toWithdrawAddresses
+      : // If one currency is selected, single withdraw
+      selectedTokens?.length === 1
+      ? selectedTokens[0]
+      : // Else, if multiple currencies are selected, batch withdraw (selected)
+        selectedTokens
+    : []
+
+  const withdrawButtonText =
+    selectedTokens?.length > 0 ? "Widthraw selected" : "Widthraw all"
 
   const handleSelectAll = () => {
     let addresses: string[] = []
@@ -45,30 +67,33 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
     }
   }
 
-  const withdrawAction = () => {
-    const toWithdrawAddresses = currenciesToWithdraw?.map((currency) => {
-      return currency.id.split("-")[1]
-    })
+  const addRecentTransaction = useAddRecentTransaction()
+  const { config, error } = usePrepareContractWrite({
+    addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
+    contractInterface: FundsModuleContract.abi,
+    functionName:
+      toWithdrawAddresses?.length === 1 || selectedTokens?.length === 1
+        ? "withdraw"
+        : "batchWithdraw",
+    args: [account, currenciesParam]
+  })
 
-    // If there is only one currency available, withdraw all or selected is the same thing
-    if (toWithdrawAddresses.length === 1) {
-      return Withdraw(signer, account, toWithdrawAddresses[0])
-    } else {
-      if (selectedTokens.length === 0) {
-        // Withdraw all in batch
-        return BatchWithdraw(signer, account, toWithdrawAddresses)
-      } else if (selectedTokens.length === 1) {
-        // Withdraw the one selected
-        return Withdraw(signer, account, selectedTokens[0])
-      } else {
-        // Withdraw selected in batch
-        return BatchWithdraw(signer, account, selectedTokens)
-      }
-    }
-  }
+  const { writeAsync } = useContractWrite(config)
 
   useEffect(() => {
-    if (success) {
+    if (data?.tx) {
+      addRecentTransaction({
+        hash: data.tx.hash,
+        description:
+          toWithdrawAddresses?.length === 1 || selectedTokens?.length === 1
+            ? `Withdraw`
+            : "Batch withdraw"
+      })
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (data) {
       const updatedCurrencies = [...currencies]
 
       if (selectedTokens.length === 0) {
@@ -102,38 +127,38 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
       setCurrencies(updatedCurrencies)
       setSelectedTokens([])
     }
-  }, [success])
+  }, [data])
 
   return (
-    <div className="px-4 pb-4 -mb-10 pt-7 container-list md:px-0">
-      <div className="absolute left-0 w-screen -z-10 bg-slate-800 rounded-t-2xl background-height"></div>
-      <div className="flex items-center justify-between h-24">
+    <div className="pb-4 background-height sm:min-h-[200px]">
+      <div className="absolute left-0 w-screen bg-gray-100 -z-10 rounded-t-2xl background-height"></div>
+      <div className="flex items-center justify-between pt-12 pb-8 pl-4 pr-2 sm:px-6">
         {currenciesToWithdraw && currenciesToWithdraw.length != 0 && (
           <>
-            <p
-              className="text-xs font-normal md:text-base text-slate-400"
-              onClick={handleSelectAll}
-            >
-              {selectedTokens.length === 0 ? "Select all" : "Deselect all"}
-            </p>
+            <InputCheckbox
+              checked={selectedTokens.length !== 0}
+              onChange={handleSelectAll}
+              label={
+                selectedTokens.length === 0 ? "Select all" : "Deselect all"
+              }
+              labelClassName="pl-3 text-gray-600"
+            />
             <div>
-              {/* TODO: What if message ? */}
-              <BlockchainCall
-                transactionDescription={`Withdraw tokens`}
-                saEventName="withdraw_to_owner"
-                action={() => withdrawAction()}
-                success={success}
-                setSuccess={setSuccess}
-                setLogs={setLogs}
-                confetti={false}
+              <Button
+                className="h-[40px] rounded-sm nightwind-prevent px-4 sm:px-7 min-w-[150px] focus:outline-none group"
                 label={
-                  <p className="text-sm font-normal border-b border-black dark:border-yellow-400 md:text-base">
-                    {selectedTokens.length > 0
-                      ? "Widthraw selected"
-                      : "Widthraw all"}
-                  </p>
+                  <div className="flex items-center font-medium">
+                    <p className="pr-2 text-sm sm:text-base">
+                      {withdrawButtonText}
+                    </p>
+                    <WithdrawIcon className="w-5 h-5 rotate-180" />
+                  </div>
                 }
-                isCustomButton={true}
+                double={false}
+                onClick={async () =>
+                  await executeTransaction(writeAsync, setLoading, setData)
+                }
+                loading={loading}
               />
             </div>
           </>
@@ -141,25 +166,25 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
       </div>
       {currencies ? (
         currenciesToWithdraw?.length ? (
-          currenciesToWithdraw.map((currency, index) => {
+          currenciesToWithdraw?.map((currency, index) => {
             return (
               <ToWithdrawItem
+                key={index}
                 currency={currency}
                 currencies={currencies}
                 setCurrencies={setCurrencies}
                 account={account}
-                signer={signer}
                 isChecked={selectedTokens.includes(currency.id.split("-")[1])}
-                key={index}
+                index={index}
                 handleSelected={handleSelected}
               />
             )
           })
         ) : (
-          <p className="text-lg">There are no currencies to withdraw</p>
+          <p className="text-lg">Nothing to withdraw 🙌</p>
         )
       ) : (
-        <FakeWithdrawItems />
+        [...Array(3).keys()].map((el, i) => <FakeWithdrawItems key={i} />)
       )}
     </div>
   )

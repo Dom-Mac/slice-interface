@@ -114,7 +114,7 @@ const getQuotes = async (metadata, currencies) => {
       // if it's ETH take the first value of the array
       formattedData[currencyMetadata.symbol] = results[0]?.quote?.USD?.price
     } else {
-      results.forEach((result) => {
+      results?.forEach((result) => {
         // check if the currency found by symbol has the correct address,
         // otherwise it's not the same currency
         const price =

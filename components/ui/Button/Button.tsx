@@ -18,13 +18,12 @@ interface ButtonProps {
   disabled?: boolean
   onClick?: any
   saEventName?: string
-  rootClassNameProp?: string
 }
 
 const Button: FC<ButtonProps> = (props) => {
   const {
     wrapperClassName = "",
-    className = "h-[40px] font-bold tracking-wide rounded-sm overflow-hidden border-white border-[3px] nightwind-prevent",
+    className = "h-[40px] font-bold tracking-wide rounded-sm overflow-hidden border-white border-[3px] nightwind-prevent px-7 min-w-[150px] focus:outline-none",
     color = "text-white bg-blue-600 hover:bg-blue-700 focus:bg-blue-700",
     type = "button",
     label,
@@ -36,13 +35,10 @@ const Button: FC<ButtonProps> = (props) => {
     targetBlank = true,
     disabled = false,
     saEventName = "",
-    rootClassNameProp = "px-7 min-w-[150px] focus:outline-none ",
     ...rest
   } = props
 
   const { color1, color2 } = useAppContext()
-
-  const rootClassName = `${rootClassNameProp} ${className}`
 
   return (
     <div
@@ -52,7 +48,7 @@ const Button: FC<ButtonProps> = (props) => {
       {href ? (
         !external ? (
           <Link href={href} passHref>
-            <button className={`peer relative z-10 ${rootClassName} ${color}`}>
+            <button className={`peer relative z-10 ${className} ${color}`}>
               <div className="flex items-center justify-center">
                 <p>{label}</p>
               </div>
@@ -65,7 +61,7 @@ const Button: FC<ButtonProps> = (props) => {
             rel="noreferrer"
             className="relative z-10 peer"
           >
-            <button className={`${rootClassName} ${color}`}>
+            <button className={`${className} ${color}`}>
               <div className="flex items-center justify-center">
                 <p>{label}</p>
               </div>
@@ -73,7 +69,7 @@ const Button: FC<ButtonProps> = (props) => {
           </a>
         ) : (
           <a href={href} className="relative z-10 peer">
-            <button className={`${rootClassName} ${color}`}>
+            <button className={`${className} ${color}`}>
               <div className="flex items-center justify-center">
                 <p>{label}</p>
               </div>
@@ -82,7 +78,7 @@ const Button: FC<ButtonProps> = (props) => {
         )
       ) : (
         <button
-          className={`peer relative z-10 ${rootClassName} ${
+          className={`peer relative z-10 ${className} ${
             disabled ? "text-white bg-gray-600 cursor-wait" : color
           }`}
           type={type}
@@ -102,7 +98,7 @@ const Button: FC<ButtonProps> = (props) => {
       )}
       {double && (
         <div
-          className={`${rootClassName} shadow-light-random absolute top-0 mt-[0.6rem] ml-[0.6rem] mr-[-0.6rem] bg-gradient-to-br ${
+          className={`${className} shadow-light-random absolute top-0 mt-[0.6rem] ml-[0.6rem] mr-[-0.6rem] bg-gradient-to-br ${
             color1[3]
           } ${color2[4]} text-transparent ${
             !disabled
