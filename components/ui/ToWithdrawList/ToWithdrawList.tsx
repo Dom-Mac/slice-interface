@@ -1,11 +1,11 @@
 import { Currency } from "@utils/useCurrenciesData"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useContractWrite, usePrepareContractWrite, useSigner } from "wagmi"
 import FakeWithdrawItems from "../FakeWithdrawItems"
 import { Button, InputCheckbox, ToWithdrawItem } from "@components/ui"
 import FundsModuleContract from "artifacts/contracts/FundsModule.sol/FundsModule.json"
 import WithdrawIcon from "@components/icons/WithdrawIcon"
-import executeTransaction from "@utils/executeTransaction"
+import executeTransaction, { TxData } from "@utils/executeTransaction"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   const [selectedTokens, setSelectedTokens] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<any>()
+  const [data, setData] = useState<TxData>()
 
   const currenciesToWithdraw = currencies?.filter(
     (currency) => Number(currency.toWithdraw) > 1
@@ -58,15 +58,6 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
     }
   }
 
-  const handleSelected = (e) => {
-    const { id, checked } = e.target
-    if (!checked) {
-      setSelectedTokens(selectedTokens.filter((item) => item !== id))
-    } else {
-      setSelectedTokens([...selectedTokens, id])
-    }
-  }
-
   const addRecentTransaction = useAddRecentTransaction()
   const { config, error } = usePrepareContractWrite({
     addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
@@ -93,7 +84,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   }, [data])
 
   useEffect(() => {
-    if (data) {
+    if (data?.wait) {
       const updatedCurrencies = [...currencies]
 
       if (selectedTokens.length === 0) {
@@ -128,6 +119,10 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
       setSelectedTokens([])
     }
   }, [data])
+
+  useEffect(() => {
+    setSelectedTokens([])
+  }, [account])
 
   return (
     <div className="pb-4 background-height sm:min-h-[200px]">
@@ -176,12 +171,13 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
                 account={account}
                 isChecked={selectedTokens.includes(currency.id.split("-")[1])}
                 index={index}
-                handleSelected={handleSelected}
+                selectedTokens={selectedTokens}
+                setSelectedTokens={setSelectedTokens}
               />
             )
           })
         ) : (
-          <p className="text-lg">Nothing to withdraw 🙌</p>
+          <p className="text-lg sm:text-xl">Nothing to withdraw 🙌</p>
         )
       ) : (
         [...Array(3).keys()].map((el, i) => <FakeWithdrawItems key={i} />)

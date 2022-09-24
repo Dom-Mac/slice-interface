@@ -9,31 +9,33 @@ import InputCheckbox from "../InputCheckbox"
 import FundsModuleContract from "artifacts/contracts/FundsModule.sol/FundsModule.json"
 import { useContractWrite, usePrepareContractWrite } from "wagmi"
 import WithdrawIcon from "@components/icons/WithdrawIcon"
-import executeTransaction from "@utils/executeTransaction"
+import executeTransaction, { TxData } from "@utils/executeTransaction"
 import Spinner from "@components/icons/Spinner"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 
 type Props = {
+  account: string
+  isChecked: boolean
   currency: Currency
   currencies: Currency[]
+  selectedTokens: string[]
   setCurrencies: Dispatch<SetStateAction<Currency[]>>
-  account: string
-  handleSelected: (e: any) => void
-  isChecked: boolean
+  setSelectedTokens: Dispatch<SetStateAction<string[]>>
   index: number
 }
 
 const ToWithdrawItem = ({
+  account,
+  isChecked,
   currency,
   currencies,
+  selectedTokens,
   setCurrencies,
-  account,
-  handleSelected,
-  isChecked,
+  setSelectedTokens,
   index
 }: Props) => {
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<any>()
+  const [data, setData] = useState<TxData>()
   const [logs, setLogs] = useState<LogDescription[]>()
   const addr0 = ethers.constants.AddressZero
   const address = currency.id.split("-")[1]
@@ -45,6 +47,24 @@ const ToWithdrawItem = ({
   const toWithdrawUsd = currency.quote
     ? (Number(toWithdrawToken) * Number(currency.quote)).toFixed(2)
     : 0
+
+  const addRecentTransaction = useAddRecentTransaction()
+  const { config, error } = usePrepareContractWrite({
+    addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
+    contractInterface: FundsModuleContract.abi,
+    functionName: "withdraw",
+    args: [account, address]
+  })
+
+  const { writeAsync } = useContractWrite(config)
+
+  const handleSelected = () => {
+    if (!isChecked) {
+      setSelectedTokens([...selectedTokens, address])
+    } else {
+      setSelectedTokens(selectedTokens.filter((item) => item !== address))
+    }
+  }
 
   useEffect(() => {
     if (data?.wait) {
@@ -63,16 +83,6 @@ const ToWithdrawItem = ({
       setCurrencies(updatedCurrencies)
     }
   }, [data])
-
-  const addRecentTransaction = useAddRecentTransaction()
-  const { config, error } = usePrepareContractWrite({
-    addressOrName: process.env.NEXT_PUBLIC_FUNDS_ADDRESS,
-    contractInterface: FundsModuleContract.abi,
-    functionName: "withdraw",
-    args: [account, address]
-  })
-
-  const { writeAsync } = useContractWrite(config)
 
   useEffect(() => {
     if (data?.tx) {

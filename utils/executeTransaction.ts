@@ -1,5 +1,10 @@
 import { Dispatch, SetStateAction } from "react"
 
+export type TxData = {
+  tx?: { hash: string }
+  wait?: { transactionHash: string }
+}
+
 const executeTransaction = async (
   promise: () => Promise<any>,
   setLoading: Dispatch<SetStateAction<boolean>>,
