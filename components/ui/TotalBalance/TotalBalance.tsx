@@ -2,8 +2,10 @@ import VisibilityOpen from "@components/icons/VisibilityOpen"
 import VisibilityClosed from "@components/icons/VisibilityClosed"
 import { ethers } from "ethers"
 import { useState } from "react"
+import QuestionMark from "@components/icons/QuestionMark"
 
 const TotalBalance = ({ currencies }) => {
+  const [show, setShow] = useState(false)
   const addr0 = ethers.constants.AddressZero
   let totalToWithdraw = 0
   let totalEarned = 0
@@ -81,9 +83,37 @@ const TotalBalance = ({ currencies }) => {
           )} */}
         </div>
       </div>
-      <p className="absolute bottom-0 right-0 pr-4 mb-2 text-xs text-right text-gray-500 sm:pr-8">
-        SLX cashback fee: 2.5%
-      </p>
+      <div
+        className="absolute bottom-0 right-0 flex items-center gap-1 pt-2 mb-2 mr-4 text-xs text-right text-gray-500 cursor-default sm:mr-8"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+      >
+        <p>SLX cashback fee: 2.5%</p>
+        <QuestionMark className="w-4 h-4" />
+        <div
+          className={`${
+            !show ? "hidden " : ""
+          }prose-sm text-left absolute p-5 w-[22rem] z-10 xs:w-96 bg-white shadow-xl bottom-0 right-0 -mr-6 mb-6 rounded-md overflow-hidden border border-blue-600 border-opacity-50`}
+        >
+          <p>
+            Amounts to be withdrawn take into account a 2.5% protocol fee, which
+            is sent to{" "}
+            <a
+              href="https://juicebox.money/p/slice"
+              className="highlight"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Slice DAO
+            </a>{" "}
+            to fund protocol development.
+          </p>
+          <p>
+            In exchange for ETH, it gives back a corresponding amount of SLX
+            governance tokens.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
