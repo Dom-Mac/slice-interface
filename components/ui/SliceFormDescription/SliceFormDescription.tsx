@@ -7,25 +7,25 @@ const SliceFormDescription = () => {
       <div className="py-6 mx-auto space-y-4 sm:px-6 max-w-screen-xs md:text-left">
         <div className="pb-4 prose">
           <p>
-            <b>
-              A slicer can be used as a decentralized store and/or to split
-              payments dynamically to its owners.
-            </b>
+            <b>Slicers are collaborative on-chain stores.</b>
           </p>
           <p>
-            Ownership over a slicer is based on{" "}
-            <DoubleText inactive logoText="Slices 🍰" size="text-normal" />,
-            ERC1155 tokens that can be traded on any nft marketplace.{" "}
+            Owners can use them to sell any product in any currency, fully
+            on-chain, and to split payments between multiple addresses.
+          </p>
+          <p>
+            <DoubleText inactive logoText="Slices 🍰" size="text-normal" />{" "}
+            represent ownership over a slicer and its earnings.{" "}
             <b>
-              The more slices you hold, the more slicer earnings you receive.
+              The more slices you hold, the more you earn from payments to your
+              slicer.
             </b>
           </p>
-          <p>It all starts by creating a slicer.</p>
         </div>
         <ul className="prose">
-          <FAQsItem
+          {/* <FAQsItem
             id="store"
-            question="How to set up a d-store"
+            question="How to set up a decentralized store"
             answer={
               <>
                 <p>
@@ -34,8 +34,7 @@ const SliceFormDescription = () => {
                 </p>
                 <p>
                   Then on your slicer page you&apos;ll find a button that says{" "}
-                  <b>Add product</b>. That&apos;s where you can set up your
-                  product on sale, and once the process is completed it will
+                  <b>Add product</b>. That&apos;s where you can , and once the process is completed it will
                   appear among the slicer products.
                 </p>
                 <p>
@@ -53,30 +52,7 @@ const SliceFormDescription = () => {
                 </p>
               </>
             }
-          />
-          <FAQsItem
-            id="single"
-            question="Creating a slicer with one owner"
-            answer={
-              <>
-                <p>
-                  Slicers are collaborative tools but you can also create a
-                  slicer just for yourself, or someone else. You may consider
-                  doing so:
-                </p>
-                <ul>
-                  <li>
-                    To sell products from a d-store without sharing ownership
-                    with others.
-                  </li>
-                  <li>
-                    If you don&apos;t know the other owners in advance, you
-                    could mint the slices to yourself and transfer them later.
-                  </li>
-                </ul>
-              </>
-            }
-          />
+          /> */}
           <FAQsItem
             id="dynamic"
             question="What is dynamic payment splitting"
@@ -101,6 +77,29 @@ const SliceFormDescription = () => {
                   15% of any payment to the slicer. At the same time the new
                   owner would receive the remaining 5%.
                 </p>
+              </>
+            }
+          />
+          <FAQsItem
+            id="single"
+            question="Creating a slicer with one owner"
+            answer={
+              <>
+                <p>
+                  Slicers are collaborative tools but you can also create a
+                  slicer just for yourself, or someone else. You may consider
+                  doing so:
+                </p>
+                <ul>
+                  <li>
+                    To sell products from a d-store without sharing ownership
+                    with others.
+                  </li>
+                  <li>
+                    If you don&apos;t know the other owners in advance, you
+                    could mint the slices to yourself and transfer them later.
+                  </li>
+                </ul>
               </>
             }
           />

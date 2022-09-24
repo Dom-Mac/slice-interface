@@ -41,7 +41,7 @@ const SliceFormBlockSplitter = ({
 }: Props) => {
   const { account } = useAppContext()
   const [initAddress, setInitAddress] = useState("")
-  const [inputCount, setInputCount] = useState(2)
+  const [inputCount, setInputCount] = useState(1)
   const [removedCount, setRemovedCount] = useState(0)
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const SliceFormBlockSplitter = ({
   }, [success])
 
   const resetInputs = () => {
-    setInputCount(2)
+    setInputCount(1)
     setRemovedCount(0)
     setAddresses([initAddress])
     setShares([1000000])
@@ -106,7 +106,7 @@ const SliceFormBlockSplitter = ({
               </p>
             </>
           }
-          position="top-[35px] right-[-35px]"
+          position="bottom-0 right-[-35px]"
         />
       </div>
       {[...Array(inputCount)].map((el, key) => {
@@ -165,6 +165,7 @@ const SliceFormBlockSplitter = ({
               </p>
             </>
           }
+          position="bottom-[15px] left-0"
         />
       </div>
 
