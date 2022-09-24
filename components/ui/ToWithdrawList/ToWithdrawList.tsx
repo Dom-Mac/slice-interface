@@ -85,6 +85,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
             1
         )
         updatedCurrencies[index].toWithdraw = "1"
+        updatedCurrencies[index].toPayToProtocol = "1"
       })
     } else {
       updatedCurrencies
@@ -102,6 +103,7 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
               1
           )
           updatedCurrencies[index].toWithdraw = "1"
+          updatedCurrencies[index].toPayToProtocol = "1"
         })
     }
 
