@@ -3,7 +3,6 @@ import nightwind from "nightwind/helper"
 import Logo from "@components/icons/Logo"
 import Nightwind from "@components/icons/Nightwind"
 import ShoppingBag from "@components/icons/ShoppingBag"
-import CarouselPayments from "@components/icons/CarouselPayments"
 import { Dispatch, SetStateAction } from "react"
 import { DropdownMenuElement } from ".."
 import Banknotes from "@components/icons/Banknotes"
@@ -26,7 +25,7 @@ function DropdownMenu({ showDropdown, setShowDropdown }: Props) {
 
   return (
     <div
-      className={`z-20 absolute top-0 right-0 w-56 p-1.5 mt-20 border border-opacity-80 border-gray-200 space-y-1 bg-white rounded-md shadow-base transition-opacity duration-200 nightwind-prevent-block`}
+      className={`z-20 absolute top-0 right-0 w-56 p-1.5 mt-20 border border-opacity-80 border-gray-200 space-y-1 bg-white rounded-lg shadow-base transition-opacity duration-200 nightwind-prevent-block`}
     >
       <DropdownMenuElement
         href="/profile"
