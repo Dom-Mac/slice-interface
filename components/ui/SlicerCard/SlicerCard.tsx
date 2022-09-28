@@ -8,19 +8,17 @@ import { LogDescription } from "ethers/lib/utils"
 import formatNumber from "@utils/formatNumber"
 import getLog from "@utils/getLog"
 import Arrow from "@components/icons/Arrow"
-import { CardImage, CopyAddress } from ".."
+import { ButtonRelease, CardImage, CopyAddress } from ".."
 import UserVerified from "@components/icons/UserVerified"
 import Immutable from "@components/icons/Immutable"
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import getEthFromWei from "@utils/getEthFromWei"
 import ProductsBalance from "../ProductsBalance"
 import { useSigner } from "wagmi"
-
-type SlicerInfo = {
-  name: string
-  address: string
-  image: string
-}
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
+import { NewTransaction } from "@rainbow-me/rainbowkit/dist/transactions/transactionStore"
+import { Currency } from "@prisma/client"
+import { SlicerReduced } from "pages/slicer"
 
 type Props = {
   slicerId: number
@@ -32,7 +30,13 @@ type Props = {
   isAllowed: boolean
   isImmutable: boolean
   productsModuleBalance: string
-  unreleasedAmount: string
+  addRecentTransaction: (transaction: NewTransaction) => void
+  unreleasedAmounts: {
+    currency: string
+    amount: BigNumber
+    symbol?: string
+  }[]
+  dbData: SlicerReduced
 }
 
 const SlicerCard = ({
@@ -45,20 +49,11 @@ const SlicerCard = ({
   isAllowed,
   isImmutable,
   productsModuleBalance,
-  unreleasedAmount
+  addRecentTransaction,
+  unreleasedAmounts,
+  dbData
 }: Props) => {
-  const { data: signer } = useSigner()
-
-  const hexId = Number(slicerId).toString(16)
-  const { data: slicerInfo } = useSWR(
-    `/api/slicer/${hexId}?stats=false`,
-    fetcher
-  )
-
-  const { name, image }: SlicerInfo = slicerInfo || {
-    name: null,
-    image: null
-  }
+  const { name, image } = dbData || {}
 
   const [ethReleased, setEthReleased] = useState("")
   const [released, setReleased] = useState(false)
@@ -68,12 +63,12 @@ const SlicerCard = ({
   const slicerName = name || `Slicer #${slicerId}`
   const slicePercentage = `${Math.floor((shares / totalSlices) * 10000) / 100}%`
 
-  useEffect(() => {
-    if (success) {
-      setEthReleased(String(getEthFromWei(unreleasedAmount)))
-      setReleased(true)
-    }
-  }, [success])
+  // useEffect(() => {
+  //   if (success) {
+  //     setEthReleased(String(getEthFromWei(unreleasedAmount)))
+  //     setReleased(true)
+  //   }
+  // }, [success])
 
   return (
     <div className="sm:flex">
@@ -121,7 +116,7 @@ const SlicerCard = ({
       <div className="pt-5 sm:pt-4 sm:ml-6 md:ml-14">
         <Link href={slicerLink}>
           <a className="flex items-center">
-            {slicerInfo ? (
+            {dbData ? (
               <h3 className="inline-block">{slicerName}</h3>
             ) : (
               <div className="w-32 h-6 mb-2 rounded-md bg-sky-300 animate-pulse" />
@@ -150,7 +145,19 @@ const SlicerCard = ({
           slicerId={slicerId}
           productsModuleBalance={productsModuleBalance}
         />
-        {!released && unreleasedAmount && Number(unreleasedAmount) != 0 ? (
+        <div className="pt-5 space-y-5">
+          {dbData &&
+            unreleasedAmounts.map((unreleasedAmount, i) => (
+              <ButtonRelease
+                slicerAddress={slicerAddress}
+                unreleasedAmount={unreleasedAmount}
+                addRecentTransaction={addRecentTransaction}
+                key={i}
+              />
+            ))}
+        </div>
+
+        {/* {!released && unreleasedAmount && Number(unreleasedAmount) != 0 ? (
           <div className="mt-6">
             <BlockchainCall
               transactionDescription={`Release ETH | Slicer #${slicerId}`}
@@ -172,7 +179,7 @@ const SlicerCard = ({
               mutateObj={{ unreleased: 0 }}
             />
           </div>
-        ) : null}
+        ) : null} */}
         {ethReleased != "" && (
           <p className="pt-4 text-sm text-green-500">
             You have released{" "}

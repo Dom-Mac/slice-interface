@@ -5,8 +5,10 @@ import prisma from "@lib/prisma"
 const currencies = async (req: NextApiRequest, res: NextApiResponse) => {
   await corsMiddleware(req, res)
   try {
-    if (req.method === "POST") {
-      const { currencies } = req.body
+    if (req.method === "GET") {
+      const { addresses } = req.query
+      const currencies = String(addresses).split("_")
+
       const dbCurrencies = await prisma.currency.findMany({
         where: { address: { in: currencies } }
       })

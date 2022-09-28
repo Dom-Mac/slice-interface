@@ -112,7 +112,7 @@ Slice uses [CoinMarketCap](https://coinmarketcap.com/) API to get and store curr
 
 Follow these steps to create a Coin Market Cap API key
 
-1. Create or log into your account on [Web3Storage](https://coinmarketcap.com/api/) by clicking on **Login**
+1. Create or log into your account on [CoinMarketCap](https://coinmarketcap.com/api/) by clicking on **Login**
 2. Create an API token and copy it in **COIN_MARKET_CAP_KEY** in your `.env` file
 
 ### Usage

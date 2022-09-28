@@ -9,10 +9,10 @@ const newCurrency = async (req: NextApiRequest, res: NextApiResponse) => {
       const { currencies } = req.body
 
       const dbCurrencies = currencies.map(
-        async ({ id, symbol, name, logo, quote }) => {
+        async ({ id, address, symbol, name, logo, quote }) => {
           await prisma.currency.upsert({
             where: {
-              address: id.split("-")[1]
+              address: address || id.split("-")[1]
             },
             update: {
               symbol,
@@ -21,7 +21,7 @@ const newCurrency = async (req: NextApiRequest, res: NextApiResponse) => {
               quote
             },
             create: {
-              address: id.split("-")[1],
+              address: address || id.split("-")[1],
               symbol,
               name,
               logo,

@@ -1,6 +1,6 @@
-import { utils } from "ethers"
+import { BigNumberish, utils } from "ethers"
 
-const getEthFromWei = (weiAmount: string, noString = false) => {
+const getEthFromWei = (weiAmount: BigNumberish, noString = false) => {
   const ethAmount = weiAmount
     ? Math.floor(Number(utils.formatEther(weiAmount)) * 10000) / 10000
     : null

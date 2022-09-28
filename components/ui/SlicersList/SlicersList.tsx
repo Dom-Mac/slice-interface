@@ -1,41 +1,32 @@
 import { ListLayout, SlicerCard } from "@components/ui"
-import { useEffect, useState } from "react"
+import { Currency } from "@prisma/client"
+import { NewTransaction } from "@rainbow-me/rainbowkit/dist/transactions/transactionStore"
+import { BigNumber, BigNumberish } from "ethers"
+import { SlicerReduced } from "pages/slicer"
+import { useState } from "react"
 
 type Props = {
   account: string
   payeeData: any
   slicers: any
   loading: boolean
+  unreleasedData: BigNumberish[]
+  addRecentTransaction: (transaction: NewTransaction) => void
+  dbData?: { slicerData: SlicerReduced[]; currencyData: Currency[] }
 }
 
-const SlicersList = ({ account, payeeData, slicers, loading }: Props) => {
+const SlicersList = ({
+  account,
+  payeeData,
+  slicers,
+  loading,
+  unreleasedData,
+  addRecentTransaction,
+  dbData
+}: Props) => {
   const [iterator, setIterator] = useState(0)
-  const [unreleased, setUnreleased] = useState([])
-  let slicerAddresses = []
-
-  const getUnreleasedData = async (data) => {
-    const fetcher = (await import("@utils/fetcher")).default
-
-    const unreleasedData = await fetcher(
-      `/api/account/${account}/unreleased`,
-      data
-    )
-    setUnreleased(unreleasedData)
-  }
-
-  useEffect(() => {
-    if (account && slicers) {
-      slicers?.map((slicer) => {
-        slicerAddresses.push(slicer.slicer.address)
-      })
-      const body = {
-        method: "POST",
-        body: JSON.stringify({ slicerAddresses })
-      }
-      getUnreleasedData(body)
-    }
-    return () => setUnreleased([])
-  }, [slicers, account])
+  const unreleasedDataCopy = unreleasedData && [...unreleasedData]
+  const { slicerData, currencyData } = dbData || {}
 
   return (
     <ListLayout
@@ -60,7 +51,21 @@ const SlicersList = ({ account, payeeData, slicers, loading }: Props) => {
           const protocolFee = slicer?.protocolFee
           const productsModuleBalance = slicer?.productsModuleBalance
           const isAllowed = Number(ownedShares) >= Number(slicer?.minimumSlices)
-          const unreleasedAmount = unreleased[i]
+          const currencies = slicer?.currencies
+          const unreleasedAmounts = unreleasedDataCopy
+            ?.splice(0, currencies.length)
+            .map((amount, i) => {
+              const currencyAddress = currencies[i].id.split("-")[0]
+
+              return {
+                currency: currencyAddress,
+                amount: amount as BigNumber,
+                symbol: currencyData?.find(
+                  (currency) => currency.address == currencyAddress
+                )?.symbol
+              }
+            })
+          const dbData = slicerData?.find((el) => el.id == slicerId)
 
           return (
             <div className="mt-3" key={key}>
@@ -74,7 +79,9 @@ const SlicersList = ({ account, payeeData, slicers, loading }: Props) => {
                 isAllowed={isAllowed}
                 isImmutable={isImmutable}
                 productsModuleBalance={productsModuleBalance}
-                unreleasedAmount={unreleasedAmount}
+                unreleasedAmounts={unreleasedAmounts}
+                addRecentTransaction={addRecentTransaction}
+                dbData={dbData}
               />
             </div>
           )

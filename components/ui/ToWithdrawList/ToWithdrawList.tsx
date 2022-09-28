@@ -7,6 +7,7 @@ import FundsModuleContract from "artifacts/contracts/FundsModule.sol/FundsModule
 import WithdrawIcon from "@components/icons/WithdrawIcon"
 import executeTransaction from "@utils/executeTransaction"
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
+import { Currency as DbCurrency } from "@prisma/client"
 import constants from "constants"
 
 type Props = {
@@ -22,7 +23,6 @@ const ToWithdrawList = ({ currencies, account, setCurrencies }: Props) => {
   const currenciesToWithdraw = currencies?.filter(
     (currency) => Number(currency.toWithdraw) > 1
   )
-
   const toWithdrawAddresses = currenciesToWithdraw?.map((currency) => {
     return currency.id.split("-")[1]
   })

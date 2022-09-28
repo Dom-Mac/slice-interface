@@ -22,6 +22,9 @@ import { defaultProvider } from "@lib/useProvider"
 import { FundingCycles } from "types/typechain/FundingCycles"
 import JBFundingCycles from "artifacts/contracts/JBFundingCycles.sol/JBFundingCycles.json"
 import constants from "../constants.json"
+import { Currency as DbCurrency } from "@prisma/client"
+import fetcher from "@utils/fetcher"
+import useSWR from "swr"
 
 export default function Earnings({ slxRate }) {
   const { account } = useAppContext()
@@ -39,7 +42,19 @@ export default function Earnings({ slxRate }) {
       }
     `
   let subgraphData = useQuery(tokensQuery, [account])
-  const currenciesData = useCurrenciesData(subgraphData, account)
+
+  const currenciesAddresses = subgraphData?.payee?.currencies?.map(
+    (c) => c.id.split("-")[1]
+  )
+  const { data: dbCurrencies }: { data?: DbCurrency[] } = useSWR(
+    currenciesAddresses
+      ? `/api/currencies?addresses=${currenciesAddresses.join("_")}`
+      : null,
+    fetcher
+  )
+  // TODO: Use dbCurrencies to show data sooner
+
+  const currenciesData = useCurrenciesData(subgraphData, dbCurrencies, account)
 
   useEffect(() => {
     setCurrencies(currenciesData)
