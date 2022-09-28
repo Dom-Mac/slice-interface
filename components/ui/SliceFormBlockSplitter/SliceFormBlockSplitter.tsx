@@ -3,7 +3,8 @@ import {
   Input,
   SliceFormAdvancedSettings,
   SliceFormInputBlock,
-  Question
+  Question,
+  SliceFormAddCurrencies
 } from "@components/ui"
 import Add from "@components/icons/Add"
 import { useAppContext } from "@components/ui/context"
@@ -190,6 +191,8 @@ const SliceFormBlockSplitter = ({
             Math.floor((minimumShares / totalShares) * 10000) / 100 + "%"}
         </p>
       </div>
+
+      <SliceFormAddCurrencies />
 
       <SliceFormAdvancedSettings
         isImmutable={isImmutable}
