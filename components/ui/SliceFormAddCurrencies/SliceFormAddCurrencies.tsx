@@ -1,27 +1,12 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { Question, Input } from "@components/ui"
+import { Question } from "@components/ui"
 import Add from "@components/icons/Add"
-import Delete from "@components/icons/Delete"
+import AddCurrencyAddress from "../AddCurrencyAddress"
 
 type Props = {}
 
 const SliceFormAddCurrencies = ({}: Props) => {
   const [currencies, setCurrencies] = useState([""])
-  const [inputCount, setInputCount] = useState(1)
-
-  const handleChange = (value: string, index: number) => {
-    let items = currencies
-    items[index] = value
-    console.log(items)
-    setCurrencies(items)
-  }
-
-  const handleDelete = (index: number) => {
-    let items = currencies
-    items.splice(index, 1)
-    setInputCount(inputCount - 1)
-    setCurrencies(items)
-  }
 
   useEffect(() => console.log(currencies), [currencies])
 
@@ -59,39 +44,24 @@ const SliceFormAddCurrencies = ({}: Props) => {
           />
         </div>
       </div>
-      {[...Array(inputCount)].map((el, index) => {
+      {currencies.map((currency, index) => {
         return (
-          <React.Fragment key={index}>
-            <div className="col-span-1 col-start-1 mx-auto mt-3 mb-3">
-              <div className="">
-                {index != 0 && <Delete onClick={() => handleDelete(index)} />}
-              </div>
-            </div>
-            <div className="col-span-8 col-start-2 pt-3">
-              <input
-                className={
-                  "peer py-2 pl-5 w-full appearance-none rounded-t-sm shadow-light-focusable ease-in-out pr-3 border-t-0 border-r-0 border-l-0 border-b-[3px] focus:outline-none bg-white text-black border-blue-300 focus:border-sky-600 placeholder-gray-400 disabled:text-gray-500 disabled:border-blue-100 disabled:bg-gray-50"
-                }
-                onChange={(e) => handleChange(e.target.value, index)}
-                placeholder="0x..."
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                onWheel={(e) => e.currentTarget.blur()}
-              ></input>
-            </div>
-          </React.Fragment>
+          <AddCurrencyAddress
+            key={index}
+            currencies={currencies}
+            setCurrencies={setCurrencies}
+            index={index}
+          />
         )
       })}
       <div className="col-span-1 col-start-1 mx-auto ">
-        <Add onClick={() => setInputCount(inputCount + 1)} />
+        <Add onClick={() => setCurrencies([...currencies, ""])} />
       </div>
 
       <div className="col-span-7 py-3 pr-2 text-left text-green-500 xs:col-span-6 md:col-span-6">
         <p
           className="inline-block font-semibold opacity-75 cursor-pointer hover:opacity-100"
-          onClick={() => setInputCount(inputCount + 1)}
+          onClick={() => setCurrencies([...currencies, ""])}
         >
           Add currency
         </p>
