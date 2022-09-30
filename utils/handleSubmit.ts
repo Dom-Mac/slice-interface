@@ -4,7 +4,7 @@ import { Message } from "./handleMessage"
 
 const handleSubmit = async (
   action: Promise<any>,
-  setMessage: Dispatch<SetStateAction<Message>>,
+  setMessage: Dispatch<SetStateAction<Message>> | null,
   setLoading: Dispatch<SetStateAction<boolean>> | null,
   setSuccess: Dispatch<SetStateAction<boolean>> | null,
   confetti = false,
@@ -15,7 +15,9 @@ const handleSubmit = async (
   const launchConfetti = (await import("./launchConfetti")).default
   const handleLog = (await import("./handleLog")).default
 
-  setMessage({ message: "", messageStatus: "success" })
+  if (setMessage) {
+    setMessage({ message: "", messageStatus: "success" })
+  }
   try {
     const [contract, call] = await action
     setLoading && setLoading(true)
@@ -39,7 +41,9 @@ const handleSubmit = async (
     const message = err.data?.message
       ?.split("reverted with reason string '")[1]
       ?.slice(0, -1)
-    handleMessage({ message, messageStatus: "error" }, setMessage)
+    if (setMessage) {
+      handleMessage({ message, messageStatus: "error" }, setMessage)
+    }
   }
 }
 

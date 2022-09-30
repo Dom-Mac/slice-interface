@@ -6,7 +6,8 @@ import { Currency } from "@prisma/client"
 import {
   createOrUpdateCurrencies,
   getCurrenciesMetadata,
-  getQuotes
+  getQuotes,
+  getQuotesToBeUpdated
 } from "@utils/useCurrenciesData"
 
 type Data =
@@ -19,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     if (req.method === "GET") {
       if (ids) {
-        let currencyData: Currency[]
+        let currencyData: Currency[] = []
         const idList = String(ids).split("_")
 
         const slicerData = await prisma.slicer.findMany({
@@ -30,38 +31,62 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
         if (currencies) {
           const currencyAddresses = String(currencies).split("_")
-          currencyData = await prisma.currency.findMany({
+          const dbCurrencies = await prisma.currency.findMany({
             where: { address: { in: currencyAddresses } }
           })
 
-          if (currencyData.length !== currencyAddresses.length) {
-            const metadata = await getCurrenciesMetadata(
-              currencyData,
-              currencyAddresses
-            )
-            const missingCurrencies = metadata.filter(
-              (el) =>
-                currencyData.findIndex((curr) => curr.address == el.address) ==
-                -1
-            )
-
-            if (missingCurrencies.length) {
-              missingCurrencies?.forEach(({ name, symbol, logo, address }) => {
-                currencyData.push({
-                  id: undefined,
-                  address,
-                  name,
-                  symbol,
-                  logo,
-                  quote: null,
-                  cmcId: null,
-                  createdAt: undefined,
-                  updatedAt: undefined
-                })
-              })
+          if (dbCurrencies.length === currencyAddresses.length) {
+            let quotes = {}
+            // check if there are quotes to be updated
+            const quotesToBeUpdated = getQuotesToBeUpdated(dbCurrencies)
+            // if there are tokens to be updated, get quotes from coin market cap
+            if (quotesToBeUpdated.length) {
+              quotes = await getQuotes(dbCurrencies)
             }
 
-            createOrUpdateCurrencies(missingCurrencies)
+            // format data
+            currencyAddresses?.forEach((address) => {
+              const dbCurrency = dbCurrencies.find(
+                (dbCurrency) => address === dbCurrency.address
+              )
+
+              const { name, symbol, logo, quote } = dbCurrency
+              currencyData.push({
+                ...dbCurrency,
+                address,
+                name,
+                symbol,
+                logo,
+                // if the quotes have been updated return the new value, else return the db value
+                quote: Object.keys(quotes).length ? quotes[symbol] : quote
+              })
+            })
+
+            if (quotesToBeUpdated.length) {
+              createOrUpdateCurrencies(currencyData)
+            }
+          } else {
+            const metadata = await getCurrenciesMetadata(
+              dbCurrencies,
+              currencyAddresses
+            )
+            const quotes = await getQuotes(metadata)
+
+            metadata?.forEach(({ name, symbol, logo, address }) => {
+              currencyData.push({
+                id: undefined,
+                address,
+                name,
+                symbol,
+                logo,
+                quote: quotes[symbol],
+                cmcId: null,
+                createdAt: undefined,
+                updatedAt: undefined
+              })
+            })
+
+            createOrUpdateCurrencies(currencyData)
           }
         }
 

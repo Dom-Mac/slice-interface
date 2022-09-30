@@ -1,24 +1,17 @@
 import Link from "next/link"
-import fetcher from "@utils/fetcher"
-import useSWR from "swr"
-import { releaseEthToSlicer, TriggerRelease } from "lib/handlers/chain"
-import BlockchainCall from "../BlockchainCall"
-import { useEffect, useState } from "react"
-import { LogDescription } from "ethers/lib/utils"
+import { useState } from "react"
+import { formatEther } from "ethers/lib/utils"
 import formatNumber from "@utils/formatNumber"
-import getLog from "@utils/getLog"
 import Arrow from "@components/icons/Arrow"
-import { ButtonRelease, CardImage, CopyAddress } from ".."
+import { ReleaseCard, CardImage, CopyAddress } from ".."
 import UserVerified from "@components/icons/UserVerified"
 import Immutable from "@components/icons/Immutable"
-import { BigNumber, ethers } from "ethers"
-import getEthFromWei from "@utils/getEthFromWei"
 import ProductsBalance from "../ProductsBalance"
-import { useSigner } from "wagmi"
-import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 import { NewTransaction } from "@rainbow-me/rainbowkit/dist/transactions/transactionStore"
-import { Currency } from "@prisma/client"
 import { SlicerReduced } from "pages/slicer"
+import { UnreleasedAmount } from "../SlicersList/SlicersList"
+import QuestionMark from "@components/icons/QuestionMark"
+import { useAppContext } from "../context"
 
 type Props = {
   slicerId: number
@@ -26,23 +19,17 @@ type Props = {
   shares: number
   totalSlices: number
   protocolFee: number
-  account: string
   isAllowed: boolean
   isImmutable: boolean
   productsModuleBalance: string
   addRecentTransaction: (transaction: NewTransaction) => void
-  unreleasedAmounts: {
-    currency: string
-    amount: BigNumber
-    symbol?: string
-  }[]
+  unreleasedAmounts: UnreleasedAmount[]
   dbData: SlicerReduced
 }
 
 const SlicerCard = ({
   slicerId,
   slicerAddress,
-  account,
   shares,
   totalSlices,
   protocolFee,
@@ -53,22 +40,24 @@ const SlicerCard = ({
   unreleasedAmounts,
   dbData
 }: Props) => {
+  const [show, setShow] = useState(false)
+  const { setModalView } = useAppContext()
   const { name, image } = dbData || {}
-
-  const [ethReleased, setEthReleased] = useState("")
-  const [released, setReleased] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [logs, setLogs] = useState<LogDescription[]>()
+  const [updatedUnreleasedAmounts, setUpdatedUnreleasedAmounts] =
+    useState<UnreleasedAmount[]>()
   const slicerLink = `/slicer/${slicerId}`
   const slicerName = name || `Slicer #${slicerId}`
-  const slicePercentage = `${Math.floor((shares / totalSlices) * 10000) / 100}%`
+  const slicePercentage = Math.floor((shares / totalSlices) * 10000) / 100
+  const currencyShown = 1
 
-  // useEffect(() => {
-  //   if (success) {
-  //     setEthReleased(String(getEthFromWei(unreleasedAmount)))
-  //     setReleased(true)
-  //   }
-  // }, [success])
+  const unreleasedData = updatedUnreleasedAmounts || unreleasedAmounts
+  const unreleasedFormatted = unreleasedData
+    ?.filter((el) => Number(el.amount) != 0)
+    .sort(
+      (a, b) =>
+        Number(formatEther(b.amount)) * (b.quote || 0) -
+        Number(formatEther(a.amount)) * (a.quote || 0)
+    )
 
   return (
     <div className="sm:flex">
@@ -113,82 +102,125 @@ const SlicerCard = ({
         }}
         imageUrl={image}
       />
-      <div className="pt-5 sm:pt-4 sm:ml-6 md:ml-14">
-        <Link href={slicerLink}>
-          <a className="flex items-center">
-            {dbData ? (
-              <h3 className="inline-block">{slicerName}</h3>
-            ) : (
-              <div className="w-32 h-6 mb-2 rounded-md bg-sky-300 animate-pulse" />
+      <div className="flex-grow pt-4 sm:pt-1 sm:ml-6 md:ml-14">
+        <div>
+          <Link href={slicerLink}>
+            <a className="flex items-center">
+              {dbData ? (
+                <h3 className="inline-block">{slicerName}</h3>
+              ) : (
+                <div className="w-32 h-6 mb-2 rounded-md bg-sky-300 animate-pulse" />
+              )}
+              <p className="h-full ml-3 text-sm font-normal text-gray-500">
+                #{slicerId}
+              </p>
+            </a>
+          </Link>
+          <div className="space-y-2 text-gray-700">
+            <div className="flex items-center">
+              <p className="text-sm">
+                {formatNumber(shares, 3)} slices owned ({slicePercentage})%
+              </p>
+              <Link href={`/transfer?id=${slicerId}`}>
+                <a className="flex items-center ml-3 group">
+                  <p className="text-sm ">Transfer</p>
+                  <div className="w-5 h-5 ml-1 transition-transform duration-150 group-hover:translate-x-1">
+                    <Arrow />
+                  </div>
+                </a>
+              </Link>
+            </div>
+          </div>
+          <ProductsBalance
+            slicerId={slicerId}
+            productsModuleBalance={productsModuleBalance}
+            unreleasedAmounts={unreleasedAmounts}
+            setUpdatedUnreleasedAmounts={setUpdatedUnreleasedAmounts}
+          />
+        </div>
+        {dbData && unreleasedFormatted.length != 0 && (
+          <div>
+            <div
+              className={`relative inline-block pt-3 pb-1 text-sm text-gray-500 ${
+                productsModuleBalance?.length > 1 ? "-mt-3" : ""
+              }`}
+              onMouseEnter={() => setShow(true)}
+              onMouseLeave={() => setShow(false)}
+            >
+              <div className="flex items-center gap-1 cursor-default">
+                <p>Release | Withdraw</p> <QuestionMark className="w-4 h-4" />
+              </div>
+              <div
+                className={`${
+                  !show ? "hidden " : ""
+                }prose-sm text-left absolute p-5 w-[22rem] z-10 xs:w-96 bg-white shadow-xl bottom-0 left-0 sm:-ml-28 md:-ml-8 lg:ml-0 mb-8 rounded-md overflow-hidden border border-blue-600 border-opacity-50`}
+              >
+                <p>
+                  <b>Release</b> is the process of sending profits from a slicer
+                  to your{" "}
+                  <Link href="/earnings">
+                    <a className="highlight">earnings vault</a>
+                    {/* <a className="highlight">funds</a> */}
+                  </Link>
+                  , which can then be <b>withdrawn</b> to your wallet.
+                </p>
+                <p>
+                  In general, multiple slicers should be released before
+                  withdrawing a currency.
+                </p>
+                <p>
+                  By clicking the button on the right, you can release and
+                  withdraw a currency at the same time.
+                </p>
+                <p>
+                  <b>Note</b>: Withdrawing sends 2.5% of the amount to{" "}
+                  <a
+                    href="https://juicebox.money/p/slice"
+                    className="highlight"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Slice DAO
+                  </a>{" "}
+                  to fund protocol development. When withdrawing ETH, you get a
+                  proportional amount of SLX governance tokens.
+                </p>
+              </div>
+            </div>
+            <ul>
+              {unreleasedFormatted
+                .slice(0, currencyShown)
+                .map((unreleasedAmount, i) => (
+                  <li key={i}>
+                    <ReleaseCard
+                      slicerAddress={slicerAddress}
+                      unreleasedAmount={unreleasedAmount}
+                      addRecentTransaction={addRecentTransaction}
+                    />
+                    {i < currencyShown - 1 &&
+                      i < unreleasedFormatted.length - 1 && (
+                        <hr className="border-gray-200" />
+                      )}
+                  </li>
+                ))}
+            </ul>
+            {unreleasedFormatted.length > currencyShown && (
+              <p className="pt-2 text-sm text-right">
+                <a
+                  className="highlight"
+                  onClick={() =>
+                    setModalView({
+                      cross: true,
+                      name: "RELEASE_SLICER_CURRENCIES_VIEW",
+                      params: { slicerAddress, unreleasedFormatted }
+                    })
+                  }
+                >
+                  See all
+                </a>
+              </p>
             )}
-            <p className="h-full ml-3 text-sm font-normal text-gray-500">
-              #{slicerId}
-            </p>
-          </a>
-        </Link>
-        <div className="space-y-2 text-gray-700">
-          <div className="flex items-center">
-            <p className="text-sm">
-              {formatNumber(shares, 3)} slices owned ({slicePercentage})
-            </p>
-            <Link href={`/transfer?id=${slicerId}`}>
-              <a className="flex items-center ml-3 group">
-                <p className="text-sm ">Transfer</p>
-                <div className="w-5 h-5 ml-1 transition-transform duration-150 group-hover:translate-x-1">
-                  <Arrow />
-                </div>
-              </a>
-            </Link>
           </div>
-        </div>
-        <ProductsBalance
-          slicerId={slicerId}
-          productsModuleBalance={productsModuleBalance}
-        />
-        <div className="pt-5 space-y-5">
-          {dbData &&
-            unreleasedAmounts.map((unreleasedAmount, i) => (
-              <ButtonRelease
-                slicerAddress={slicerAddress}
-                unreleasedAmount={unreleasedAmount}
-                addRecentTransaction={addRecentTransaction}
-                key={i}
-              />
-            ))}
-        </div>
-
-        {/* {!released && unreleasedAmount && Number(unreleasedAmount) != 0 ? (
-          <div className="mt-6">
-            <BlockchainCall
-              transactionDescription={`Release ETH | Slicer #${slicerId}`}
-              saEventName="withdraw_eth_to_owner"
-              label={`Release ${getEthFromWei(unreleasedAmount)} ETH`}
-              action={() =>
-                TriggerRelease(
-                  signer,
-                  slicerId,
-                  account,
-                  ethers.constants.AddressZero,
-                  false
-                )
-              }
-              success={success}
-              setSuccess={setSuccess}
-              setLogs={setLogs}
-              mutateUrl={`/api/account/${account}/unreleased`}
-              mutateObj={{ unreleased: 0 }}
-            />
-          </div>
-        ) : null} */}
-        {ethReleased != "" && (
-          <p className="pt-4 text-sm text-green-500">
-            You have released{" "}
-            <span className="font-medium">{ethReleased} ETH</span>, check{" "}
-            <Link href="/earnings">
-              <a className="text-green-500 underline">your earnings</a>
-            </Link>{" "}
-            to withdraw them!
-          </p>
         )}
       </div>
     </div>

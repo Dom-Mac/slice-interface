@@ -31,6 +31,21 @@ export const ethMetadata = {
   address: ethers.constants.AddressZero
 }
 
+export const getQuotesToBeUpdated = (
+  currencies: { updatedAt: Date; quote: number }[]
+) => {
+  const dateNow = new Date()
+  const minutesBetweenUpdates = 5
+  // check if there are quotes to be updated
+  return currencies.filter((currency) => {
+    const lastUpdated = new Date(currency.updatedAt)
+    return (
+      !currency.quote ||
+      lastUpdated.getTime() < Number(dateNow) - minutesBetweenUpdates * 60000
+    )
+  })
+}
+
 export const createOrUpdateCurrencies = (currencies) => {
   fetcher(`${process.env.NEXT_PUBLIC_APP_URL}/api/currencies/createOrUpdate`, {
     method: "POST",
@@ -138,18 +153,10 @@ export default function useCurrenciesData(
 
     // Case in which all the requested currencies are known
     if (dbCurrencies.length === currencies.length) {
-      const dateNow = new Date()
-      const minutesBetweenUpdates = 5
-      // check if there are quotes to be updated
-      const quotesToBeUpdated = dbCurrencies.filter((currency) => {
-        const lastUpdated = new Date(currency.updatedAt)
-        return (
-          !currency.quote ||
-          lastUpdated.getTime() <
-            Number(dateNow) - minutesBetweenUpdates * 60000
-        )
-      })
       let quotes = {}
+      // check if there are quotes to be updated
+      const quotesToBeUpdated = getQuotesToBeUpdated(dbCurrencies)
+
       // if there are tokens to be updated, get quotes from coin market cap
       if (quotesToBeUpdated.length) {
         quotes = await getQuotes(dbCurrencies)
@@ -160,20 +167,18 @@ export default function useCurrenciesData(
         const dbCurrency = dbCurrencies.find(
           (dbCurrency) => currency.id.split("-")[1] === dbCurrency.address
         )
+        const { name, symbol, logo, quote, address } = dbCurrency
         formattedData.push({
           ...currency,
-          symbol: dbCurrency.symbol,
-          name: dbCurrency.name,
-          logo: dbCurrency.logo,
+          name,
+          symbol,
+          logo,
           // if the quotes have been updated return the new value, else return the db value
-          quote: Object.keys(quotes).length
-            ? quotes[dbCurrency.symbol]
-            : dbCurrency.quote
+          quote: Object.keys(quotes).length ? quotes[symbol] : quote
         })
       })
 
       if (quotesToBeUpdated.length) {
-        // CREATE OR UPDATE CURRENCIES
         createOrUpdateCurrencies(formattedData)
       }
     } else {
@@ -187,18 +192,17 @@ export default function useCurrenciesData(
       const quotes = await getQuotes(metadata)
       if (Object.keys(quotes).length && metadata.length) {
         currencies?.forEach((currency, index) => {
-          const currencyMetadata = metadata[index]
+          const { name, symbol, logo } = metadata[index]
           formattedData.push({
             ...currency,
-            symbol: currencyMetadata.symbol,
-            name: currencyMetadata.name,
-            logo: currencyMetadata.logo,
-            quote: quotes[currencyMetadata?.symbol]
+            symbol,
+            name,
+            logo,
+            quote: quotes[symbol]
           })
         })
       }
 
-      // CREATE OR UPDATE CURRENCIES
       createOrUpdateCurrencies(formattedData)
     }
 

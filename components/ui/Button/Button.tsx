@@ -98,7 +98,7 @@ const Button: FC<ButtonProps> = (props) => {
       )}
       {double && (
         <div
-          className={`${className} shadow-light-random absolute top-0 mt-[0.6rem] ml-[0.6rem] mr-[-0.6rem] bg-gradient-to-br ${
+          className={`${className} shadow-light-random absolute top-0 mt-[0.4rem] ml-[0.5rem] mr-[-0.5rem] bg-gradient-to-br ${
             color1[3]
           } ${color2[4]} text-transparent ${
             !disabled

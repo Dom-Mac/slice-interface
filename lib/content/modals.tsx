@@ -43,6 +43,7 @@ type ViewNames =
   | "CREATE_PRODUCT_CONFIRM_VIEW"
   | "PRODUCT_VIEW"
   | "REDEEM_PRODUCT_VIEW"
+  | "RELEASE_SLICER_CURRENCIES_VIEW"
   | "FINGERPRINTING_VIEW"
 
 export const LOADING_VIEW = () => {
@@ -676,6 +677,41 @@ export const REDEEM_PRODUCT_VIEW = (params: any) => {
           </div>
         )}
       </div>
+    </>
+  )
+}
+
+export const RELEASE_SLICER_CURRENCIES_VIEW = (params: any) => {
+  const { slicerAddress, unreleasedFormatted } = params
+
+  useEffect(() => {
+    saEvent("release_open_modal")
+  }, [])
+
+  return (
+    <>
+      <div className="pb-6 text-center">
+        <DoubleText inactive logoText="Slicer earnings" />
+        <p className="pt-4">{slicerAddress}</p>
+      </div>
+      {/* <ul className="max-w-sm pt-6 mx-auto">
+        {owners.map((el, key) => (
+          <li key={key}>
+            <OwnerBlock
+              index={Number(key)}
+              slicerId={slicerId}
+              totalSlices={totalSlices}
+              owner={owners[Number(key)]}
+              unreleasedOwner={unreleased[Number(key)]}
+              unreleased={unreleased}
+              setUnreleased={setUnreleased}
+            />
+            {key != owners.length - 1 && (
+              <hr className="my-8 border-gray-300" />
+            )}
+          </li>
+        ))} 
+      </ul>*/}
     </>
   )
 }

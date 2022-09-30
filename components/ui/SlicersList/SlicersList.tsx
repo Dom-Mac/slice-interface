@@ -5,8 +5,14 @@ import { BigNumber, BigNumberish } from "ethers"
 import { SlicerReduced } from "pages/slicer"
 import { useState } from "react"
 
+export type UnreleasedAmount = {
+  currency: any
+  amount: BigNumber
+  symbol: string
+  quote: number
+}
+
 type Props = {
-  account: string
   payeeData: any
   slicers: any
   loading: boolean
@@ -16,7 +22,6 @@ type Props = {
 }
 
 const SlicersList = ({
-  account,
   payeeData,
   slicers,
   loading,
@@ -52,19 +57,23 @@ const SlicersList = ({
           const productsModuleBalance = slicer?.productsModuleBalance
           const isAllowed = Number(ownedShares) >= Number(slicer?.minimumSlices)
           const currencies = slicer?.currencies
-          const unreleasedAmounts = unreleasedDataCopy
-            ?.splice(0, currencies.length)
-            .map((amount, i) => {
-              const currencyAddress = currencies[i].id.split("-")[0]
-
-              return {
-                currency: currencyAddress,
-                amount: amount as BigNumber,
-                symbol: currencyData?.find(
+          const unreleasedAmounts: UnreleasedAmount[] =
+            currencies &&
+            unreleasedDataCopy
+              ?.splice(0, currencies.length)
+              .map((amount, i) => {
+                const currencyAddress = currencies[i].id.split("-")[0]
+                const data = currencyData?.find(
                   (currency) => currency.address == currencyAddress
-                )?.symbol
-              }
-            })
+                )
+
+                return {
+                  currency: currencyAddress,
+                  amount: amount as BigNumber,
+                  symbol: data?.symbol,
+                  quote: data?.quote
+                }
+              })
           const dbData = slicerData?.find((el) => el.id == slicerId)
 
           return (
@@ -72,7 +81,6 @@ const SlicersList = ({
               <SlicerCard
                 slicerAddress={slicerAddress}
                 slicerId={slicerId}
-                account={account}
                 shares={ownedShares}
                 totalSlices={totalSlices}
                 protocolFee={Number(protocolFee)}

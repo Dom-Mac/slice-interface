@@ -11,6 +11,7 @@ import {
   CREATE_PRODUCT_CONFIRM_VIEW,
   PRODUCT_VIEW,
   REDEEM_PRODUCT_VIEW,
+  RELEASE_SLICER_CURRENCIES_VIEW,
   FINGERPRINTING_VIEW
 } from "@lib/content/modals"
 
@@ -50,6 +51,9 @@ const Modal = ({ modalView, setModalView }: Props) => {
       break
     case "REDEEM_PRODUCT_VIEW":
       content = REDEEM_PRODUCT_VIEW(params)
+      break
+    case "RELEASE_SLICER_CURRENCIES_VIEW":
+      content = RELEASE_SLICER_CURRENCIES_VIEW(params)
       break
     case "FINGERPRINTING_VIEW":
       content = FINGERPRINTING_VIEW()
