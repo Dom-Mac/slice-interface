@@ -36,6 +36,7 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
   const [totalShares, setTotalShares] = useState(1000000)
   const [isImmutable, setIsImmutable] = useState(false)
   const [isCreatorMetadata, setIsCreatorMetadata] = useState(false)
+  const [currencies, setCurrencies] = useState([""])
   const [message, setMessage] = useState<Message>({
     message: "",
     messageStatus: "success"
@@ -60,6 +61,7 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL
     const cleanedAddresses = addresses.filter((el) => el != "")
+    const cleanedCurrencies = currencies.filter((el) => el != "")
     const cleanedShares = shares.filter((el) => el != 0)
 
     setloadingButton(true)
@@ -76,7 +78,7 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
           signer,
           payees,
           minimumShares,
-          [],
+          cleanedCurrencies,
           0,
           0,
           isImmutable
@@ -142,6 +144,8 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
           setTotalShares={setTotalShares}
           setIsImmutable={setIsImmutable}
           setIsCreatorMetadata={setIsCreatorMetadata}
+          currencies={currencies}
+          setCurrencies={setCurrencies}
         />
         <div className="py-12 space-y-4 text-yellow-600 sm:px-3">
           {totalShares > 4000000000 && (

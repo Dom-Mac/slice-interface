@@ -3,6 +3,7 @@ import {
   Input,
   SliceFormAdvancedSettings,
   SliceFormInputBlock,
+  SliceFormAddCurrencies,
   Question
 } from "@components/ui"
 import Add from "@components/icons/Add"
@@ -16,12 +17,14 @@ type Props = {
   totalShares: number
   isImmutable: boolean
   isCreatorMetadata: boolean
+  currencies: string[]
   setAddresses: Dispatch<SetStateAction<string[]>>
   setShares: Dispatch<SetStateAction<number[]>>
   setMinimumShares: Dispatch<SetStateAction<number>>
   setTotalShares: Dispatch<SetStateAction<number>>
   setIsImmutable: Dispatch<SetStateAction<boolean>>
   setIsCreatorMetadata: Dispatch<SetStateAction<boolean>>
+  setCurrencies: Dispatch<SetStateAction<string[]>>
 }
 
 const SliceFormBlockSplitter = ({
@@ -37,7 +40,9 @@ const SliceFormBlockSplitter = ({
   setMinimumShares,
   setTotalShares,
   setIsImmutable,
-  setIsCreatorMetadata
+  setIsCreatorMetadata,
+  currencies,
+  setCurrencies
 }: Props) => {
   const { account } = useAppContext()
   const [minimumSharesAuto, setMinimumSharesAuto] = useState(true)
@@ -189,6 +194,26 @@ const SliceFormBlockSplitter = ({
             Math.floor((minimumShares / totalShares) * 10000) / 100 + "%"}
         </p>
       </div>
+
+      <div className="relative flex items-center justify-end col-span-5 pb-3 xs:col-end-7">
+        <p className="pr-1">Currencies</p>
+        <Question
+          text={
+            <>
+              <p>
+                <b>ETH is supported by default. </b>
+                Currencies can be added at this step or after creating the
+                slicer
+              </p>
+            </>
+          }
+          position="bottom-[15px] left-0"
+        />
+      </div>
+      <SliceFormAddCurrencies
+        currencies={currencies}
+        setCurrencies={setCurrencies}
+      />
       {/* 
       <SliceFormAdvancedSettings
         isImmutable={isImmutable}
