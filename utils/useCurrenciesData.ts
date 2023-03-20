@@ -33,7 +33,7 @@ const getDbCurrencies = async (currenciesAddresses: String[]) => {
   return dbCurrencies
 }
 
-const createOrUpdateCurrencies = (currencies) => {
+const createOrUpdateCurrencies = (currencies: Currency[]) => {
   fetcher("/api/currencies/createOrUpdate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
