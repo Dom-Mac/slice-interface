@@ -43,7 +43,7 @@ const SliceFormAdvancedSettings = ({
       {showAnswer && (
         <div className="grid grid-cols-6 col-span-8 gap-4 py-2 sm:mx-6 xs:col-span-10 xs:grid-cols-8 xs:pl-8 xs:pr-4 max-w-screen-xs">
           <div className="relative flex items-center justify-end col-span-5 pb-3 xs:col-end-7">
-            <p className="pr-1">Currencies</p>
+            <p className="pr-1">Supported currencies</p>
             <Question
               text={
                 <>

@@ -16,11 +16,9 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
   const [resolvedAddress, setResolvedAddress] = useState("")
 
   const addCurrency = () => {
-    if (address) {
-      setCurrencies([...currencies, address])
-      setAddress("")
-      setResolvedAddress("")
-    }
+    setCurrencies([...currencies, address])
+    setAddress("")
+    setResolvedAddress("")
   }
 
   const removeCurrency = (index: number) => {
@@ -61,15 +59,14 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
               required={false}
               resolvedAddress={resolvedAddress}
               setResolvedAddress={setResolvedAddress}
+              placeholder="0x..."
+              showEns={false}
             />
-          </div>
-          <div className="flex items-center justify-end">
             <div
               className="inline-flex gap-4 text-green-600 opacity-75 cursor-pointer hover:opacity-100"
               onClick={() => addCurrency()}
             >
-              <Add />
-              <p className="inline-block font-semibold">Add currency</p>
+              <p className="inline-block font-semibold">Add</p>
             </div>
           </div>
         </div>
