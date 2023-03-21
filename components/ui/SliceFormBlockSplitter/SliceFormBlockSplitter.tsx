@@ -195,32 +195,14 @@ const SliceFormBlockSplitter = ({
         </p>
       </div>
 
-      <div className="relative flex items-center justify-end col-span-5 pb-3 xs:col-end-7">
-        <p className="pr-1">Currencies</p>
-        <Question
-          text={
-            <>
-              <p>
-                <b>ETH is supported by default. </b>
-                Currencies can be added at this step or after creating the
-                slicer
-              </p>
-            </>
-          }
-          position="bottom-[15px] left-0"
-        />
-      </div>
-      <SliceFormAddCurrencies
-        currencies={currencies}
-        setCurrencies={setCurrencies}
-      />
-      {/* 
       <SliceFormAdvancedSettings
         isImmutable={isImmutable}
         isCreatorMetadata={isCreatorMetadata}
         setIsImmutable={setIsImmutable}
         setIsCreatorMetadata={setIsCreatorMetadata}
-      /> */}
+        currencies={currencies}
+        setCurrencies={setCurrencies}
+      />
     </div>
   )
 }

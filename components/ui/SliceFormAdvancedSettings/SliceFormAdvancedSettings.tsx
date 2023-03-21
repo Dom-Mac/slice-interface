@@ -1,26 +1,30 @@
 import { Dispatch, SetStateAction, useState } from "react"
-import { Question } from "@components/ui"
+import { Question, SliceFormAddCurrencies } from "@components/ui"
 import MySwitch from "../MySwitch"
 import Chevron from "@components/icons/Chevron"
 
 type Props = {
   isImmutable: boolean
   isCreatorMetadata: boolean
+  currencies: string[]
   setIsImmutable: Dispatch<SetStateAction<boolean>>
   setIsCreatorMetadata: Dispatch<SetStateAction<boolean>>
+  setCurrencies: Dispatch<SetStateAction<string[]>>
 }
 
 const SliceFormAdvancedSettings = ({
   isImmutable,
   isCreatorMetadata,
   setIsImmutable,
-  setIsCreatorMetadata
+  setIsCreatorMetadata,
+  currencies,
+  setCurrencies
 }: Props) => {
   const [showAnswer, setShowAnswer] = useState(false)
   return (
     <>
       <div
-        className="relative flex items-center w-full col-span-8 gap-0 pt-5 mx-auto border-b-2 border-blue-600 cursor-pointer max-w-screen-xs group xs:col-span-10 sm:mx-6"
+        className="relative flex items-center w-full col-span-8 gap-0 pt-5 mx-auto cursor-pointer max-w-screen-xs group xs:col-span-10 sm:mx-6"
         onClick={() => setShowAnswer((showAnswer) => !showAnswer)}
       >
         <div className="flex-shrink-0 w-6 h-6 mb-2 mr-2">
@@ -38,7 +42,26 @@ const SliceFormAdvancedSettings = ({
       </div>
       {showAnswer && (
         <div className="grid grid-cols-6 col-span-8 gap-4 py-2 sm:mx-6 xs:col-span-10 xs:grid-cols-8 xs:pl-8 xs:pr-4 max-w-screen-xs">
-          <div className="relative flex items-center justify-end col-span-5 xs:col-span-7">
+          <div className="relative flex items-center justify-end col-span-5 pb-3 xs:col-end-7">
+            <p className="pr-1">Currencies</p>
+            <Question
+              text={
+                <>
+                  <p>
+                    <b>ETH is supported by default. </b>
+                    Currencies can be added at this step or after creating the
+                    slicer
+                  </p>
+                </>
+              }
+              position="bottom-[15px] left-0"
+            />
+          </div>
+          <SliceFormAddCurrencies
+            currencies={currencies}
+            setCurrencies={setCurrencies}
+          />
+          {/* <div className="relative flex items-center justify-end col-span-5 xs:col-span-7">
             <p className="pr-1">Immutable metadata</p>
             <Question
               text={
@@ -98,7 +121,7 @@ const SliceFormAdvancedSettings = ({
               enabled={isCreatorMetadata}
               setEnabled={setIsCreatorMetadata}
             />
-          </div>
+          </div> */}
         </div>
       )}
     </>

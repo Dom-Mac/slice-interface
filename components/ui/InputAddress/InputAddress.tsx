@@ -11,8 +11,8 @@ import Input from "../Input/Input"
 
 export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   address: string
-  resolvedAddress: string
-  setResolvedAddress: Dispatch<SetStateAction<string>>
+  resolvedAddress?: string
+  setResolvedAddress?: Dispatch<SetStateAction<string>>
   label?: string
   onChange?: (...args: any[]) => any
   placeholder?: string

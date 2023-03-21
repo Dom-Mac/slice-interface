@@ -54,13 +54,15 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
               </div>
             ))}
           </div>
-          <InputAddress
-            address={address}
-            onChange={setAddress}
-            required={false}
-            resolvedAddress={resolvedAddress}
-            setResolvedAddress={setResolvedAddress}
-          />
+          <div>
+            <InputAddress
+              address={address}
+              onChange={setAddress}
+              required={false}
+              resolvedAddress={resolvedAddress}
+              setResolvedAddress={setResolvedAddress}
+            />
+          </div>
           <div className="flex items-center justify-end">
             <div
               className="inline-flex gap-4 text-green-600 opacity-75 cursor-pointer hover:opacity-100"
