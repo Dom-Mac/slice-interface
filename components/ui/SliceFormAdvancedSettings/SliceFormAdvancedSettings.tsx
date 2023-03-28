@@ -50,7 +50,8 @@ const SliceFormAdvancedSettings = ({
                   <p>
                     <b>ETH is supported by default. </b>
                     Currencies can be added at this step or after creating the
-                    slicer
+                    slicer. Enter the <b>ERC20 token address</b> to add a new
+                    currency.
                   </p>
                 </>
               }

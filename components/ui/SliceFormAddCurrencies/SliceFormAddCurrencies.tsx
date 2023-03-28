@@ -14,18 +14,31 @@ type Props = {
 const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
   const [visible, setVisible] = useState(false)
   const [address, setAddress] = useState("")
-  const [resolvedAddress, setResolvedAddress] = useState("")
+  const [isValidAddress, setIsValidAddress] = useState(false)
+
+  const validateAddress = (value: string) => {
+    const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/
+
+    if (ethAddressRegex.test(value)) {
+      setIsValidAddress(true)
+    } else {
+      setIsValidAddress(false)
+    }
+  }
 
   const addCurrency = () => {
     setCurrencies([...currencies, address])
     setAddress("")
-    setResolvedAddress("")
   }
 
   const removeCurrency = (index: number) => {
     const newCurrencies = currencies.filter((_, i) => i !== index)
     setCurrencies(newCurrencies)
   }
+
+  useEffect(() => {
+    validateAddress(address)
+  }, [address])
 
   return (
     <>
@@ -61,12 +74,14 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
               error={false}
               onChange={setAddress}
             />
-            <div
-              className="inline-flex gap-4 text-green-600 opacity-75 cursor-pointer hover:opacity-100"
-              onClick={() => addCurrency()}
-            >
-              <p className="inline-block font-semibold">Add</p>
-            </div>
+            {isValidAddress && (
+              <div
+                className="inline-flex gap-4 text-green-600 opacity-75 cursor-pointer hover:opacity-100"
+                onClick={() => addCurrency()}
+              >
+                <p className="inline-block font-semibold">Add</p>
+              </div>
+            )}
           </div>
         </div>
       )}
