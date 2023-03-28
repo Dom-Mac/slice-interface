@@ -83,6 +83,7 @@ const SliceFormBlockSplitter = ({
     setShares([1000000])
     setMinimumShares(1000000)
     setTotalShares(1000000)
+    setCurrencies([""])
   }
 
   return (
