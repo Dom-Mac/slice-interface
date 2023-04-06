@@ -27,7 +27,9 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
   }
 
   const addCurrency = () => {
-    setCurrencies([...currencies, address])
+    if (!currencies.includes(address)) {
+      setCurrencies([...currencies, address])
+    }
     setAddress("")
   }
 
@@ -43,7 +45,9 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
   return (
     <>
       <div className="relative z-30 flex items-center justify-end col-span-3 pb-3 xs:col-span-3 xs:col-start-7 md:col-span-3 md:col-start-8">
-        {currencies.length > 1 && <p>Eth +{currencies.length - 1}</p>}
+        {currencies.length > 1 && (
+          <p className="pr-1">ETH +{currencies.length - 1}</p>
+        )}
         <Image src={ethImg} alt="Token logo" width={28} height={28} />
         <div onClick={() => setVisible(!visible)} className="ml-2">
           {!visible && <Add />}
@@ -55,14 +59,14 @@ const SliceFormAddCurrencies = ({ currencies, setCurrencies }: Props) => {
           <div>
             {/* slice(1) because first currency is eth, currencies = [""] */}
             {currencies.slice(1).map((currency, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <p>{currency}</p>
+              <div key={index} className="flex items-center gap-2 pb-2">
                 <div
                   className="text-red-100"
                   onClick={() => removeCurrency(index)}
                 >
                   <Delete />
                 </div>
+                <p>{currency}</p>
               </div>
             ))}
           </div>
