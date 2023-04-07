@@ -17,7 +17,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         isCreatorMetadata,
         totalShares,
         minimumShares,
-        creator
+        creator,
+        currencies
       } = JSON.parse(req.body)
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL
 
@@ -62,8 +63,29 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             config: { sponsors: true, creatorMetadata: isCreatorMetadata },
             sponsors: {}
           }
+
+          // TODO check if it's a valid ERC20 address and fetch name and symbol
+          const currenciesObj = currencies.map((currency: string) => ({
+            where: {
+              address: currency
+            },
+            create: {
+              address: currency,
+              name: "Token",
+              symbol: "TOKEN"
+            }
+          }))
+
           await prisma.slicer.create({
-            data: slicerInfo
+            data: {
+              ...slicerInfo,
+              currencies: {
+                connectOrCreate: currenciesObj
+              }
+            },
+            include: {
+              currencies: true
+            }
           })
 
           // On-demand ISR

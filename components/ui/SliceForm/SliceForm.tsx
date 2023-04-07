@@ -100,7 +100,8 @@ const SliceForm = ({ success, setLoading, setSuccess, setLogs }: Props) => {
             isCreatorMetadata,
             totalShares,
             minimumShares,
-            creator
+            creator,
+            currencies: cleanedCurrencies
           }),
           method: "POST"
         }
